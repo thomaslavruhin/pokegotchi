@@ -286,6 +286,188 @@ body {
 .act .knob b.glyph { font: inherit; font-size: 11px; color: #f0f0ff; text-shadow: 1px 1px 0 #1d1a29; }
 
 
+/* ── bag.css ── */
+/* BOLSA: ícone 8-bit antes do nome */
+.bag-ico { display: inline-block; width: 1.3em; margin-right: .5em; vertical-align: -.15em; }
+.bag-ico svg { width: 100%; height: auto; display: block; }
+.bag-desc { font-size: .85em; color: #6a6f84; margin-top: 4px; line-height: 1.5; }
+/* prévia da forma nova (EEVEE) durante a pergunta SIM/NÃO */
+.bag-preview { position: absolute; left: 3%; top: 6%; z-index: 4; background: var(--paper); color: var(--ink); border: 3px solid var(--edge); border-radius: 6px;
+  box-shadow: inset 0 0 0 2px var(--edge-hi), 0 0 0 2px #1d2335; width: 34%; display: flex; flex-direction: column; align-items: center; padding: 2px 2px 6px;
+  font-family: var(--font-pixel); font-size: clamp(5px, 2.8cqw, 8px); text-shadow: 1px 1px 0 var(--ink-shadow); pointer-events: none; }
+.bag-preview img { width: 90%; image-rendering: pixelated; }
+
+/* ── battle.css ── */
+/* Batalha → LUTAR: os nomes dos golpes são longos (LANÇAMENTO DE ROCHA), então quebram em duas linhas */
+.device.bt-moves .act span.lbl { white-space: normal; text-align: center; max-width: 84px; font-size: 6px; line-height: 1.35; min-height: 2.7em; }
+.device.bt-moves .act .knob svg { width: 20px; height: 20px; }
+/* Lista de golpes: o botão do meio é VOLTAR (rótulos da faixa e ícone trocados) */
+.device.bt-moves .band-label { font-size: 0; }
+.device.bt-moves .band-label.l::after { content: 'VOLTAR'; font-size: 7px; }
+.device.bt-moves .band-label.r::after { content: '[ X ]'; font-size: 7px; }
+.device.bt-moves #petIcon > * { display: none; }
+.device.bt-moves #petIcon::after { content: '◀'; font: 16px var(--font-pixel); color: #404048; }
+
+/* ── card.css ── */
+/* ── CARTÃO DE TREINADOR (card.js): o cartão azul do FRLG, rolando por dentro ── */
+.cd { position: absolute; inset: 0; z-index: 3; padding: 3%; background: #3a5a90; font-family: var(--font-pixel); font-size: clamp(6px, 3.4cqw, 9px); line-height: 1.3; color: var(--ink); user-select: none; }
+.cd-card { height: 100%; display: flex; flex-direction: column; border-radius: 8px; border: 2px solid #203868; box-shadow: inset 0 0 0 2px #d8ecff;
+  background: linear-gradient(160deg, #b8dcf8 0%, #90c0ec 100%); overflow: hidden; }
+.cd-title { flex: none; background: #2850a0; color: #fff; text-shadow: 1px 1px 0 #102858; padding: .55em .8em .45em; letter-spacing: .05em; }
+.cd-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding: .6em .7em .8em; display: flex; flex-direction: column; gap: .55em; text-shadow: 1px 1px 0 #e0f0ff; }
+.cd-top { display: grid; grid-template-columns: 24% 1fr; gap: .6em; align-items: center; }
+.cd-pic { aspect-ratio: 1; border-radius: 6px; background: radial-gradient(circle at 50% 65%, #f0f8ff 0 46%, #c0dcf4 47%); box-shadow: inset 0 0 0 2px #6890c8; overflow: hidden; display: grid; place-items: center; }
+.cd-pic img { width: 100%; max-width: none; image-rendering: pixelated; }
+.cd-rows { display: flex; flex-direction: column; gap: .3em; }
+.cd-row { display: flex; justify-content: space-between; gap: .5em; white-space: nowrap; font-size: clamp(5px, 3cqw, 9px); border-bottom: 1px dashed #6890c8; padding-bottom: .15em; }
+.cd-sec { display: flex; justify-content: space-between; background: #2850a0; color: #fff; text-shadow: 1px 1px 0 #102858; border-radius: 3px; padding: .4em .6em .3em; }
+.cd-badges { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .4em; }
+.cd-badge { font: inherit; font-size: clamp(4px, 2.2cqw, 6px); display: flex; flex-direction: column; align-items: center; gap: .3em; padding: .4em .1em .3em; border-radius: 4px; color: #6a7088;
+  background: rgba(255,255,255,.35); box-shadow: inset 0 0 0 1px rgba(40,80,160,.25); cursor: pointer; min-height: 36px; }
+.cd-badge svg { width: 62%; max-width: 3.4em; height: auto; image-rendering: pixelated; }
+.cd-badge.on { color: var(--ink); background: rgba(255,255,255,.7); }
+.cd-medals { display: flex; flex-direction: column; gap: .3em; }
+.cd-medal { display: flex; align-items: flex-start; gap: .5em; }
+.cd-medal i { flex: none; width: 1em; height: 1em; margin-top: .05em; border-radius: 50%; background: #a8b4c8; box-shadow: inset 0 0 0 1px #7880a0; }
+.cd-medal.on i { background: radial-gradient(circle at 35% 35%, #fff4b0, #f0c030 55%, #b08010); box-shadow: inset 0 0 0 1px #806010; }
+.cd-medal small { display: block; font-size: clamp(5px, 2.5cqw, 7px); color: #4a5878; line-height: 1.5; margin-top: .15em; }
+.cd-hof { display: grid; grid-template-columns: 1fr 1fr; gap: .5em; }
+.cd-hof button { font: inherit; background: var(--paper); color: var(--ink); border: 2px solid #c89820; box-shadow: inset 0 0 0 1px #f8e0a0; border-radius: 5px; padding: .6em .3em; min-height: 32px; cursor: pointer; text-shadow: 1px 1px 0 var(--ink-shadow); }
+.cd-hof button:active { transform: translateY(1px); }
+
+/* ── options.css ── */
+/* ── OPÇÕES: painel de exportar/importar por cima da tela ── */
+.op-panel { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; gap: 4px; padding: 3%;
+  background: var(--paper); color: var(--ink); border: 3px solid var(--edge); box-shadow: inset 0 0 0 2px var(--edge-hi);
+  font-family: var(--font-pixel); font-size: clamp(6px, 3.4cqw, 9px); text-shadow: 1px 1px 0 var(--ink-shadow); }
+.op-title { padding: 2px 4px 4px; border-bottom: 2px dashed #c8c8b0; }
+.op-code { flex: 1; min-height: 0; width: 100%; resize: none; padding: 4px 6px; border: 2px solid #c8c8b0; border-radius: 3px;
+  background: #fff; color: var(--ink); font-family: var(--font-term); font-size: clamp(11px, 5cqw, 15px); line-height: 1.05;
+  word-break: break-all; overflow-wrap: anywhere; user-select: text; -webkit-user-select: text; text-shadow: none; }
+.op-code:focus { outline: 2px solid #6890f0; outline-offset: -2px; }
+.op-row { display: flex; gap: 3px; justify-content: flex-end; }
+.op-btn { font: inherit; color: inherit; text-shadow: inherit; background: #f0f0e0; border: 2px solid var(--edge); border-radius: 4px;
+  padding: 0 4px; min-height: max(24px, 11cqw); font-size: clamp(6px, 3cqw, 8px); cursor: pointer; flex: 0 1 auto; }
+.op-btn:hover, .op-btn:focus-visible { background: #fff8c8; outline: none; }
+.op-btn:active { translate: 0 1px; }
+.op-prev { flex: 1; padding-right: max(32%, 70px); min-height: 0; display: flex; flex-direction: column; align-items: flex-start; line-height: 1.6; overflow: hidden; }
+.op-prev img { flex: 1; min-height: 0; max-width: 40%; object-fit: contain; object-position: left bottom; image-rendering: pixelated; }
+
+/* ── pc.css ── */
+/* PC: tela cheia por cima do canvas (abaixo do .menu-layer). Tudo em cqw: acompanha a largura da tela do jogo,
+   de ~260px no celular a ~360px no desktop */
+.pc-layer { position: absolute; inset: 0; z-index: 3; display: grid; grid-template-columns: 25% minmax(0, 1fr); gap: 1.4cqw; padding: 1.4cqw;
+  background: #28406a repeating-linear-gradient(45deg, rgba(255,255,255,.05) 0 4px, transparent 4px 8px); color: var(--ink);
+  font-family: var(--font-pixel); font-size: clamp(5px, 2.6cqw, 8px); line-height: 1.4; text-shadow: 1px 1px 0 var(--ink-shadow); overflow: hidden; user-select: none; }
+.pc-layer button { font: inherit; color: inherit; text-shadow: inherit; cursor: pointer; }
+.pc-side { display: flex; flex-direction: column; gap: 1.6cqw; min-height: 0; }
+.pc-card { background: var(--paper); border: 2px solid var(--edge); box-shadow: inset 0 0 0 1px var(--edge-hi); border-radius: 4px; padding: 1cqw; display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 0; }
+.pc-act { flex: none; gap: .4cqw; }
+.pc-act img { width: 64%; image-rendering: pixelated; margin: -1.5cqw 0 -1cqw; }
+.pc-act.sel, .pc-act:focus-visible { border-color: #e05040; box-shadow: inset 0 0 0 1px #f8a090, 0 0 0 2px #e05040; outline: none; }
+.pc-lbl { font-size: .8em; color: #fff; background: #48a868; border-radius: 3px; padding: .5cqw 1cqw .3cqw; text-shadow: none; }
+.pc-info { flex: 1; justify-content: center; gap: .8cqw; min-height: 0; overflow: hidden; }
+/* nomes de até 10 letras cabem numa linha mesmo na tela de ~260px */
+.pc-side .pc-nm { font-size: .82em; white-space: nowrap; max-width: 100%; overflow: hidden; }
+.pc-dim { color: #6a6f84; }
+.pc-total { font-size: .8em; margin-top: auto; }
+.pc-types { display: flex; flex-wrap: wrap; gap: .6cqw; justify-content: center; }
+.pc-type { color: #fff; font-size: .78em; padding: .5cqw .9cqw .3cqw; border-radius: 3px; text-shadow: 1px 1px 0 rgba(0,0,0,.3); }
+.pc-main { display: flex; flex-direction: column; gap: 1.2cqw; min-width: 0; min-height: 0; }
+.pc-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 1cqw; background: var(--paper); border: 2px solid var(--edge); box-shadow: inset 0 0 0 1px var(--edge-hi); border-radius: 4px; padding: 0 .4cqw; }
+.pc-arr { background: none; border: 0; padding: 1.4cqw 2.4cqw; color: #e05040 !important; }
+.pc-title { flex: 1; text-align: center; white-space: nowrap; }
+.pc-title small { font-size: .8em; margin-left: 1cqw; }
+.pc-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); gap: .6cqw; padding: .8cqw;
+  background: var(--wall) repeating-linear-gradient(0deg, rgba(255,255,255,.12) 0 2px, transparent 2px 6px); border: 2px solid #1d2335; border-radius: 4px; }
+.pc-cell { position: relative; padding: 0; border: 0; border-radius: 3px; background: rgba(255,255,255,.28); min-width: 0; min-height: 0; }
+.pc-cell img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; pointer-events: none; }
+.pc-cell.sel, .pc-cell:focus-visible { background: rgba(255,255,255,.75); box-shadow: inset 0 0 0 2px #e05040; outline: none; animation: pc-blink .6s steps(2) infinite; }
+@keyframes pc-blink { 50% { box-shadow: inset 0 0 0 2px #f8d030; } }
+.pc-shiny { position: absolute; right: 1px; top: 0; font-style: normal; font-size: .9em; color: #e0a000; text-shadow: 1px 1px 0 #fff; }
+
+/* DADOS */
+.pc-sheet { font-size: 1.08em; position: absolute; inset: 1.6cqw; background: var(--paper); border: 3px solid var(--edge); box-shadow: inset 0 0 0 2px var(--edge-hi), 0 0 0 2px #1d2335; border-radius: 6px;
+  display: grid; grid-template-columns: 34% minmax(0, 1fr); gap: 1.6cqw; padding: 1.6cqw; overflow: hidden; }
+.pc-sh-l { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .6cqw; background: #e8f0f8; border-radius: 4px; padding-bottom: 1cqw; }
+.pc-sh-l img { width: 92%; image-rendering: pixelated; }
+.pc-shtxt { color: #d09000; font-size: .85em; }
+.pc-sh-r { display: flex; flex-direction: column; gap: 1cqw; min-width: 0; }
+.pc-sh-r .pc-types { justify-content: flex-start; }
+.pc-bar { display: grid; grid-template-columns: 9.5em minmax(0, 1fr) 3em; align-items: center; gap: 1cqw; font-size: .9em; }
+.pc-bar > span:last-child { text-align: right; }
+.pc-bar b { height: 1.8cqw; min-height: 4px; background: #505860; border-radius: 3px; padding: 1px; }
+.pc-bar i { display: block; height: 100%; border-radius: 1px; }
+.pc-evo { font-size: .85em; line-height: 1.5; }
+
+/* animação da troca: dois aparelhos ligados pelo cabo */
+.pc-link { position: absolute; inset: 0; background: #101830; display: flex; align-items: center; justify-content: space-between; padding: 0 8cqw; }
+.pc-gba { width: 17cqw; height: 11cqw; background: #6050b0; border-radius: 2cqw; box-shadow: inset 0 0 0 1cqw #4a3c90; position: relative; }
+.pc-gba::after { content: ""; position: absolute; inset: 2.4cqw 4cqw; background: #a8e0a0; border-radius: 2px; }
+.pc-cable { flex: 1; height: 1cqw; background: #303848; margin: 0 1cqw; position: relative; }
+.pc-cable i { position: absolute; top: 50%; left: 0; width: 3cqw; height: 3cqw; translate: -50% -50%; border-radius: 50%; background: #f8d030; box-shadow: 0 0 2cqw #f8d030; opacity: 0; }
+.pc-link.go .pc-cable i { animation: pc-go 1.2s linear forwards; }
+.pc-link.back .pc-cable i { animation: pc-go 1.2s linear reverse forwards; }
+@keyframes pc-go { 0% { left: 0; opacity: 1; } 100% { left: 100%; opacity: 1; } }
+.pc-lmon { position: absolute; left: 50%; top: 4%; width: 34cqw; translate: -50% 0; image-rendering: pixelated; transition: opacity .4s, translate .4s; }
+.pc-link.go .pc-lmon { opacity: 0; translate: 10% 0; }
+.pc-link.back .pc-lmon { animation: pc-in 1.2s steps(6) forwards; }
+@keyframes pc-in { 0% { opacity: 0; } 70% { opacity: 0; } 100% { opacity: 1; } }
+.pc-link.evo .pc-lmon { filter: brightness(0) invert(1); }
+/* tela estreita (celular): coluna do ativo mais fina e menos margem, para as células crescerem */
+@container (max-width: 320px) {
+  .pc-layer { grid-template-columns: 23% minmax(0, 1fr); gap: 1cqw; padding: 1cqw; }
+  .pc-side .pc-nm { font-size: .7em; }
+  .pc-lbl { font-size: .66em; padding: .5cqw .4cqw .3cqw; }
+  .pc-grid { gap: .4cqw; padding: .4cqw; }
+  .pc-arr { padding: .8cqw 2.4cqw; }
+}
+@media (prefers-reduced-motion: reduce) { .pc-cell.sel { animation: none; } }
+
+/* ── pokedex.css ── */
+/* ── POKéDEX (pokedex.js): tela cheia por cima do canvas, moldura vermelha do aparelho do FRLG ── */
+.dx { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; gap: 1.6%; padding: 2.2% 3% 3%;
+  background: linear-gradient(180deg, #ec4436, #b8261f); color: var(--ink); font-family: var(--font-pixel); font-size: clamp(6px, 3.4cqw, 9px); line-height: 1.3; user-select: none; }
+.dx-head { flex: none; display: flex; justify-content: space-between; align-items: center; min-height: 1.5em; gap: 4px; color: #fff; text-shadow: 1px 1px 0 #7a1410; font-size: clamp(5px, 2.8cqw, 8px); }
+.dx-title { font-size: clamp(6px, 3.2cqw, 8px); letter-spacing: .06em; }
+.dx-count { flex: none; display: flex; justify-content: space-between; gap: 6px; white-space: nowrap; background: #18161f; color: #f8f8f8; border-radius: 3px; padding: .45em .7em .35em; font-size: clamp(5px, 2.5cqw, 8px); }
+.dx.paged .dx-count { display: none; }
+.dx-list, .dx-page { flex: 1; min-height: 0; background: var(--paper); border: 2px solid #7a1410; box-shadow: inset 0 0 0 2px #f4c8c0; border-radius: 4px;
+  overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; text-shadow: 1px 1px 0 var(--ink-shadow); }
+.dx-row { display: grid; grid-template-columns: 2.6em 5.4em 1fr auto; align-items: center; gap: .35em; height: 2.5em; padding: 0 .6em 0 1.3em;
+  position: relative; cursor: pointer; border-bottom: 1px dashed #e2e2d4; }
+.dx-row::before { content: ""; position: absolute; left: .35em; top: 50%; translate: 0 -50%; border: .3em solid transparent; border-left: .45em solid var(--ink); opacity: 0; }
+.dx-row.sel { background: #fbeaa8; }
+.dx-row.sel::before { opacity: 1; }
+.dx-row.unseen { color: #a4a4ae; }
+.dx-nm { overflow: hidden; white-space: nowrap; text-overflow: clip; }
+.dx-ico { width: 2.6em; height: 2.4em; overflow: hidden; display: grid; place-items: center; }
+.dx-ico img { width: 3.4em; max-width: none; height: auto; image-rendering: pixelated; }
+.dx-sil { filter: brightness(0); opacity: .38; }
+.dx-mk { display: flex; align-items: center; gap: .3em; }
+.dx svg { width: 1em; height: 1em; flex: none; }
+.dx-shy { color: #e09a00; font-weight: normal; text-shadow: 1px 1px 0 #f8e0a0; }
+
+.dx-page { display: flex; flex-direction: column; gap: .45em; padding: .5em .7em .5em; }
+.dx-shc { display: flex; align-items: center; gap: .5em; }
+.dx-shbtn { font: inherit; font-size: 1.2em; line-height: 1; color: #f8d0c8; border: 2px solid #f8a090; border-radius: 4px; padding: .1em .4em; min-width: 2.2em; min-height: 1.6em; cursor: pointer; }
+.dx-shbtn.on { color: #e09a00; border-color: #f8d030; background: #fff4c8; }
+.dx-pbody { display: grid; grid-template-columns: 30% 1fr; gap: .7em; align-items: start; }
+.dx-pic { aspect-ratio: 1; display: grid; place-items: center; overflow: hidden; border-radius: 4px; cursor: pointer;
+  background: radial-gradient(circle at 50% 62%, #e8f0f8 0 45%, #c8d8e8 46% 100%); box-shadow: inset 0 0 0 2px #a8b8c8; }
+.dx-pic.shiny { background: radial-gradient(circle at 50% 62%, #fff8d8 0 45%, #f0d890 46% 100%); box-shadow: inset 0 0 0 2px #d8b048; }
+.dx-pic img { width: 100%; max-width: none; image-rendering: pixelated; }
+.dx-info { display: flex; flex-direction: column; gap: .4em; min-width: 0; }
+.dx-info .types { display: flex; flex-wrap: wrap; gap: .3em; }
+.dx .type { font-size: clamp(5px, 2.5cqw, 7px); padding: .35em .5em .25em; }
+.dx-lbl { color: #6a6f84; }
+.dx-stats { display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: column; grid-template-rows: repeat(3, auto); gap: .3em 1em; font-size: clamp(5px, 2.5cqw, 7px); }
+.dx-st { display: grid; grid-template-columns: 3.4em 1fr 2.4em; gap: .4em; align-items: center; }
+.dx-st .b { height: .6em; background: #d8d8c0; border-radius: 2px; }
+.dx-st .b i { display: block; height: 100%; background: #e08850; border-radius: 2px; }
+.dx-st .n { text-align: right; font-variant-numeric: tabular-nums; }
+.dx-evo { font-size: clamp(5px, 2.5cqw, 7px); color: #4a4a58; line-height: 1.6; border-top: 2px dashed #c8c8b0; padding-top: .35em; }
+
 
 @media (prefers-reduced-motion: reduce) {
   .led.bad, #msgArrow, .act.active .knob { animation: none; }
@@ -3477,7 +3659,7 @@ function sanitize(o) {
   g.active = active;
   const seen = new Set([active.uid]);
   g.pc = (Array.isArray(o.pc) ? o.pc.slice(0, 360) : []).map(m => sanitizeMon(m, false)).filter(m => m && !seen.has(m.uid) && seen.add(m.uid));
-  g.nextUid = Math.max(Math.floor(num(o.nextUid, 2)), ...seen) + 1;
+  g.nextUid = Math.max(Math.floor(num(o.nextUid, 2)), Math.max(...seen) + 1);
   g.dex = { seen: dexStr(o.dex?.seen), caught: dexStr(o.dex?.caught), shiny: dexStr(o.dex?.shiny) };
   g.bag = mergeLike(DEFAULTS.bag, o.bag); for (const k in g.bag) g.bag[k] = clamp(Math.floor(g.bag[k]), 0, 99);
   g.prog = mergeLike(DEFAULTS.prog, o.prog); g.prog.badges = clamp(Math.floor(g.prog.badges), 0, 8);
@@ -3657,7 +3839,7 @@ function reportAway(sm, now) {
     if (sm.poop) txt += ` ${N()} fez ${sm.poop} sujeira${sm.poop > 1 ? 's' : ''}.`;
     say(txt);
   } else if (sm.poop) say(`${N()} fez sujeira no habitat!`);
-  if (sm.levels) say(`Cuidando de si mesmo, subiu ${sm.levels} nível${sm.levels > 1 ? 'is' : ''}!`);
+  if (sm.levels) say(`Cuidando de si mesmo, subiu ${sm.levels} ${sm.levels > 1 ? 'níveis' : 'nível'}!`);
   if ((sm.wake && !s.asleep) || ((sm.collapse || sm.doze) && s.asleep)) say(s.asleep ? `${N()} está dormindo... Zzz` : `${N()} acordou com fome!`);
   if (s.sick) say(`${N()} está doente!`);
   else if (s.hunger < 15) say(`${N()} está faminto!`);
@@ -3703,10 +3885,13 @@ function ask(text, kind, extra) {
   document.getElementById(kind === 'reset' || (extra && extra.safeNo) ? 'choiceNo' : 'choiceYes').focus({ preventScroll: true });
 }
 // await confirmYN('Soltar PIDGEY?', { safeNo: true }) -> true/false
-const confirmYN = (text, extra) => new Promise(res => ask(text, yes => res(yes), extra));
-function closeChoice() { pendingChoice = null; elChoice.hidden = true; }
+const confirmYN = (text, extra) => new Promise(res => ask(text, yes => res(yes), { ...extra, promise: true }));
+function closeChoice() {
+  const pc = pendingChoice; pendingChoice = null; elChoice.hidden = true;
+  if (pc && pc.promise) pc.kind(false);   // confirmYN fechado de fora (RESET, volta para casa): vale NÃO, ninguém fica esperando
+}
 function answer(yes) {
-  const pc = pendingChoice; closeChoice(); Sfx.click();
+  const pc = pendingChoice; pendingChoice = null; closeChoice(); Sfx.click();
   if (!pc) return;
   if (typeof pc.kind === 'function') pc.kind(yes);
   if (pc.kind === 'starter') { if (yes) startGame(pc.sp); else { sayNow('Então escolha com calma.'); markStarter(null); } }
@@ -3719,7 +3904,8 @@ elChoice.addEventListener('click', e => { const b = e.target.closest('button'); 
 /* ════════════ Cenas, botões e menus (a base dos módulos da aventura) ════════════
    SCENES[nome] = { enter(arg), exit(próxima), update(dt), draw(ctx), knobs, key(e, k) → true se tratou }
    - O habitat e a escolha do inicial são do núcleo; as outras cenas vêm de src/modules.
-   - knobs: os 4 botões redondos mudam de papel em cada cena: [{ label, icon, fn, down, up, disabled }] x4 e .center.
+   - knobs: os 4 botões redondos mudam de papel em cada cena: [{ label, icon, fn, down, up, disabled, inChoice }] x4 e .center.
+     Com uma pergunta SIM/NÃO aberta, só os marcados com inChoice funcionam.
      icon: nome de BM ('heart'), um glifo curto ('▲', 'OK'), SVG pronto, ou chave de sprite ('f25').
    - Menu: listas no estilo do menu START do FRLG, em HTML por cima da tela, com pilha (submenus). */
 const SCENES = {};
@@ -3757,7 +3943,8 @@ function setKnobs(defs) {
   });
   if (!defs) { paintHabitatKnobs(); setTrainBtn(); }
 }
-function knobPress(i) { const d = knobDefs && knobDefs[i]; if (!d || d.disabled || !d.fn) return Sfx.deny(); d.fn(); }
+// com uma pergunta SIM/NÃO aberta só valem os botões marcados com inChoice (a cena de baixo não anda)
+function knobPress(i) { const d = knobDefs && knobDefs[i]; if (!d || d.disabled || !d.fn || (pendingChoice && !d.inChoice)) return Sfx.deny(); d.fn(); }
 
 /* Menu FRLG: Menu.open({ items: [{ label, sub, fn, disabled }], onBack, sel, wide, title }) empilha; o item recebe fn(item).
    Teclado: ▲▼ move, A (Z/Espaço/Enter) escolhe, B (X/Esc/Backspace) volta. Botões redondos: ▲ ▼ OK VOLTAR. */
@@ -4334,6 +4521,7 @@ function updateLed() {
 /* ════════════ Cenas ════════════ */
 function markStarter(key) { document.querySelectorAll('.starter').forEach(b => b.classList.toggle('sel', b.dataset.sp === String(key))); }
 function toSelect() {
+  const prev = SCENES[scene]; if (prev && prev.exit) prev.exit('select');   // RESET no meio de uma cena de módulo
   closeChoice(); away = null; Menu.closeAll(); setKnobs(null);
   scene = 'select'; evo = null; particles = []; sweep = null; berryFx = null; cancelTraining();
   $('selectLayer').hidden = false; $('hpbox').style.visibility = 'hidden';
@@ -4391,7 +4579,7 @@ cv.addEventListener('pointermove', e => {
 });
 // botões redondos: no habitat, as ações de sempre; em outras cenas e menus, o que knobDefs mandar
 KNOB_IDS.forEach((id, i) => {
-  $(id).addEventListener('pointerdown', e => { const d = knobDefs && knobDefs[i]; if (d && d.down && !d.disabled) { e.preventDefault(); d.down(); } });
+  $(id).addEventListener('pointerdown', e => { const d = knobDefs && knobDefs[i]; if (d && d.down && !d.disabled && (!pendingChoice || d.inChoice)) { e.preventDefault(); d.down(); } });
   ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => $(id).addEventListener(ev, () => { const d = knobDefs && knobDefs[i]; if (d && d.up) d.up(); }));
 });
 // TREINAR com mais de um minigame: escolhe qual
@@ -4411,7 +4599,7 @@ $('btnClean').addEventListener('click', () => knobDefs ? knobPress(2) : clean())
 $('btnLight').addEventListener('click', () => knobDefs ? knobPress(3) : lights());
 $('btnPet').addEventListener('pointerdown', strikeOnPress);
 $('btnPet').addEventListener('click', () => {
-  if (knobDefs) { const c = knobDefs.center; if (c && c.fn) c.fn(); else if (Menu.top) Menu.ok(); else msgAdvance(); return; }
+  if (knobDefs) { const c = knobDefs.center; if (pendingChoice && !(c && c.inChoice)) return Sfx.deny(); if (c && c.fn) c.fn(); else if (Menu.top) Menu.ok(); else msgAdvance(); return; }
   const skip = pressInTraining || training; pressInTraining = false; if (skip) return; if (scene === 'habitat') pet(); else Sfx.click();
 });
 $('btnSound').addEventListener('click', () => {
@@ -4441,8 +4629,15 @@ window.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.target.closest && e.target.closest('input, textarea')) return;
   if (pendingChoice) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.repeat) { e.preventDefault(); return; }   // segurou a tecla no item do menu: não responde às cegas
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); (document.activeElement === $('choiceYes') ? $('choiceNo') : $('choiceYes')).focus(); }
-    if (e.key === 'Escape' || e.key === 'Backspace') { e.preventDefault(); answer(false); }
+    if (e.key === 'Escape' || e.key === 'Backspace' || e.key === 'x' || e.key === 'X') { e.preventDefault(); answer(false); }
+    if ((e.key === 'z' || e.key === 'Z') && !e.repeat) {
+      e.preventDefault(); const f = document.activeElement;
+      if (f === $('choiceYes') || f === $('choiceNo')) answer(f === $('choiceYes'));
+      else $(pendingChoice.kind === 'reset' || pendingChoice.safeNo ? 'choiceNo' : 'choiceYes').focus({ preventScroll: true });   // foco saiu (toque na tela): Z não confirma às cegas
+    }
+    if (e.key >= '1' && e.key <= '4' && knobDefs && !e.repeat) { e.preventDefault(); $(KNOB_IDS[+e.key - 1]).click(); }   // cena com SIM/NÃO nos botões
     return;
   }
   const k = e.key.toLowerCase();
@@ -4481,6 +4676,2775 @@ window.addEventListener('storage', e => {
 
 /* ════════════ Módulos da aventura (src/modules) ════════════ */
 
+/* ── bag.js ── */
+/* ════════════ BOLSA (em casa) ════════════
+   Lista os itens que o jogador tem; DOCE RARO e pedras no POKéMON ativo, fósseis viram POKéMON no PC.
+   A batalha tem a sua própria bolsa; esta é a de casa (START → BOLSA, tecla I). As peças de pedra/doce
+   (bag_stonesFor, bag_candy…) também servem ao PC (pc.js). */
+extendDefaults({ prog: { fossils: 0, stoneTradeEvos: 0, trades: 0 } });
+
+// ordem na lista: remédios, evolução, fósseis, bolas
+const BAG_ORDER = ['pocao', 'doce', 'lua', 'fogo', 'agua', 'trovao', 'folha', 'cabo', 'helix', 'domo', 'ambar', 'poke', 'great', 'ultra', 'master'];
+const BAG_DESC = {
+  pocao: 'Recupera PS na batalha.', doce: 'Sobe 1 nível.', cabo: 'Use no PC: TROCAR.',
+  poke: 'Para capturar POKéMON.', great: 'Captura melhor que a POKé BOLA.', ultra: 'Captura melhor que a GRANDE BOLA.', master: 'Captura sem falhar.',
+};
+// ícones 8-bit (X = cor do item)
+const BAG_BM = {
+  ball: ['..KKKK..', '.KXXXXK.', 'KXXWXXXK', 'KKKKKKKK', 'KWWKKWWK', 'KWWWWWWK', '.KWWWWK.', '..KKKK..'],
+  pocao: ['..KKK..', '..KwK..', '.KKKKK.', 'KXXXXXK', 'KXWXXXK', 'KXXXXXK', 'KXXXXXK', '.KKKKK.'],
+  doce: ['KK.KKK.KK', 'KXKXXXKXK', '.KXXWXXK.', 'KXKXXXKXK', 'KK.KKK.KK'],
+  stone: ['..KKK..', '.KXXXK.', 'KXWXXXK', 'KXXXXXK', 'KXXXXXK', '.KXXXK.', '..KKK..'],
+  cabo: ['.KK......', 'KggK.....', 'KggKKKKK.', '.KK....YK', '.......KK'],
+  fossil: ['.KKKK.', 'KXXXXK', 'KXDXXK', 'KXXDXK', 'KXXXXK', '.KKKK.'],
+};
+const BAG_COL = { poke: '#e83838', great: '#4878e0', ultra: '#f8d030', master: '#9050c0', pocao: '#9050c0', doce: '#70c8f8',
+  lua: '#8890a8', fogo: '#f08030', agua: '#6890f0', trovao: '#a8d848', folha: '#58b048', helix: '#c08848', domo: '#c08848', ambar: '#f0a030' };
+function bag_icon(k) {
+  const it = ITEMS[k], bm = BALLS.includes(k) ? BAG_BM.ball : it.stone ? BAG_BM.stone : it.fossil ? BAG_BM.fossil : BAG_BM[k] || BAG_BM.stone;
+  return `<span class="bag-ico">${bmSvg(bm, { ...PAL, X: BAG_COL[k] || '#c0c0c0' })}</span>`;
+}
+
+// evoluções por pedra de uma espécie: [{ k, to }] (k = chave do item; o nome bate com DEX[].evo[].item)
+const bag_stoneEvos = spId => DEX[spId].evo.filter(e => e.item).map(e => ({ k: Object.keys(ITEMS).find(k => ITEMS[k].name === e.item), to: e.to })).filter(e => e.k);
+const bag_stoneTo = (spId, k) => (bag_stoneEvos(spId).find(e => e.k === k) || {}).to;
+// pedras da BOLSA que servem para a espécie
+const bag_stonesFor = spId => bag_stoneEvos(spId).filter(e => bagHas(e.k));
+
+// DOCE RARO: +1 nível pelas regras do núcleo (EXP vai a 0). No ativo, live = mensagem e pendingEvo (o núcleo evolui em casa).
+function bag_candy(m, live) {
+  if (m.level >= 100) { sayNow('Não teria efeito.'); Sfx.deny(); return false; }
+  if (!bagUse('doce')) return false;
+  addExp(needExp(m.level) - m.exp, live, m);
+  if (!live) { sayNow(`${N(m)} subiu para o Nv. ${m.level}!`); Sfx.levelUp(); }
+  save(); updateUI(); return true;
+}
+
+// pedra no ativo: o núcleo anima; a pedra só é gasta quando a evolução acontece de fato (recarregar no meio não perde a pedra)
+// Só vale enquanto a animação daquele uid está rodando: se ela for abortada (outra aba trocou o ativo), a pendência morre
+let bag_stonePending = null;   // { k, uid, to }
+const bag_dropStale = () => { const p = bag_stonePending; if (p && !(evo && evo.uid === p.uid)) bag_stonePending = null; };
+on('evolved', (m, from) => {
+  bag_dropStale(); const p = bag_stonePending; if (!p || m !== s || m.uid !== p.uid || m.sp !== p.to) return;
+  bag_stonePending = null; bagUse(p.k); G.prog.stoneTradeEvos++;   // o núcleo grava logo depois
+});
+on('tick', bag_dropStale);
+// por que a pedra não pode ser usada agora no ativo (null = pode)
+function bag_activeBusy() {
+  if (scene !== 'habitat' || G.outing) return 'Use em casa, no habitat.';
+  if (evo || training || pendingChoice) return 'Não dá para usar isso agora.';
+  if (s.asleep) return `Shh... ${N()} está dormindo. Acenda as luzes primeiro.`;
+  if (s.berry || pk.mode === 'eat') return `Primeiro deixe ${N()} comer a FRUTA!`;
+  return null;
+}
+// prévia do POKéMON que vai surgir (EEVEE: a pedra escolhe a forma)
+function bag_preview(spId, shiny) {
+  const wrap = document.querySelector('.screen-wrap'); let el = document.getElementById('bagPreview');
+  if (spId == null) { if (el) el.remove(); return; }
+  if (!el) { el = document.createElement('div'); el.id = 'bagPreview'; el.className = 'bag-preview'; wrap.appendChild(el); }
+  el.innerHTML = `<img src="${spriteURL('f' + spId + (shiny ? 's' : ''))}" alt=""><span>${DEX[spId].name}</span>`;
+  // o brilhante é montado na 1ª vez (assíncrono): troca a imagem quando ficar pronto
+  if (shiny) setTimeout(() => { const im = el.isConnected && el.querySelector('img'); if (im) im.src = spriteURL('f' + spId + 's'); }, 300);
+}
+async function bag_useStone(k) {
+  bag_dropStale(); const to = bag_stoneTo(s.sp, k);
+  if (!to) { sayNow(`Não teria efeito em ${N()}.`); return Sfx.deny(); }
+  const why = bag_activeBusy(); if (why) { sayNow(why); return Sfx.deny(); }
+  if (bag_stoneEvos(s.sp).length > 1) {
+    bag_preview(to, s.shiny);
+    const ok = await confirmYN(`Usar a ${ITEMS[k].name}? ${N()} vai evoluir para ${DEX[to].name}!`);
+    bag_preview(null);
+    if (!ok) return;
+    const why2 = bag_activeBusy(); if (why2) { sayNow(why2); return Sfx.deny(); }   // algo mudou durante a pergunta
+  }
+  if (!bagHas(k) || bag_stoneTo(s.sp, k) !== to) return Sfx.deny();
+  Menu.closeAll();
+  bag_stonePending = { k, uid: s.uid, to };
+  startEvolution(to, { forced: true });
+}
+// fóssil: o PROF. CARVALHO revive e manda para o PC
+function bag_fossil(k) {
+  if (G.pc.length >= 360) { sayNow('O PC está cheio!'); return Sfx.deny(); }
+  if (!bagUse(k)) return Sfx.deny();
+  const m = receiveMon(ITEMS[k].fossil, 5, {}, 'fossil'); save();   // prog.fossils é contado pelo progresso (gancho caught)
+  sayNow('PROF. CARVALHO reviveu o fóssil!'); say(`${N(m)} foi enviado para o PC do PROF. CARVALHO.`);
+  Sfx.cry(m.sp); return true;
+}
+
+function bag_use(k) {
+  const it = ITEMS[k]; syncFromStorage(); if (!G || !bagHas(k)) return bag_refresh();
+  if (k === 'doce') { if (bag_candy(s, true)) bag_refresh(); return; }
+  if (it.stone) return bag_useStone(k);
+  if (it.fossil) { if (bag_fossil(k)) bag_refresh(); return; }
+  sayNow(k === 'cabo' ? 'Use o CABO DE TROCA no PC (TROCAR).' : 'Não dá para usar isso agora.'); Sfx.deny();
+}
+function bag_items() {
+  // pedras: só as que servem para o ativo (as outras ficam guardadas, aparecem no USAR ITEM do PC)
+  const list = BAG_ORDER.filter(k => bagHas(k) && !(ITEMS[k].stone && !bag_stoneTo(s.sp, k))).map(k => {
+    const it = ITEMS[k];
+    return { label: `${bag_icon(k)}<span>${it.name}</span>`, sub: 'x ' + G.bag[k], fn: () => {
+      const desc = it.stone ? `Evolui ${N()} em ${DEX[bag_stoneTo(s.sp, k)].name}.` : it.fossil ? `Revive um ${DEX[it.fossil].name}.` : BAG_DESC[k] || '';
+      Menu.open({ title: `${it.name}<div class="bag-desc">${desc}</div>`, items: [
+        { label: 'USAR', fn: () => bag_use(k) }, { label: 'VOLTAR', fn: () => Menu.close() }] });
+    } };
+  });
+  if (!list.length) list.push({ label: 'A BOLSA está vazia.', disabled: true });
+  return [...list, { label: 'FECHAR', fn: () => Menu.close() }];
+}
+// depois de usar: fecha o submenu do item e atualiza a lista (quantidades)
+let bag_menu = null;
+function bag_refresh() {
+  while (Menu.top && Menu.top !== bag_menu && Menu.stack.includes(bag_menu)) Menu.close();
+  if (Menu.top === bag_menu) { const n = bag_items(); bag_menu.items = n; bag_menu.sel = Math.min(bag_menu.sel, n.length - 1); Menu.render(); }
+}
+function openBag() {
+  if (!G || !s || evo || pendingChoice) return Sfx.deny();
+  if (training) { say('Termine o treino primeiro!'); return Sfx.deny(); }
+  syncFromStorage(); if (!G) return;
+  Menu.open({ title: 'BOLSA', items: bag_items(), wide: true });
+  bag_menu = Menu.top;
+}
+addStartItem({ label: 'BOLSA', order: 40, fn: openBag });
+HAB_KEYS.i = openBag;
+
+/* ── battle.js ── */
+/* Batalha selvagem (spec D, E): layout do GBA, golpes por tipo, conta da Gen III e captura.
+   O encontro vive em G.enc (gravado a cada turno: recarregar não sorteia de novo); o PS do POKéMON ativo
+   vive em G.outing.hp (vale para o passeio inteiro). Cada decisão (dano, captura, desmaio) é sorteada e gravada
+   antes da animação; a narração vem depois, em ordem, com await talk(). Recarregar não desfaz nem repete nada. */
+extendDefaults({ prog: { legend: {}, captures: 0, wins: 0, charm: false, exploreLockUntil: 0 } });
+
+const btRid = () => Math.random().toString(36).slice(2, 10);
+const BT_TAB = btRid();   // esta aba: dono do encontro enquanto batalha
+// outra aba está nesta batalha (batimento de menos de 2 min)
+const btElsewhere = e => !!(e && e.owner && e.owner !== BT_TAB && Date.now() - num(e.at, 0) < 120e3);
+// físico x especial pelo tipo do golpe (Gen III)
+const BT_PHYS = new Set(['NORMAL', 'LUTADOR', 'VOADOR', 'VENENO', 'TERRA', 'PEDRA', 'INSETO', 'FANTASMA', 'AÇO']);
+const BT_SPLASH = { name: 'SPLASH', power: 0, type: 'NORMAL', strong: false };
+const BT_FAIL = ['Ah, não! O POKéMON escapou!', 'Aaah! Parecia que tinha pego!', 'Argh! Quase!', 'Droga! Foi por pouco!'];
+
+/* ── Contas ── */
+// status com IV 15, EV 0 e natureza neutra
+function btStats(id, L) {
+  const b = DEX[id].base, f = x => Math.floor((2 * x + 15) * L / 100);
+  return { hp: f(b[0]) + L + 10, atk: f(b[1]) + 5, def: f(b[2]) + 5, spa: f(b[3]) + 5, spd: f(b[4]) + 5, spe: f(b[5]) + 5 };
+}
+// golpes conhecidos no nível L (até 4): fraco do tipo 1 (Nv1), fraco do tipo 2 ou NORMAL (Nv10), fortes no 22 e no 38
+function btMoves(id, L) {
+  const t = DEX[id].types, t2 = t[1] || 'NORMAL', mv = (m, type, strong) => ({ name: m.name, power: m.power, type, strong });
+  if (id === 129) return L >= 15 ? [BT_SPLASH, mv(MOVES.NORMAL, 'NORMAL', false)] : [BT_SPLASH];
+  const out = [mv(MOVES[t[0]], t[0], false)];
+  if (L >= 10) out.push(mv(MOVES[t2], t2, false));
+  if (L >= 22) out.push(mv(MOVES2[t[0]], t[0], true));
+  if (L >= 38) out.push(mv(MOVES2[t2], t2, true));
+  return out.filter((m, i) => out.findIndex(o => o.name === m.name) === i);   // NORMAL puro não repete golpe
+}
+const btEff = (type, id) => DEX[id].types.reduce((a, d) => a * (TYPE_CHART[type][d] ?? 1), 1);
+const btPet = () => ({ sp: s.sp, lv: s.level, st: btStats(s.sp, s.level), weak: s.hunger < 20 ? .85 : 1 });
+const btWild = e => ({ sp: e.sp, lv: e.lv, st: btStats(e.sp, e.lv), weak: 1 });
+function btDamage(att, def, mv, crit) {
+  const phys = BT_PHYS.has(mv.type), A = (phys ? att.st.atk : att.st.spa) * att.weak, D = phys ? def.st.def : def.st.spd;
+  const base = Math.floor(Math.floor(Math.floor(2 * att.lv / 5 + 2) * mv.power * A / D) / 50) + 2;
+  const eff = btEff(mv.type, def.sp), stab = DEX[att.sp].types.includes(mv.type) ? 1.5 : 1;
+  const dmg = Math.floor(base * stab * eff * (crit ? 2 : 1) * randInt(85, 100) / 100);
+  return { dmg: eff ? Math.max(1, dmg) : 0, eff };
+}
+// captura Gen III: devolve quantas das 4 checagens passaram (4 = pego)
+function btChecks(e, k) {
+  if (k === 'master') return 4;
+  const M = e.maxHp, H = Math.max(1, e.hp), L = G.prog.legend[e.sp];
+  const rate = e.legend ? Math.min(45, 3 + 6 * (L ? L.thrown || 0 : 0)) : DEX[e.sp].catch;
+  const a = Math.floor(Math.floor((3 * M - 2 * H) * rate * ITEMS[k].ball / (3 * M)) * (e.asleep ? 2 : 1) * (G.prog.captures < 15 ? 1.5 : 1));
+  if (a >= 255) return 4;
+  const b = Math.floor(1048560 / Math.floor(Math.sqrt(Math.floor(Math.sqrt(Math.floor(16711680 / Math.max(1, a)))))));
+  let n = 0; while (n < 4 && Math.floor(Math.random() * 65536) < b) n++;
+  return n;
+}
+// lendário que escapou (fuga, desmaio, app fechado): volta em 24 h quase certo, com o PS guardado; a pena de captura fica
+function btLegendRec(id) {
+  const L = G.prog.legend;
+  if (!L[id] || typeof L[id] !== 'object') L[id] = { unlockedAt: Date.now(), misses: 0, thrown: 0, hp: null, hpUntil: 0, backAt: 0, caught: false };
+  return L[id];
+}
+function btLegendMiss(e, ko) {
+  const L = btLegendRec(e.sp), now = Date.now();
+  if (L.caught || dexHas('caught', e.sp)) { L.backAt = now + 7 * 864e5; return; }   // pós-jogo: uma vez por semana
+  L.misses = 30; L.backAt = now + 864e5; L.hp = ko ? null : e.hp; L.hpUntil = now + 864e5;
+}
+
+/* ── Animação: esperas e interpolações movidas pelo quadro (pausam com a aba escondida, como as mensagens) ── */
+const ADV = { tw: [] };
+function advTween(dur, fn) { return new Promise(r => { if (!(dur > 0)) { fn(1); r(); } else ADV.tw.push({ t: 0, dur, fn, r }); }); }
+const advWait = sec => advTween(sec, () => {});
+const advUntil = cond => new Promise(r => ADV.tw.push({ cond, r }));
+function advTick(dt) {
+  for (const w of ADV.tw.slice()) {
+    let end;
+    if (w.cond) end = w.cond(); else { w.t += dt; w.fn(Math.min(1, w.t / w.dur)); end = w.t >= w.dur; }
+    if (end) { ADV.tw.splice(ADV.tw.indexOf(w), 1); w.r(); }
+  }
+}
+// espera a fila de mensagens esvaziar (nível, insígnia...) antes de perguntar algo: o SIM/NÃO apagaria a fila
+const advQuiet = () => advUntil(() => !msg.queue.length && !msg.done && (!msg.cur || (msg.shown >= msg.cur.length && msg.hold > 1)));
+
+/* ── Ícones (bitmaps na paleta do núcleo) ── */
+const BT_PAL = { ...PAL, H: '#2f7d32', N: '#3870e0', U: '#383840', M: '#8040c0' };
+const BT_BM = {
+  ball: ['..KKK..', '.KRRRK.', 'KRRWRRK', 'KKKWKKK', 'KWWWWWK', '.KWWWK.', '..KKK..'],
+  sword: ['.......WK', '......WwK', '.....WwK.', '....WwK..', '.K.WwK...', '..KwK....', '..LKK....', '.LDK.K...', 'LD.......'],
+  run: ['....K....', '....KK...', 'KKKKKWK..', 'KWWWWWWK.', 'KKKKKWK..', '....KK...', '....K....'],
+  bag: ['...KKK...', '..K...K..', '.KKKKKKK.', 'KOOOOOOOK', 'KOOYYYOOK', 'KOOOOOOOK', 'KDDDDDDDK', '.KKKKKKK.'],
+  ps: ['KKK.KKK', 'K.K.K..', 'KKK.KKK', 'K.....K', 'K...KKK'],
+  nv: ['K...K....', 'KK..K....', 'K.K.K.K.K', 'K..KK.K.K', 'K...K..K.'],   // "Nv" miúdo, como o "Lv" do FRLG
+};
+const BT_BALL_PAL = { poke: BT_PAL, great: { ...BT_PAL, R: '#3870e0' }, ultra: { ...BT_PAL, R: '#383840', W: '#f8d030' }, master: { ...BT_PAL, R: '#8040c0' } };
+const btIco = (bm, pal = BT_PAL) => bmSvg(bm, pal);
+// selo do tipo no botão do golpe
+const btTypeIco = t => `<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="${TYPE_COLOR[t]}" stroke="#202028" stroke-width="1"/><circle cx="4.5" cy="4.5" r="1.5" fill="rgba(255,255,255,.5)"/></svg>`;
+
+/* ── Estado da cena (não persiste: o que importa está em G.enc / G.outing) ── */
+const BT = { tok: 0, mode: 'main', busy: true, e: null, o: null, fin: false, wipe: 0, wildDx: 0, petDx: 0, wildShown: 0, petShown: 0, petMax: 1,
+  holdW: false, holdP: false, blinkW: 0, blinkP: 0, shake: 0, lungeP: 0, lungeW: 0, ball: null, absorb: 0, hideWild: false, sinkW: 0, sinkP: 0, parts: [], later: [] };
+const btAlive = tok => tok === BT.tok && scene === 'batalha' && !!G;
+// outra aba gravou (o tick dela) e esta adotou o save: o encontro e o passeio desta batalha voltam para G antes de gravar
+function btSave(e) {
+  if (!G) return;
+  if (e && G.enc && G.enc !== e && G.enc.id === e.id && !btElsewhere(G.enc)) G.enc = e;
+  const o = BT.o; if (o && G.outing && G.outing !== o && G.outing.startedAt === o.startedAt) G.outing = o;
+  save();
+}
+
+SCENES.batalha = {
+  get knobs() { return btKnobsMain(); },
+  enter(arg) {
+    ADV.tw = []; BT.tok++;
+    const e = G && G.enc; if (!e) { setTimeout(goHome); return; }
+    if (!e.id) e.id = btRid();
+    // outra aba está nesta batalha: a mensagem vem do exResume, em casa
+    if (btElsewhere(e)) { setTimeout(goHome); return; }
+    // o save guarda encontro e passeio como vieram: revalida aqui
+    e.lv = clamp(Math.floor(num(e.lv, 5)), 1, 100); e.maxHp = btStats(e.sp, e.lv).hp; e.hp = clamp(Math.round(num(e.hp, e.maxHp)), 0, e.maxHp);
+    e.turn = Math.max(0, Math.floor(num(e.turn, 0))); e.sleepTurns = clamp(Math.floor(num(e.sleepTurns, 0)), 0, 3); e.asleep = !!e.asleep && e.sleepTurns > 0;
+    if (!EX_AREAS[e.area]) e.area = 'floresta';
+    if (!G.outing || typeof G.outing !== 'object') G.outing = exNewOuting(e.area);
+    const o = G.outing; EX.mine = o.startedAt;   // o passeio desta batalha passa a ser desta aba
+    o.maxHp = btStats(s.sp, s.level).hp; o.hp = clamp(Math.round(num(o.hp, o.maxHp)), 0, o.maxHp);
+    Object.assign(BT, { e, o, fin: false });
+    // resultado já decidido (recarregou no meio da narração), nocaute ou desmaio gravados: só conclui
+    if (e.done || e.hp <= 0 || o.hp <= 0) { if (!e.done) btSettle(e.hp <= 0 ? { won: true } : { fainted: true }, e); btFinish(e, true); setTimeout(goHome); return; }
+    if (e.petHp0 == null) e.petHp0 = o.hp;   // custo de energia da batalha = PS perdido nela
+    e.owner = BT_TAB; e.at = Date.now(); save();
+    Object.assign(BT, { mode: 'main', wipe: RM.matches ? 0 : 1, wildDx: -170, petDx: -150, boxW: false, boxP: false, wildShown: e.hp, petShown: o.hp, petMax: o.maxHp,
+      holdW: false, holdP: false, blinkW: 0, blinkP: 0, shake: 0, lungeP: 0, lungeW: 0, ball: null, absorb: 0, hideWild: false, sinkW: 0, sinkP: 0, parts: [], later: [] });
+    btIntro(arg && arg.resume);
+  },
+  exit() { ADV.tw = []; BT.tok++; btMovesUi(false); },
+  update(dt) {
+    advTick(dt);
+    const e = BT.e, o = BT.o, rate = m => Math.max(14, m * .9) * dt;   // a barra escorre, não pula
+    if (e && !BT.holdW) BT.wildShown = btToward(BT.wildShown, Math.max(0, e.hp), rate(e.maxHp));
+    if (o && !BT.holdP) { BT.petMax = o.maxHp; BT.petShown = btToward(BT.petShown, Math.max(0, o.hp), rate(o.maxHp)); }
+    BT.blinkW = Math.max(0, BT.blinkW - dt); BT.blinkP = Math.max(0, BT.blinkP - dt); BT.shake = Math.max(0, BT.shake - dt);
+    for (const p of BT.parts) { p.life += dt; p.x += p.vx * dt; p.y += p.vy * dt; }
+    BT.parts = BT.parts.filter(p => p.life < p.max);
+  },
+  draw(c) { btDraw(c); },
+  key(e, k) {
+    if (BT.mode === 'moves' && !BT.busy && (k === 'x' || k === 'escape' || k === 'backspace')) { e.preventDefault(); btMain(); return true; }
+    // botão focado: Enter/Espaço passa a mensagem, senão deixa o clique nativo acontecer (o núcleo cancelaria)
+    if (e.target.closest && e.target.closest('button') && (k === 'enter' || k === ' ')) { if (e.repeat || msgAdvance()) e.preventDefault(); return true; }
+    // A no menu principal = LUTAR (o cursor do FRLG começa nele)
+    if ((k === 'enter' || k === ' ' || k === 'z') && !e.repeat) { e.preventDefault(); if (!msgAdvance() && !BT.busy && BT.mode === 'main') btFight(); return true; }
+    return false;
+  },
+};
+const btToward = (v, to, step) => v < to ? Math.min(to, v + step) : Math.max(to, v - step);
+
+/* ── Botões ── */
+const btLive = () => !!(BT.e && !BT.e.done && !BT.fin);
+function btKnobsMain() {
+  const e = BT.e, off = BT.busy;
+  return [
+    { label: 'LUTAR', icon: btIco(BT_BM.sword), fn: () => !BT.busy && btFight(), disabled: off },
+    { label: 'BOLSA', icon: btIco(BT_BM.bag), fn: () => !BT.busy && btBag(), disabled: off },
+    { label: 'ANIMAR', icon: 'heart', fn: () => !BT.busy && btCheer(), disabled: off || !!(e && e.animar) },
+    { label: 'FUGIR', icon: btIco(BT_BM.run), fn: () => !BT.busy && btRun(), disabled: off },
+  ];
+}
+function btSetBusy(b) { BT.busy = b; if (!Menu.top && scene === 'batalha' && BT.mode === 'main') setKnobs(btKnobsMain()); }
+// lista de golpes: o botão do meio vira VOLTAR (rótulo e ícone trocados pelo battle.css)
+function btMovesUi(on) { $('device').classList.toggle('bt-moves', on); $('btnPet').setAttribute('aria-label', on ? 'Voltar' : 'Fazer carinho'); }
+function btMain() { BT.mode = 'main'; btMovesUi(false); setKnobs(btKnobsMain()); Sfx.click(); }
+function btFight() {
+  if (BT.busy || !btLive()) return;
+  BT.mode = 'moves'; btMovesUi(true); Sfx.click();
+  const mv = btMoves(s.sp, s.level), defs = [0, 1, 2, 3].map(i => mv[i] ? { label: mv[i].name, icon: btTypeIco(mv[i].type), fn: () => !BT.busy && btTurn({ kind: 'move', mv: mv[i] }) } : null);
+  defs.center = { label: 'VOLTAR', icon: '◀', fn: () => !BT.busy && btMain() };
+  setKnobs(defs);
+}
+// volta ao "O que X vai fazer?" (ou encerra, se ele desmaiou de cansaço no meio)
+function btMenu() {
+  if (!btAlive(BT.tok) || !btLive()) return;
+  if (s.asleep || s.energy <= 0) return btEnd({ fled: true, exhausted: true }, BT.e);
+  BT.mode = 'main'; btMovesUi(false); btSetBusy(false);
+  sayNow(`O que ${N()} vai fazer?`);
+}
+
+/* ── Fluxo ── */
+async function btIntro(resume) {
+  const tok = BT.tok, e = BT.e, nm = DEX[e.sp].name, quick = RM.matches;
+  btSetBusy(true);
+  advTween(quick ? 0 : .45, p => { BT.wipe = 1 - p; });
+  Sfx.cry(e.sp);
+  await advTween(quick ? 0 : .7, p => { BT.wildDx = Math.round(-170 * (1 - p)); });
+  if (!btAlive(tok)) return;
+  BT.boxW = true;
+  if (e.shiny) btShinyFx();
+  // recarregou antes do fim da abertura: ela se repete inteira (lendário e brilhante nunca passam sem aviso)
+  if (resume && e.introDone) await talk(`O ${nm} selvagem ainda está aqui!`);
+  else if (e.legend) { await talk('Gyaoo!'); await talk(`O ${nm} lendário encara você!`); }
+  else await talk(`Um ${nm} selvagem apareceu!`);
+  if (!btAlive(tok)) return;
+  if (e.shiny) await talk('Ele está brilhando!');
+  if (e.asleep) await talk(`O ${nm} selvagem está dormindo!`);
+  if (!btAlive(tok)) return;
+  Sfx.whoosh();
+  const vai = talk(`Vai! ${N()}!`);
+  await advTween(quick ? 0 : .5, p => { BT.petDx = Math.round(-150 * (1 - p)); });
+  BT.boxP = true; Sfx.cry(s.sp); await vai;
+  if (!btAlive(tok)) return;
+  if (s.hunger < 20) await talk(`${N()} está com fome e sem forças...`);
+  if (!e.introDone) { e.introDone = true; btSave(e); }
+  // recarregou depois da ação do seu POKéMON: o selvagem ainda tem a vez dele
+  if (e.owe) {
+    const r = await btWildAct(e, tok); if (!btAlive(tok)) return;
+    if (r) return btEnd(r, e);
+    e.turn++; e.at = Date.now(); btSave(e);
+  }
+  btMenu();
+}
+async function btTurn(act) {
+  const tok = BT.tok; if (!btLive() || BT.busy) return;
+  syncFromStorage(); if (!btAlive(tok)) return;
+  // outra aba encerrou ou assumiu a batalha: volta para casa (lá o aviso aparece)
+  const e = BT.e, g = G.enc;
+  if (!g || g.id !== e.id || g.done || btElsewhere(g)) { btSetBusy(true); BT.fin = true; goHome(); return; }
+  G.enc = e; e.owner = BT_TAB;
+  BT.mode = 'main'; btMovesUi(false); btSetBusy(true); Sfx.click();
+  const pet = btPet(), wild = btWild(e);
+  // BOLSA e ANIMAR vão primeiro; golpes pela VELOCIDADE (empate: sorteio)
+  const petFirst = act.kind !== 'move' || pet.st.spe > wild.st.spe || (pet.st.spe === wild.st.spe && Math.random() < .5);
+  // a vez do selvagem fica devida já: recarregar no meio do turno não a pula
+  e.owe = petFirst; e.at = Date.now(); btSave(e);
+  for (const who of petFirst ? ['pet', 'wild'] : ['wild', 'pet']) {
+    const r = who === 'pet' ? await btPetAct(act, e, tok) : await btWildAct(e, tok);
+    if (!btAlive(tok)) return;
+    if (r) return btEnd(r, e);
+  }
+  e.turn++; e.owe = false; e.at = Date.now(); btSave(e);
+  btMenu();
+}
+async function btPetAct(act, e, tok) {
+  const nm = DEX[e.sp].name, n = N(), o = BT.o;
+  if (act.kind === 'ball') return btThrow(act.k, e, tok);
+  if (act.kind === 'pocao') {
+    bagUse('pocao'); const gain = Math.min(20, o.maxHp - o.hp); o.hp += gain; btSave(e); Sfx.happy();
+    await talk('Você usou uma POÇÃO!'); await advUntil(() => BT.petShown === o.hp);
+    await talk(`${n} recuperou ${gain} PS!`); return null;
+  }
+  if (act.kind === 'animar') {
+    e.animar = true; e.pump = true; s.happy = clamp(s.happy + 2); btSave(e); updateUI(); Sfx.happy();
+    for (let i = 0; i < 4; i++) BT.parts.push({ type: 'heart', x: 50 + Math.random() * 30, y: 110, vx: (Math.random() - .5) * 20, vy: -25, life: 0, max: 1 });
+    await talk(`${n} ficou animado!`); return null;
+  }
+  // golpe: tudo sorteado e gravado antes da narração (a barra fica parada até o golpe acertar)
+  if (s.happy < 25 && Math.random() < .2) { await talk(`${n} está emburrado...`); return null; }
+  const mv = act.mv, hit = !!mv.power && !(mv.strong && Math.random() >= .9);
+  let r = null, crit = false, held = false, woke = false;
+  if (hit) {
+    crit = Math.random() < (e.pump ? 1 / 4 : s.happy >= 80 ? 1 / 8 : 1 / 16); e.pump = false;
+    r = btDamage(btPet(), btWild(e), mv, crit);
+    if (r.eff) {
+      // golpe gentil: espécie ainda não capturada não desmaia (fica com 1 PS); lendários e já capturados podem
+      let dmg = r.dmg;
+      if (!e.legend && !dexHas('caught', e.sp) && dmg >= e.hp) { dmg = Math.max(0, e.hp - 1); held = true; }
+      e.hp = Math.max(0, e.hp - dmg); woke = e.asleep && e.hp > 0;
+      if (woke) { e.asleep = false; e.sleepTurns = 0; }
+      BT.holdW = true;
+    }
+  }
+  e.at = Date.now();
+  if (r && r.eff && e.hp <= 0) btSettle({ won: true }, e); else btSave(e);
+  await talk(`${n} usou ${mv.name}!`);
+  if (!mv.power) { await talk('Mas nada aconteceu!'); return null; }
+  if (!hit) { await talk(`O ataque de ${n} errou!`); return null; }
+  if (!r.eff) { await talk(`Não afeta o ${nm} selvagem...`); return null; }
+  await btHitFx('wild', r.eff); BT.holdW = false;
+  await advUntil(() => BT.wildShown === e.hp);
+  if (crit) await talk('Um golpe crítico!');
+  if (r.eff > 1) await talk('É super efetivo!'); else if (r.eff < 1) await talk('Não é muito efetivo...');
+  if (held) await talk(`O ${nm} selvagem aguentou firme!`);
+  if (e.hp <= 0) return btWildFaint(e, tok);
+  if (woke) await talk(`O ${nm} selvagem acordou!`);
+  return null;
+}
+async function btWildAct(e, tok) {
+  const nm = DEX[e.sp].name, n = N(), o = BT.o, wild = btWild(e), pet = btPet();
+  e.owe = false;   // vai junto no próximo save deste turno
+  if (e.asleep) {
+    if (--e.sleepTurns <= 0) { e.asleep = false; btSave(e); await talk(`O ${nm} selvagem acordou!`); }
+    else { btSave(e); await talk(`O ${nm} selvagem está dormindo.`); }
+    return null;
+  }
+  // brilhante nunca foge (nem com TELETRANSPORTE)
+  if (e.sp === 63 && !e.shiny && e.turn === 0 && Math.random() < .5) return btWildFlee(e, `O ${nm} selvagem usou TELETRANSPORTE!`);
+  if (!e.legend && !e.shiny && e.hp < e.maxHp * .25 && wild.st.spe > pet.st.spe && Math.random() < .1) return btWildFlee(e);
+  // IA: 70% o golpe de maior dano esperado, 30% um qualquer; lendários sempre o melhor
+  const mvs = btMoves(e.sp, e.lv), score = m => m.power * (DEX[e.sp].types.includes(m.type) ? 1.5 : 1) * btEff(m.type, s.sp) * (m.strong ? .9 : 1);
+  const mv = e.legend || Math.random() < .7 ? mvs.reduce((a, b) => score(b) > score(a) ? b : a) : mvs[randInt(0, mvs.length - 1)];
+  // dano sorteado e gravado antes da narração; desmaio já com as penas no mesmo save (recarregar não o desfaz)
+  const hit = !!mv.power && !(mv.strong && Math.random() >= .9), crit = hit && Math.random() < 1 / 16, r = hit ? btDamage(wild, pet, mv, crit) : null;
+  let endured = false;
+  if (r && r.eff) {
+    let hp = o.hp - r.dmg;
+    if (hp <= 0 && s.happy >= 80 && !e.endured) { hp = 1; endured = e.endured = true; }   // aguenta por você, 1x por batalha
+    o.hp = Math.max(0, hp); BT.holdP = true;
+  }
+  e.at = Date.now();
+  if (o.hp <= 0) btSettle({ fainted: true }, e); else btSave(e);
+  await talk(`O ${nm} selvagem usou ${mv.name}!`);
+  if (!mv.power) { await talk('Mas nada aconteceu!'); return null; }
+  if (!hit) { await talk(`O ataque do ${nm} selvagem errou!`); return null; }
+  if (!r.eff) { await talk(`Não afeta ${n}...`); return null; }
+  await btHitFx('pet', r.eff); BT.holdP = false;
+  await advUntil(() => BT.petShown === o.hp);
+  if (crit) await talk('Um golpe crítico!');
+  if (r.eff > 1) await talk('É super efetivo!'); else if (r.eff < 1) await talk('Não é muito efetivo...');
+  if (endured) await talk(`${n} aguentou firme por você!`);
+  if (o.hp <= 0) {
+    Sfx.cry(s.sp); await advTween(RM.matches ? 0 : .5, p => { BT.sinkP = p; });
+    await talk(`${n} desmaiou!`); return { fainted: true };
+  }
+  return null;
+}
+async function btWildFaint(e, tok) {
+  Sfx.cry(e.sp); await advTween(RM.matches ? 0 : .5, p => { BT.sinkW = p; });
+  await talk(`O ${DEX[e.sp].name} selvagem desmaiou!`);
+  await btPayExp(e);
+  return { won: true };
+}
+async function btWildFlee(e, pre) {
+  btSettle({ wildFled: true }, e);
+  if (pre) await talk(pre);
+  Sfx.whoosh(); await advTween(RM.matches ? 0 : .4, p => { BT.wildDx = Math.round(170 * p); });
+  await talk(`O ${DEX[e.sp].name} selvagem fugiu!`);
+  return { wildFled: true };
+}
+// EXP do nocaute/captura: anotada no resultado (e.done.exp) e paga aqui, com o nível e a evolução pendente do addExp do núcleo
+const btExpFor = e => Math.round(Math.max(3, Math.round(DEX[e.sp].exp * e.lv / 7 * .1)) * (e.lv > s.level ? 1.2 : 1));
+async function btPayExp(e) {
+  const d = e.done; if (!d || !d.exp || d.expPaid) return;
+  const oldL = s.level, oldMax = btStats(s.sp, s.level).hp, known = btMoves(s.sp, s.level).map(m => m.name);
+  await talk(`${N()} ganhou ${d.exp} pontos de EXP.!`);
+  if (d.expPaid) return;
+  addExp(d.exp, true); d.expPaid = true;
+  const o = BT.o;
+  if (s.level > oldL && o) { const mx = btStats(s.sp, s.level).hp; o.hp += mx - oldMax; o.maxHp = mx; BT.petShown += mx - oldMax; }
+  btSave(e); updateUI();
+  for (const m of btMoves(s.sp, s.level)) if (!known.includes(m.name)) await talk(`${N()} aprendeu ${m.name}!`);
+}
+async function btThrow(k, e, tok) {
+  const nm = DEX[e.sp].name, quick = RM.matches;
+  // bola gasta, pena do lendário e, se pegou, a captura inteira num save só, antes da animação
+  const checks = btChecks(e, k);
+  bagUse(k); if (e.legend) btLegendRec(e.sp).thrown++;
+  e.at = Date.now();
+  if (checks >= 4) btSettle({ caught: true, k }, e); else btSave(e);
+  sayNow(`Você jogou uma ${ITEMS[k].name}!`); Sfx.whoosh();
+  const b = BT.ball = { k, x: 60, y: 112, dx: 0, open: 0, dim: false };
+  await advTween(quick ? .2 : .6, p => { b.x = 60 + 116 * p; b.y = 112 - 58 * p + -60 * Math.sin(p * Math.PI) * .9; });
+  Sfx.noise(.15, { freq: 2400, q: 1, vol: .2 });
+  await advTween(quick ? 0 : .35, p => { BT.absorb = p; b.open = 1 - p; });
+  BT.hideWild = true; BT.absorb = 0; b.open = 0;
+  await advTween(quick ? .1 : .35, p => { b.y = 54 + 22 * (p < .7 ? (p / .7) ** 2 : 1 - Math.sin((p - .7) / .3 * Math.PI) * .2); });
+  b.y = 76; Sfx.bounce();
+  const shakes = Math.min(3, checks);
+  for (let i = 0; i < shakes; i++) {
+    await advWait(quick ? .25 : .45); if (!btAlive(tok)) return null;
+    Sfx.tone(260, .06, { vol: .08 });
+    await advTween(quick ? .2 : .4, p => { b.dx = Math.round(Math.sin(p * Math.PI * 2) * 3); });
+    b.dx = 0;
+  }
+  await advWait(quick ? .2 : .45); if (!btAlive(tok)) return null;
+  if (checks < 4) {
+    Sfx.noise(.2, { freq: 1800, q: .8, vol: .25 });
+    await advTween(quick ? 0 : .3, p => { b.open = p; BT.absorb = 1 - p; BT.hideWild = false; });
+    BT.ball = null; BT.absorb = 0;
+    await talk(BT_FAIL[shakes]); return null;
+  }
+  b.dim = true; Sfx.seq([[784, .1], [988, .1], [1175, .1], [1568, .3]], { vol: .07 });
+  for (let i = 0; i < 6; i++) BT.parts.push({ type: 'star', x: 176, y: 72, vx: (i % 3 - 1) * 28, vy: i < 3 ? -26 : -8, life: 0, max: .9 });
+  await talk(`Parabéns! ${nm} foi pego!`);
+  await btPayExp(e);
+  if (e.done.novo) {
+    await talk(`Os dados de ${nm} foram registrados na POKéDEX.`);
+    if (typeof showDexEntry === 'function') await showDexEntry(e.sp);   // a ficha nova, como no FRLG
+  }
+  await talk(`${nm} foi enviado para o PC do PROF. CARVALHO.`);
+  btLater();
+  return { caught: true };
+}
+// avisos que outros módulos deram na captura (gancho 'caught'): guardados para depois da narração, sem estragar a surpresa
+function btLater() { for (const m of BT.later) msg.queue.push(m); BT.later = []; }
+/* Resultado: btSettle grava tudo o que o resultado muda (captura, vitória, custo de cuidado, desmaio, lendário) num save só
+   e marca e.done; btFinish, depois da narração (ou no próximo boot, se recarregou), paga a EXP que faltou, solta o encontro e avisa. */
+function btSettle(r, e) {
+  if (e.done) return e.done;
+  const o = BT.o, now = Date.now(), mul = MUL();
+  const d = { won: !!r.won, caught: !!r.caught, fled: !!r.fled, fainted: !!r.fainted, exhausted: false, novo: false, night: phaseAt() === 'NOITE', exp: 0, expPaid: false };
+  if (r.caught) {
+    d.novo = !dexHas('caught', e.sp);
+    const q0 = msg.queue.length;
+    receiveMon(e.sp, e.lv, { shiny: !!e.shiny, ball: r.k }, 'catch');
+    BT.later = msg.queue.splice(q0);
+    G.prog.captures++; if (e.legend) btLegendRec(e.sp).caught = true;
+  }
+  if (r.won) { G.prog.wins++; s.happy = clamp(s.happy + 2); }
+  if (r.won || r.caught) d.exp = btExpFor(e);
+  const lost = o ? Math.max(0, (num(e.petHp0, o.hp) - o.hp) / o.maxHp) : 0;
+  s.energy = clamp(s.energy - (2 + Math.round(8 * lost))); s.hunger = clamp(s.hunger - 2 * mul.h);
+  if (e.legend && !r.caught) btLegendMiss(e, !!r.won);
+  if (r.fainted) { if (o) o.hp = 0; s.energy = Math.max(5, s.energy - 20); s.happy = clamp(s.happy - 8); G.prog.exploreLockUntil = now + 15 * 60e3; }
+  d.exhausted = !r.fainted && (!!r.exhausted || s.energy <= 0);
+  if (d.exhausted && !s.asleep) { s.asleep = true; s.sleptAt = now; }   // o sono de exaustão de sempre
+  e.done = d; e.owe = false; e.at = now;
+  btSave(e); updateUI();
+  return d;
+}
+function btFinish(e, home) {
+  const d = e.done; if (!d || !G) return;
+  if (d.exp && !d.expPaid) { addExp(d.exp, true); d.expPaid = true; }   // recarregou antes do "ganhou EXP"
+  if (e === BT.e) BT.fin = true;
+  if (G.enc && G.enc.id === e.id) G.enc = null;
+  if (d.fainted || d.exhausted || home) G.outing = null;
+  save(); updateUI();
+  fire('battleEnd', { won: d.won, caught: d.caught, fled: d.fled, fainted: d.fainted, sp: e.sp, shiny: !!e.shiny, night: d.night });
+  if (!home) return;
+  const nm = DEX[e.sp].name;
+  if (d.caught) { if (d.novo) say(`Os dados de ${nm} foram registrados na POKéDEX.`); say(`${nm} foi enviado para o PC do PROF. CARVALHO.`); btLater(); }
+  if (d.fainted) say(`${N()} voltou para casa para descansar.`);
+  else if (d.exhausted) say(`${N()} está exausto!`);
+}
+// fim da narração: conclui e decide para onde ir (passeio continua, ou casa)
+async function btEnd(r, e) {
+  const tok = BT.tok; if (!e || !G) return;
+  btSetBusy(true);
+  const d = btSettle(r, e);
+  if (d.fainted) await talk(`${N()} voltou para casa para descansar.`);
+  if (d.exhausted) await talk(`${N()} está exausto!`);
+  if (!btAlive(tok)) return;
+  btFinish(e);
+  if (d.fainted || d.exhausted) goHome(); else go('explorar', { after: true });
+}
+function btRun() {
+  if (BT.busy || !btLive()) return;
+  btSetBusy(true); Sfx.whoosh();
+  const e = BT.e, tok = BT.tok;
+  btSettle({ fled: true }, e);
+  talk('Fugiu sem problemas!').then(() => btAlive(tok) && btEnd({ fled: true }, e));
+  advTween(RM.matches ? 0 : .4, p => { BT.petDx = -Math.round(150 * p); });
+}
+function btCheer() {
+  if (BT.busy || !btLive()) return;
+  if (BT.e.animar) { sayNow(`${N()} já está animado!`); return Sfx.deny(); }
+  btTurn({ kind: 'animar' });
+}
+function btBag() {
+  if (BT.busy || !btLive()) return;
+  const items = BALLS.filter(k => G.bag[k] > 0).map(k => ({ label: ITEMS[k].name, sub: '×' + G.bag[k], fn: () => { Menu.closeAll(); btBall(k); } }));
+  if (!items.length) items.push({ label: 'POKé BOLA', sub: '×0', fn: () => { Menu.closeAll(); btBall('poke'); } });
+  items.push({ label: 'POÇÃO', sub: '×' + (G.bag.pocao || 0), disabled: !bagHas('pocao'), fn: () => {
+    const o = BT.o; if (o.hp >= o.maxHp) { sayNow(`O PS de ${N()} já está cheio!`); return Sfx.deny(); }
+    Menu.closeAll(); btTurn({ kind: 'pocao' });
+  } });
+  items.push({ label: 'VOLTAR', fn: () => Menu.close() });
+  Menu.open({ title: 'BOLSA', items });
+}
+// PC cheio ou sem bola: recusa antes de jogar, nada é gasto
+function btBall(k) {
+  if (G.pc.length >= 360) { sayNow('O PC está cheio!'); return Sfx.deny(); }
+  if (!bagHas(k)) { sayNow('Não há POKé BOLAS!'); return Sfx.deny(); }
+  btTurn({ kind: 'ball', k });
+}
+// só uma aba batalha por vez (spec N5): batimento a cada 15 s pelo tick; quem perde a vez volta para casa
+on('tick', now => {
+  if (scene !== 'batalha' || !BT.e || BT.fin) return;
+  const g = G.enc, e = BT.e;
+  if (g && g.id === e.id && !btElsewhere(g)) {
+    G.enc = e;   // o tick acabou de adotar o save: a batalha segue com o objeto dela
+    if (e.owner !== BT_TAB || now - num(e.at, 0) > 15e3) { e.owner = BT_TAB; e.at = now; }
+  } else if (!BT.busy) { BT.fin = true; goHome(); }
+});
+// recarregar ou fechar: solta a batalha na hora (a mesma aba, ao voltar, retoma sem esperar os 2 min)
+window.addEventListener('pagehide', () => {
+  const g = G && G.enc; if (!g || g.owner !== BT_TAB) return;
+  g.owner = null; if (BT.e && BT.e.id === g.id) BT.e.owner = null;
+  save();
+});
+
+/* ── Efeitos ── */
+async function btHitFx(who, eff) {
+  const quick = RM.matches;
+  Sfx.whoosh();
+  await advTween(quick ? 0 : .22, p => { const v = Math.sin(p * Math.PI); if (who === 'wild') BT.lungeP = v; else BT.lungeW = v; });
+  BT.lungeP = BT.lungeW = 0;
+  Sfx.hit(eff > 1 ? 0 : eff < 1 ? 3 : 1);
+  if (who === 'wild') BT.blinkW = .5; else { BT.blinkP = .5; if (!quick) BT.shake = .3; }
+  await advWait(.5);
+}
+function btShinyFx() {
+  Sfx.seq([[1568, .06], [2093, .06], [1568, .06], [2637, .16]], { vol: .05 });
+  for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; BT.parts.push({ type: 'star', x: 176 + Math.cos(a) * 10, y: 50 + Math.sin(a) * 10, vx: Math.cos(a) * 30, vy: Math.sin(a) * 30, life: 0, max: .8 }); }
+}
+
+/* ── Desenho (240x160) ── */
+const BT_LOOK = {
+  floresta: { sky: ['#78c0f8', '#d0f0d8'], far: '#4a9850', ground: ['#98d070', '#88c060'], pad: ['#5c9840', '#a8d880', '#c0e898'] },
+  vulcao: { sky: ['#e88860', '#f8d8a8'], far: '#8a5848', ground: ['#c09060', '#b08050'], pad: ['#7a5034', '#c8a070', '#d8b888'] },
+  praia: { sky: ['#60a8f0', '#d8f0f8'], far: '#3880d0', ground: ['#f0d8a0', '#e4c890'], pad: ['#b89858', '#f8e4b0', '#fff0c8'] },
+};
+const BT_BG = {};
+const btHex = h => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16));
+function btBg(area, ph) {
+  const key = area + ph; if (BT_BG[key]) return BT_BG[key];
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const c = cv.getContext('2d');
+  const L = BT_LOOK[area] || BT_LOOK.floresta, a = btHex(L.sky[0]), b = btHex(L.sky[1]);
+  // céu em faixas de 4px (degradê "pixelado")
+  for (let y = 0; y < 92; y += 4) { const k = y / 92; R(c, 0, y, W, 4, `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * k)).join(',')})`); }
+  const rnd = rng(area.length * 131);
+  if (area === 'praia') { R(c, 0, 84, W, 8, L.far); for (let x = 0; x < W; x += 6) R(c, x + (x % 12 ? 2 : 0), 86, 3, 1, '#a8d8f8'); }
+  else for (let x = 0; x < W; x += 2) { const hh = area === 'vulcao' ? 10 + Math.abs(((x + 40) % 120) - 60) / 3 : 8 + Math.round(rnd() * 3 + Math.sin(x * .15) * 3); R(c, x, 92 - hh, 2, hh, L.far); }
+  R(c, 0, 92, W, H - 92, L.ground[0]);
+  for (let y = 94; y < H; y += 6) for (let x = (y / 6 % 2) * 8; x < W; x += 16) R(c, x, y, 6, 2, L.ground[1]);
+  // plataformas (ovais) do selvagem e do seu POKéMON
+  for (const [x, y, rx, ry] of [[176, 80, 46, 11], [62, 152, 60, 13]]) { disc(c, x, y, rx, ry, L.pad[0]); disc(c, x, y - 1, rx - 2, ry - 2, L.pad[1]); disc(c, x - 6, y - 3, Math.round(rx * .55), Math.round(ry * .4), L.pad[2]); }
+  if (PHASE_TINT[ph]) { c.fillStyle = PHASE_TINT[ph]; c.fillRect(0, 0, W, H); }
+  return (BT_BG[key] = cv);
+}
+function btText(c, t, x, y, col = '#404048', align = 'left') {
+  c.font = '8px "Press Start 2P", monospace'; c.textAlign = align; c.textBaseline = 'top';
+  c.fillStyle = '#d8d0b8'; c.fillText(t, x + 1, y + 1); c.fillStyle = col; c.fillText(t, x, y);
+}
+// nível: o "Nv" miúdo e os números em 8px (cabe Nv100 antes do rótulo PS)
+function btLv(c, L, x, y) { drawBm(c, BT_BM.nv, x + 1, y + 3, { K: '#d8d0b8' }); drawBm(c, BT_BM.nv, x, y + 2, { K: '#404048' }); btText(c, String(L), x + 10, y); }
+function btBar(c, x, y, w, v, max) {
+  const f = max > 0 ? Math.max(0, v) / max : 0, col = f > .5 ? '#58d080' : f > .2 ? '#f8d030' : '#f05030';
+  R(c, x - 14, y - 2, w + 16, 7, '#505058'); drawBm(c, BT_BM.ps, x - 12, y - 1, { K: '#f8d030' });
+  R(c, x, y - 1, w, 5, '#505058'); R(c, x + 1, y, w - 2, 3, '#f8f8f8');
+  const fw = Math.ceil((w - 2) * f); if (fw > 0) { R(c, x + 1, y, fw, 3, col); R(c, x + 1, y, fw, 1, 'rgba(255,255,255,.4)'); }
+}
+function btBox(c, x, y, w, h) {
+  R(c, x + 2, y + 2, w, h, 'rgba(0,0,0,.25)'); R(c, x, y, w, h, '#404848'); R(c, x + 1, y + 1, w - 2, h - 2, '#f8f8e0');
+  R(c, x + 1, y + h - 3, w - 2, 2, '#d8d8b8');
+}
+function btDraw(c) {
+  const e = BT.e; if (!e) { R(c, 0, 0, W, H, '#000'); return; }
+  const area = e.area in BT_LOOK ? e.area : 'floresta', quake = BT.shake > 0 ? Math.round(Math.sin(BT.shake * 60) * 2) : 0;
+  c.drawImage(btBg(area, phaseAt()), 0, 0);
+  ctx = c;
+  // selvagem (no alto, à direita)
+  const wk = 'f' + e.sp + (e.shiny ? 's' : ''), wx = 176 + BT.wildDx - Math.round(BT.lungeW * 10);
+  if (!BT.hideWild && !(BT.blinkW > 0 && Math.floor(BT.blinkW * 16) % 2)) {
+    if (BT.absorb > 0) {
+      const im = tinted(wk, '#f8f8f8'), z = 1 - BT.absorb, f = footOf(wk);
+      if (im) c.drawImage(im, Math.round(wx - 32 * z), Math.round(80 - f.base * z), Math.round(64 * z), Math.round(64 * z));
+    } else {
+      c.save(); c.beginPath(); c.rect(0, 0, W, 84); c.clip();
+      drawPokemon(wk, wx, 80 + Math.round(BT.sinkW * 64), {}); c.restore();
+    }
+    if (e.asleep && !BT.sinkW) drawBm(c, BM.zz, wx + 18, 22 - Math.floor(clock * 2) % 3, PAL);
+  }
+  // bola
+  const b = BT.ball;
+  if (b) {
+    const pal = b.dim ? { ...BT_BALL_PAL[b.k], R: '#806060', W: '#a0a0a0' } : BT_BALL_PAL[b.k] || BT_PAL;
+    drawBm(c, BT_BM.ball, Math.round(b.x + b.dx - 3), Math.round(b.y - 6 - b.open * 2), pal);
+    if (b.open > 0) { c.globalAlpha = b.open; disc(c, Math.round(b.x), Math.round(b.y - 4), 8, 8, '#f8f8f8'); c.globalAlpha = 1; }
+  }
+  // seu POKéMON (de costas, embaixo à esquerda)
+  const pk2 = monKey(s, true), px = 62 + BT.petDx + Math.round(BT.lungeP * 10) + quake;
+  if (!(BT.blinkP > 0 && Math.floor(BT.blinkP * 16) % 2)) drawPokemon(pk2, px, 160 + Math.round(BT.sinkP * 70), {});
+  // caixas (cada uma aparece quando o seu POKéMON entra)
+  if (BT.boxW) btWildBox(c, e);
+  if (BT.boxP) btPetBox(c, quake);
+  btFx(c);
+}
+function btWildBox(c, e) {
+  btBox(c, 6, 8, 108, 32);
+  btText(c, DEX[e.sp].name, 12, 13);
+  if (e.shiny) drawBm(c, BM.star, 104, 13, PAL);
+  if (dexHas('caught', e.sp)) drawBm(c, BT_BM.ball, 104, 25, BT_PAL);
+  btLv(c, e.lv, 12, 26);
+  btBar(c, 62, 28, 40, BT.wildShown, e.maxHp);
+}
+function btPetBox(c, quake) {
+  const bx = 124 + quake, by = 102;
+  btBox(c, bx, by, 112, 46);
+  btText(c, N(), bx + 6, by + 5);
+  if (s.shiny) drawBm(c, BM.star, bx + 102, by + 5, PAL);
+  btLv(c, s.level, bx + 6, by + 18);
+  btBar(c, bx + 60, by + 20, 46, BT.petShown, BT.petMax);
+  btText(c, `${Math.ceil(BT.petShown)}/${BT.petMax}`, bx + 106, by + 29, '#404048', 'right');
+  R(c, bx + 6, by + 40, 100, 3, '#505058');
+  const ef = s.level >= 100 ? 1 : Math.min(1, s.exp / needExp(s.level)); if (ef > 0) R(c, bx + 7, by + 41, Math.round(98 * ef), 1, '#40b8f0');
+}
+// partículas e a abertura
+function btFx(c) {
+  for (const p of BT.parts) {
+    if (p.type === 'heart') drawBm(c, BM.heart, p.x - 4, p.y - 4, PAL);
+    else if (Math.floor(p.life * 12) % 2 === 0) drawBm(c, BM.star, p.x - 2, p.y - 2, PAL);
+  }
+  // abertura: barras pretas se abrindo
+  if (BT.wipe > 0) for (let i = 0; i < 8; i++) { const w = Math.ceil(W * BT.wipe); R(c, i % 2 ? W - w : 0, i * 20, w, 20, '#000'); }
+}
+
+/* ── card.js ── */
+/* ════════════ CARTÃO DE TREINADOR ════════════
+   Cena 'card' (START → CARTÃO): POKéDEX, dias de jogo, vitórias, as 8 insígnias de Kanto e as medalhas.
+   Depois do HALL DA FAMA, rever o HALL e o DIPLOMA (hall.js). Só lê o progresso: quem concede é o módulo de progresso. */
+extendDefaults({ prog: { medals: [], wins: 0 } });
+
+// insígnias em pixel art 13x13 (K = contorno). Apagada: só o contorno, cinza.
+const CD_BADGES = [
+  { name: 'ROCHA', pal: { K: '#303040', W: '#f8f8f8', w: '#c8c8d0', g: '#9098a8', D: '#606878' }, bm: ['....KKKKK....', '...KWwwwwK...', '..KWwwwwwgK..', '.KWwwwwwwggK.', 'KWwwwwwwwgggK', 'KwwwwwwwggggK', 'KwwwwwwggggDK', 'KwwwwwggggDDK', 'KwwwwggggDDDK', '.KwggggDDDDK.', '..KggDDDDDK..', '...KDDDDDK...', '....KKKKK....'] },
+  { name: 'CASCATA', pal: { K: '#203058', C: '#68a8f0', B: '#3868c0', W: '#f8f8f8' }, bm: ['......K......', '.....KCK.....', '....KCCCK....', '....KCCCK....', '...KCWCCCK...', '..KCWCCCCBK..', '..KCWCCCCBK..', '.KCCCCCCCBBK.', '.KCCCCCCBBBK.', '.KCCCCCCBBBK.', '..KCCCCBBBK..', '...KKBBBKK...', '.....KKK.....'] },
+  { name: 'TROVÃO', pal: { K: '#583010', O: '#f08030', Y: '#f8d030', W: '#fff8c0' }, bm: ['......K......', '.....KOK.....', '....KOOOK....', '...KOOYOOK...', '..KOOYYYOOK..', '.KOOYYWYYOOK.', 'KOOYYWWWYYOOK', '.KOOYYWYYOOK.', '..KOOYYYOOK..', '...KOOYOOK...', '....KOOOK....', '.....KOK.....', '......K......'] },
+  { name: 'ARCO-ÍRIS', pal: { K: '#303040', R: '#e83838', G: '#58b048', Y: '#f8d030', B: '#5880e0', W: '#f8f8f8' }, bm: ['.....KKK.....', '....KRRRK....', '....KRRRK....', '.KKK.KRK.KKK.', 'KGGGK.K.KYYYK', 'KGGGGKWKYYYYK', 'KGGGGWWWYYYYK', 'KGGGGKWKYYYYK', 'KGGGK.K.KYYYK', '.KKK.KBK.KKK.', '....KBBBK....', '....KBBBK....', '.....KKK.....'] },
+  { name: 'ALMA', pal: { K: '#602048', P: '#e868b0', W: '#fff0f8' }, bm: ['.............', '..KKK...KKK..', '.KPPPK.KPPPK.', 'KPWPPPKPPPPPK', 'KPWPPPPPPPPPK', 'KPPPPPPPPPPPK', '.KPPPPPPPPPK.', '..KPPPPPPPK..', '...KPPPPPK...', '....KPPPK....', '.....KPK.....', '......K......', '.............'] },
+  { name: 'PÂNTANO', pal: { K: '#584010', Y: '#f8d030', O: '#c89020' }, bm: ['....KKKKK....', '..KKYYYYYKK..', '.KYYOOOOOYYK.', '.KYOKKKKKOYK.', 'KYOK.....KOYK', 'KYOK.KKK.KOYK', 'KYOK.KYK.KOYK', 'KYOK.KKK.KOYK', 'KYOK.....KOYK', '.KYOKKKKKOYK.', '.KYYOOOOOYYK.', '..KKYYYYYKK..', '....KKKKK....'] },
+  { name: 'VULCÃO', pal: { K: '#581818', R: '#e83838', O: '#f08030', Y: '#f8d030' }, bm: ['.....K.......', '....KRK......', '....KRRK.....', '...KRRRK..K..', '...KRRORK.KK.', '..KRROORKKRK.', '..KRROOORRRK.', '.KRROOYOORRK.', '.KRROYYYOORK.', '.KRROYYYOORK.', '..KRROYOORK..', '...KRRRRRK...', '....KKKKK....'] },
+  { name: 'TERRA', pal: { K: '#204818', G: '#58b048', L: '#a8e070' }, bm: ['.........KKK.', '.......KKGGK.', '.....KKGGGGK.', '....KGGGGGLK.', '...KGGGGGLGK.', '..KGGGGGLGGK.', '..KGGGGLGGK..', '.KGGGGLGGGK..', '.KGGGLGGGK...', '.KGGLGGKK....', '.KGLKKK......', '.KLK.........', 'KK...........'] },
+];
+const CD_DIM = { K: '#8a90a8' };
+// chaves das medalhas: o módulo de progresso grava em G.prog.medals. Aceita a chave curta daqui ou o nome
+// (sem acento, qualquer caixa): a ordem importa — "mestre do treino" casa com treino antes de mestre
+const CD_MEDALS = [
+  { k: 'brilho', name: 'BRILHO', hint: 'Capture um POKéMON brilhante.', re: /brilh|shiny/ },
+  { k: 'veterano', name: 'VETERANO', hint: 'Vença 100 batalhas.', re: /veteran/ },
+  { k: 'fiel', name: 'FIEL', hint: 'Jogue 7 dias seguidos.', re: /fiel|streak/ },
+  { k: 'treino', name: 'MESTRE DO TREINO', hint: 'Faça um treino com 3 CRÍTICOS.', re: /trein|train/ },
+  { k: 'colhedor', name: 'COLHEDOR', hint: 'Faça 350 pontos na COLHEITA.', re: /colhe|harvest/ },
+  { k: 'paleontologo', name: 'PALEONTÓLOGO', hint: 'Reviva 3 fósseis.', re: /paleo|fossil/ },
+  { k: 'negociante', name: 'NEGOCIANTE', hint: 'Faça 4 trocas.', re: /negoci|troca|trade/ },
+  { k: 'lendas', name: 'CAÇADOR DE LENDAS', hint: 'Capture os 5 lendários.', re: /lend|legend/ },
+  { k: 'mestre', name: 'MESTRE POKéMON', hint: 'Entre no HALL DA FAMA.', re: /mestre|master|hall|hof/ },
+];
+const cdNorm = v => String(v && typeof v === 'object' ? v.k || v.key || v.id || '' : v).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+function cardMedals() {
+  const got = new Set();
+  for (const m of Array.isArray(G.prog.medals) ? G.prog.medals : []) { const n = cdNorm(m); const i = n ? CD_MEDALS.findIndex(md => md.re.test(n)) : -1; if (i >= 0) got.add(i); }
+  return got;
+}
+const cdDate = t => { const d = new Date(t); return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`; };
+// início do jogo: o POKéMON mais antigo que você tem (o inicial, salvo se foi solto)
+const cardStart = () => Math.min(s.born, ...G.pc.map(m => m.born || Date.now()));
+
+const cd = { el: null, body: null };
+function cd_build() {
+  if (cd.el) return;
+  const el = document.createElement('div'); el.className = 'cd'; el.hidden = true;
+  el.innerHTML = '<div class="cd-card"><div class="cd-title">CARTÃO DE TREINADOR</div><div class="cd-body"></div></div>';
+  document.querySelector('.screen-wrap').appendChild(el);
+  cd.el = el; cd.body = el.querySelector('.cd-body');
+  el.addEventListener('click', e => {
+    const b = e.target.closest('[data-cd]'); if (!b) return;
+    const a = b.dataset.cd;
+    if (a === 'hall') { Sfx.click(); startHall(); }
+    else if (a === 'diploma') { Sfx.click(); startHall({ diploma: true }); }
+    else if (a.startsWith('badge')) { const i = +a.slice(5), n = CD_BADGES[i].name; Sfx.click(); sayNow(i < G.prog.badges ? `INSÍGNIA ${n}!` : `INSÍGNIA ${n}: ainda não conquistada.`); }
+  });
+  new MutationObserver(() => { if (!$('selectLayer').hidden) cd.el.hidden = true; }).observe($('selectLayer'), { attributes: true, attributeFilter: ['hidden'] });
+}
+function cd_render() {
+  const now = Date.now(), days = Math.floor((now - cardStart()) / 864e5) + 1, nb = clamp(Math.floor(G.prog.badges) || 0, 0, 8), med = cardMedals();
+  const row = (l, v) => `<div class="cd-row"><span>${l}</span><span>${v}</span></div>`;
+  cd.body.innerHTML =
+    `<div class="cd-top"><div class="cd-pic"><img src="${spriteURL(monKey(s))}" alt=""></div><div class="cd-rows">` +
+      row('POKéDEX', `${dexCount('caught')} / 151`) + row('VISTOS', dexCount('seen')) +
+      (G.hof || dexCount('shiny') ? row('BRILHANTES', `${dexCount('shiny')} / 151`) : '') +
+      row('DIAS DE JOGO', days) + row('VITÓRIAS', Math.floor(G.prog.wins) || 0) + row('INÍCIO', cdDate(cardStart())) +
+    '</div></div>' +
+    `<div class="cd-sec">INSÍGNIAS <span>${nb} / 8</span></div><div class="cd-badges">` +
+      CD_BADGES.map((b, i) => `<button type="button" tabindex="-1" class="cd-badge${i < nb ? ' on' : ''}" data-cd="badge${i}" aria-label="INSÍGNIA ${b.name}${i < nb ? '' : ' (não conquistada)'}">` +
+        `${bmSvg(b.bm, i < nb ? b.pal : CD_DIM)}<span>${i < nb ? b.name : '???'}</span></button>`).join('') + '</div>' +
+    `<div class="cd-sec">MEDALHAS <span>${med.size} / ${CD_MEDALS.length}</span></div><div class="cd-medals">` +
+      CD_MEDALS.map((m, i) => med.has(i) ? `<div class="cd-medal on"><i></i><span>${m.name}</span></div>`
+        : `<div class="cd-medal"><i></i><span>???<small>${m.hint}</small></span></div>`).join('') + '</div>' +
+    (G.hof ? `<div class="cd-sec">HALL DA FAMA <span>${cdDate(num(G.hof.at, now))}</span></div>` +
+      '<div class="cd-hof"><button type="button" tabindex="-1" data-cd="hall">HALL DA FAMA</button><button type="button" tabindex="-1" data-cd="diploma">DIPLOMA</button></div>' : '');
+}
+function cd_scroll(d) {
+  if (!cd.el || cd.el.hidden || Menu.top) return false;
+  const b = cd.body, top = b.scrollTop; b.scrollTop = top + d * Math.max(16, b.clientHeight * .4);
+  if (b.scrollTop === top) return false;
+  Sfx.click();
+}
+// OK: com o HALL DA FAMA aberto, o menu para revê-lo; antes disso, só um lembrete
+function cd_ok() {
+  if (!G.hof) { sayNow(`Complete a POKéDEX (${dexCount('caught')} / 151) para entrar no HALL DA FAMA!`); return Sfx.click(); }
+  Menu.open({ title: 'HALL DA FAMA', items: [
+    { label: 'REVER O HALL', fn: () => startHall() },
+    { label: 'VER DIPLOMA', fn: () => startHall({ diploma: true }) },
+    { label: 'VOLTAR', fn: () => Menu.close() }] });
+}
+
+SCENES.card = {
+  enter() {
+    cd_build(); cd_render(); cd.el.hidden = false; cd.el.parentNode.appendChild(cd.el); cd.body.scrollTop = 0;
+    setKnobs([dxHoldKnob('▲', '▲', () => cd_scroll(-1)), dxHoldKnob('▼', '▼', () => cd_scroll(1)),
+      { label: 'OK', icon: 'OK', fn: cd_ok }, { label: 'VOLTAR', icon: '◀', fn: () => { Sfx.click(); goHome(); } }]);
+    knobDefs.center = { fn: cd_ok };
+  },
+  exit() { if (cd.el) cd.el.hidden = true; },
+  draw(c) { R(c, 0, 0, W, H, '#3a5a90'); },
+  key(e, k) {
+    if (k === 'arrowup' || k === 'w' || k === 'arrowdown' || k === 's') cd_scroll(k === 'arrowup' || k === 'w' ? -1 : 1);
+    else if (k === 'enter' || k === ' ' || k === 'z') { if (!e.repeat) cd_ok(); }
+    else if (k === 'escape' || k === 'x' || k === 'backspace') { if (!e.repeat) { Sfx.click(); goHome(); } }
+    else return false;
+    e.preventDefault(); return true;
+  },
+};
+on('newGame', () => { if (cd.el) cd.el.hidden = true; });
+
+addStartItem({ label: 'CARTÃO', order: 60, fn: () => go('card') });
+
+/* ── colheita.js ── */
+/* ════════════ COLHEITA DE FRUTAS (2º minigame do TREINAR, tecla G) ════════════
+   30 s pegando o que cai das árvores: FRUTA ORAN, FRUTA SITRUS, PEDRA (atordoa) e POKé BOLA (item de verdade).
+   O custo é pago na largada (sair no meio ou recarregar não devolve nada); EXP, felicidade e itens só no fim.
+   Contadores do dia: miniGames (só as 5 primeiras partidas dão itens) e miniBalls (teto de 4 bolas/dia).
+   miniDate é a data local desses contadores: zera só quando o dia avança (relógio para trás não paga de novo). */
+extendDefaults({ prog: { miniBest: 0 }, daily: { miniGames: 0, miniBalls: 0, miniDate: '' } });
+
+const CL_TIME = 30, CL_SPEED = 120, CL_STUN = 1, CL_COUNT = 3;
+const CL_STONES = ['lua', 'fogo', 'agua', 'trovao', 'folha'];
+// pontos de cada fruta (PEDRA e POKé BOLA não pontuam)
+const CL_PTS = { oran: 10, sitrus: 25 };
+const CL_RATE = [{ min: 250, txt: 'CRÍTICO!', col: '#f85838' }, { min: 150, txt: 'ÓTIMO!', col: '#f8d030' }, { min: 0, txt: 'BOM', col: '#78d878' }];
+const CL_ROCK = ['...KKKK...', '.KKwwggKK.', 'KwwwgggggK', 'KwwggggddK', 'KgggggdddK', 'KggggddddK', '.KdddddKK.', '..KKKKK...'];
+const CL_ROCK_PAL = { K: '#383840', w: '#c8c0b0', g: '#988878', d: '#686058' };
+// FRUTA SITRUS: bitmap próprio (a ORAN tingida de amarelo virava um borrão sem brilho)
+const CL_SITRUS = ['.......GG....', '......GGG....', '.....G.......', '...KKKKKKK...', '..KYYYYYWWK..', '.KYYYYYYYWWK.', 'KYYYYYYYYYWYK', 'KYYYYYYYYYYYK', 'KOYYYYYYYYYYK', 'KOYYYYYYYYYOK', '.KOOYYYYYOOK.', '..KOOOOOOOK..', '...KKKKKKK...'];
+const CL_SITRUS_PAL = { K: '#806010', Y: '#f8d030', W: '#fff8c8', O: '#d89818', G: '#58b048' };
+const CL_BALL = ['...KKKK...', '.KKRRRRKK.', '.KRWRRRRK.', 'KRWRRRRRrK', 'KKKKwwKKKK', 'KWWKWWKWwK', 'KWWWKKWWwK', '.KWWWWWwK.', '.KKwwwwKK.', '...KKKK...'];
+let cl = null;   // a partida em andamento (não persiste: recarregar = desistir)
+if (location.hash === '#dev') window.PKG_CL = () => cl;   // teste (só com #dev)
+
+const cl_rating = sc => CL_RATE.find(r => sc >= r.min);
+// zera os contadores do minigame quando o dia local avança
+function cl_day() {
+  const d = G.daily, today = localDate();
+  if (today > (d.miniDate || '')) { d.miniDate = today; d.miniGames = 0; d.miniBalls = 0; }
+}
+// pode sair POKé BOLA agora? (só nas 5 primeiras partidas do dia, 2 por partida e o teto do dia, contando as já pegas)
+const cl_ballOk = () => G.daily.miniGames < 5 && cl.balls < 2 && G.daily.miniBalls + cl.balls < 4;
+// a partida acabou por fora (dormiu, adoeceu, outra aba trocou o ativo ou zerou): fecha o SIM/NÃO do SAIR, se aberto
+function cl_abort() {
+  const ours = cl && cl.asking; cl = null; cv.style.touchAction = '';
+  if (ours && pendingChoice) answer(false);
+  if (scene === 'colheita' && s) { goHome(); sayNow('A COLHEITA foi interrompida.'); }
+}
+// RESET em outra aba vai direto para a escolha do inicial sem passar pelo exit() da cena: limpa o que sobrou
+const cl_heal = () => { if (scene !== 'colheita' && cl) { cl = null; cv.style.touchAction = ''; } };
+on('home', cl_heal); on('newGame', cl_heal);
+
+function startColheita() {
+  if (blocked()) return Sfx.deny();
+  syncFromStorage(); if (!s || scene !== 'habitat') return;   // outra aba pode ter mudado tudo
+  const why = trainBlockReason(); if (why) { say(why); return Sfx.deny(); }
+  const mul = MUL();
+  s.energy = clamp(s.energy - 10 * mul.e); s.hunger = clamp(s.hunger - 4 * mul.h); s.hygiene = clamp(s.hygiene - 3);
+  s.lastAttention = Date.now(); cl_day(); save(); updateUI();
+  Sfx.click(); go('colheita');
+}
+TRAIN_MODES.push({ label: 'COLHEITA', fn: startColheita });
+HAB_KEYS.g = startColheita;
+
+/* ── entrada: teclas seguradas, toque (segurar metade da tela ou arrastar) e botões ◀ ▶ ── */
+const cl_keyDir = () => (cl.keys.r ? 1 : 0) - (cl.keys.l ? 1 : 0);
+function cl_release() { if (!cl) return; cl.keys.l = cl.keys.r = false; cl.ptr = null; cl.knob = 0; }
+window.addEventListener('keyup', e => {
+  if (scene !== 'colheita' || !cl) return;
+  const k = e.key.toLowerCase();
+  if (k === 'arrowleft' || k === 'a') cl.keys.l = false;
+  if (k === 'arrowright' || k === 'd') cl.keys.r = false;
+});
+window.addEventListener('blur', () => { if (scene === 'colheita') cl_release(); });
+// soltou o dedo fora da tela do jogo (ou o navegador cancelou o toque)
+['pointerup', 'pointercancel'].forEach(ev => window.addEventListener(ev, e => { if (scene === 'colheita' && cl && cl.ptr && cl.ptr.id === e.pointerId) cl.ptr = null; }));
+// segurar o dedo não abre menu de contexto nem seleciona
+cv.addEventListener('contextmenu', e => { if (scene === 'colheita') e.preventDefault(); });
+// aba escondida no meio da partida: pausa (o relógio do jogo não anda escondido, mas os status sim)
+document.addEventListener('visibilitychange', () => { if (document.hidden && scene === 'colheita' && cl && cl.phase !== 'end') { cl_release(); cl_pause(true); } });
+
+function cl_knobs() {
+  if (cl.phase === 'end') return setKnobs([null, null, null, { label: 'OK', icon: 'OK', fn: cl_done }]);
+  // o clique que vem logo depois de soltar o dedo não conta de novo; sem dedo (tecla 1/2, Enter no botão) = passo curto
+  const hold = d => ({ fn: () => { if (cl.knobUpD !== d || performance.now() - cl.knobUp > 400) cl_nudge(d); },
+    down: () => { cl.knob = d; }, up: () => { if (cl.knob === d) cl.knob = 0; cl.knobUp = performance.now(); cl.knobUpD = d; } });
+  const defs = [{ label: '◀', icon: '◀', ...hold(-1) }, { label: '▶', icon: '▶', ...hold(1) },
+    { label: cl.paused ? 'JOGAR' : 'PAUSA', icon: cl.paused ? '▶' : 'II', fn: () => cl_pause(!cl.paused) },
+    { label: 'SAIR', icon: 'X', fn: cl_quit }];
+  defs.center = { fn: () => { if (cl.paused) cl_pause(false); else msgAdvance(); } };
+  setKnobs(defs);
+}
+// botão apertado pelo teclado (1/2, Enter no botão focado): um passo curto
+function cl_nudge(d) { if (cl.phase === 'end' || cl.paused || cl.stun > 0) return; cl.x = clamp(cl.x + d * 16, 16, W - 16); cl.dir = d; }
+function cl_pause(on) {
+  if (!cl || cl.phase === 'end' || cl.paused === on) return;
+  cl.paused = on; if (on) cl_release();
+  Sfx.click(); cl_knobs();
+}
+async function cl_quit() {
+  if (!cl) return;
+  if (cl.phase === 'end') return cl_done();
+  const was = cl.paused; cl_pause(true);
+  cl.asking = true;
+  const yes = await confirmYN('Sair da COLHEITA? O cansaço não volta e não há prêmios.', { safeNo: true });
+  if (scene !== 'colheita' || !cl) return;
+  cl.asking = false;
+  if (yes) { cl = null; goHome(); say('Você saiu da COLHEITA.'); }
+  else if (!was) cl_pause(false);
+}
+function cl_done() { if (!cl || cl.phase !== 'end' || cl.endT < .8) return; cl = null; goHome(); }
+
+SCENES.colheita = {
+  enter() {
+    const f = footOf(monKey(s));
+    cl = { uid: s.uid, phase: 'count', t: 0, count: CL_COUNT, paused: false, x: 120, dir: -1, run: 0, stun: 0,
+      score: 0, streak: 0, best: 0, oran: 0, balls: 0, caught: 0, drops: [], fx: [], spawnT: .3,
+      keys: { l: false, r: false }, ptr: null, knob: 0, knobUp: 0, knobUpD: 0, endT: 0, res: null,
+      h: clamp(f.base - (f.top || 0), 16, 56) };
+    cv.style.touchAction = 'none';   // arrastar o dedo não rola a página
+    cl_knobs(); Sfx.blip(660);
+    sayNow('Pegue as FRUTAS que caem! Cuidado com as PEDRAS.');
+  },
+  exit() { cl = null; cv.style.touchAction = ''; },
+  key(e, k) {
+    if (!cl) return false;
+    if (k === 'arrowleft' || k === 'a') { e.preventDefault(); cl.keys.l = true; return true; }
+    if (k === 'arrowright' || k === 'd') { e.preventDefault(); cl.keys.r = true; return true; }
+    if (e.repeat) { if (k.startsWith('arrow') || k === ' ') e.preventDefault(); return true; }
+    if (k === 'p') { e.preventDefault(); cl_pause(!cl.paused); return true; }
+    if (k === 'escape' || k === 'x' || k === 'backspace') { e.preventDefault(); cl_quit(); return true; }
+    if (k === 'enter' || k === ' ' || k === 'z') {
+      e.preventDefault();
+      if (cl.phase === 'end') cl_done(); else if (cl.paused) cl_pause(false); else msgAdvance();
+      return true;
+    }
+    return k.startsWith('arrow');
+  },
+  pointer(x, y, e) {
+    if (!cl) return;
+    if (cl.phase === 'end') return cl_done();
+    if (cl.paused) return cl_pause(false);
+    e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch {}
+    cl.ptr = { id: e.pointerId, x0: x, x, side: x < W / 2 ? -1 : 1, drag: false };
+  },
+  pointerMove(x, y, e) {
+    const p = cl && cl.ptr; if (!p || p.id !== e.pointerId) return;
+    p.x = clamp(x, 0, W); if (Math.abs(p.x - p.x0) > 6) p.drag = true;
+  },
+  pointerUp(x, y, e) { if (cl && cl.ptr && cl.ptr.id === e.pointerId) cl.ptr = null; },
+  update(dt) {
+    if (!cl) return;
+    // o POKéMON mudou (outra aba trocou o ativo), dormiu ou adoeceu: a partida acaba sem prêmio
+    if (!s || s.uid !== cl.uid || s.asleep || s.sick) return cl_abort();
+    for (const p of cl.fx) { p.life += dt; p.y += p.vy * dt; p.x += (p.vx || 0) * dt; if (p.g) p.vy += p.g * dt; }
+    cl.fx = cl.fx.filter(p => p.life < p.max);
+    if (cl.phase === 'end') { cl.endT += dt; return; }
+    if (cl.paused || pendingChoice) return;
+    // 3-2-1: os itens só começam no JÁ!
+    if (cl.phase === 'count') {
+      const prev = Math.ceil(cl.count); cl.count -= dt; const now = Math.ceil(cl.count);
+      if (now !== prev) Sfx.blip(now >= 1 ? 660 : 1320);
+      if (cl.count > 0) return;
+      if (cl.count <= -.6) cl.phase = 'play';
+    }
+    cl_play(dt);
+  },
+  draw() { if (cl) cl_draw(); },
+};
+
+function cl_play(dt) {
+  cl.t = Math.min(CL_TIME, cl.t + dt);
+  const k = cl.t / CL_TIME;
+  // movimento: teclas > botão segurado > toque (arrastar segue o dedo; segurar anda para o lado tocado)
+  let dir = cl_keyDir() || cl.knob, target = null;
+  if (!dir && cl.ptr) { if (cl.ptr.drag) target = cl.ptr.x; else dir = cl.ptr.side; }
+  cl.stun = Math.max(0, cl.stun - dt);
+  let moved = 0;
+  if (cl.stun <= 0) {
+    if (target != null) { const d = target - cl.x; moved = Math.abs(d) < 2 ? 0 : Math.sign(d) * Math.min(Math.abs(d), CL_SPEED * dt); }
+    else if (dir) moved = dir * CL_SPEED * dt;
+    if (moved) { cl.x = clamp(cl.x + moved, 16, W - 16); cl.dir = Math.sign(moved); }
+  }
+  cl.run = moved ? cl.run + dt : 0;
+  // chuva de itens: intervalo 1,2 s -> 0,6 s, queda 40 -> 90 px/s
+  if (cl.t < CL_TIME - .4) {
+    cl.spawnT -= dt;
+    if (cl.spawnT <= 0) { cl.spawnT += 1.2 - .6 * k; cl_spawn(40 + 50 * k); }
+  }
+  const key = monKey(s), f = footOf(key);
+  const cx = Math.round(cl.x) - 32 + (cl.dir > 0 ? 63 - f.cx : f.cx), half = clamp(f.w / 2 + 8, 14, 24);
+  for (const d of cl.drops) {
+    if (d.done) continue;
+    d.y += d.v * dt; d.wob += dt;
+    if (d.y >= FEET - cl.h - 4 && d.y <= FEET - 2 && Math.abs(d.x - cx) <= half) { d.done = true; cl_catch(d, cx); }
+    else if (d.y >= FEET - 3) { d.done = true; cl_miss(d); }
+  }
+  cl.drops = cl.drops.filter(d => !d.done);
+  // fim do tempo: o que ainda está no ar cai logo, depois o placar
+  if (cl.t >= CL_TIME) { if (!cl.drops.length) cl_end(); else cl.drops.forEach(d => { d.v = Math.max(d.v, 140); }); }
+}
+function cl_spawn(v) {
+  const r = Math.random();
+  let kind = r < .70 ? 'oran' : r < .82 ? 'sitrus' : r < .97 ? 'rock' : 'ball';
+  if (kind === 'ball' && !cl_ballOk()) kind = 'oran';
+  // longe do último item, para não cair tudo no mesmo lugar
+  let x, tries = 0; do { x = 16 + Math.random() * (W - 32); } while (cl.lastX != null && Math.abs(x - cl.lastX) < 20 && ++tries < 6);
+  cl.lastX = x;
+  cl.drops.push({ kind, x, y: -8, v, wob: Math.random() * 6 });
+}
+function cl_pop(txt, x, y, col) { cl.fx.push({ txt, col, x, y, vy: -18, life: 0, max: .9 }); }
+function cl_catch(d, cx) {
+  if (d.kind === 'rock') {
+    cl.stun = CL_STUN; cl.streak = 0; Sfx.deny();   // a entrada continua valendo: segurando o dedo, volta a andar após o atordoamento
+    for (let i = 0; i < 5; i++) cl.fx.push({ dust: true, x: d.x, y: d.y, vx: (Math.random() - .5) * 50, vy: -20 - Math.random() * 30, g: 120, life: 0, max: .5 });
+    cl_pop('AI!', cx, FEET - cl.h - 14, '#c0c8d8'); return;
+  }
+  cl.streak++; cl.best = Math.max(cl.best, cl.streak); cl.caught++;
+  if (cl.streak === 5) Sfx.blip(1568);
+  const combo = cl.streak > 5 ? 1.5 : 1;
+  if (d.kind === 'ball') {
+    cl.balls++; Sfx.blip(1046); setTimeout(() => Sfx.blip(1397), 70);
+    cl_pop('BOLA!', cx, FEET - cl.h - 14, '#f85838'); return;
+  }
+  const pts = Math.round(CL_PTS[d.kind] * combo);
+  cl.score += pts;
+  if (d.kind === 'oran' && cl.oran < 10) { cl.oran++; s.hunger = clamp(s.hunger + 1); }   // come a fruta (até +10 por partida)
+  if (d.kind === 'sitrus') Sfx.blip(1318);
+  Sfx.crunch();
+  cl_pop('+' + pts, cx, FEET - cl.h - 14, combo > 1 ? '#f8d030' : '#f8f8f8');
+}
+// caiu no chão: fruta ou bola perdida quebra a sequência; pedra só levanta poeira
+function cl_miss(d) {
+  if (d.kind !== 'rock') cl.streak = 0;
+  const col = d.kind === 'rock' ? 'dust' : d.kind === 'ball' ? 'red' : d.kind;
+  for (let i = 0; i < 4; i++) cl.fx.push({ [col === 'dust' ? 'dust' : 'bit']: true, col, x: d.x, y: FEET - 3, vx: (Math.random() - .5) * 40, vy: -15 - Math.random() * 20, g: 120, life: 0, max: .45 });
+}
+
+/* ── fim: prêmios (com o save mais novo de outra aba) ── */
+function cl_end() {
+  syncFromStorage();
+  // save zerado (já foi para a escolha do inicial) ou o ativo mudou
+  if (!G || !s || scene !== 'colheita' || s.uid !== cl.uid) return cl_abort();
+  cl_day();
+  const d = G.daily, sc = cl.score, n = N(), rewarded = d.miniGames < 5, rate = cl_rating(sc);
+  d.miniGames++;
+  const gain = Math.floor((15 + 1.2 * s.level) * Math.min(1.5, sc / 150));
+  s.happy = clamp(s.happy + (sc >= 200 ? 8 : 5)); s.lastAttention = Date.now();
+  // bolas (das quedas e dos pontos) dentro do teto de 4 por dia
+  const got = { poke: 0, great: 0 };
+  const give = k => { if (d.miniBalls >= 4) return; d.miniBalls++; bagAdd(k); got[k]++; };
+  if (rewarded) for (let i = 0; i < cl.balls; i++) give('poke');
+  if (rewarded && sc >= 150) give('poke');
+  if (rewarded && sc >= 250) give(G.prog.badges >= 2 ? 'great' : 'poke');
+  const stone = rewarded && sc >= 350 && Math.random() < .1 ? CL_STONES[randInt(0, CL_STONES.length - 1)] : null;
+  if (stone) bagAdd(stone);
+  const record = sc > G.prog.miniBest; if (record) G.prog.miniBest = sc;
+  cl.phase = 'end'; cl.endT = 0; cl.drops = []; cl_release();
+  cl.res = { rate, gain, got, stone, record, best: G.prog.miniBest };
+  cl_knobs(); Sfx.happy();
+  sayNow(`Fim da COLHEITA! ${sc} pontos: ${rate.txt}${record ? ' NOVO RECORDE!' : ''}`);
+  talk(`${n} ganhou ${gain} EXP e ficou mais feliz.`);
+  const bolas = (q, k) => `${q} ${ITEMS[k].name.replace('BOLA', q > 1 ? 'BOLAS' : 'BOLA')}`;
+  const list = ['poke', 'great'].filter(k => got[k]).map(k => bolas(got[k], k));
+  if (list.length) talk(`Você ganhou ${list.join(' e ')}!`);
+  if (stone) talk(`Você encontrou ${ITEMS[stone].name}!`);
+  if (!rewarded && (sc >= 150 || cl.balls)) talk('Os prêmios da COLHEITA de hoje acabaram. Volte amanhã!');
+  else if (rewarded && sc >= 150 && !list.length) talk('Já ganhou as POKé BOLAS da COLHEITA de hoje.');
+  if (s.energy < 20) talk(`${n} está exausto... Deixe-o dormir.`);
+  addExp(gain, true); fire('minigame', { score: sc }); save(); updateUI();
+}
+
+/* ── desenho ── */
+function cl_drawDrop(c, d) {
+  const x = Math.round(d.x + (d.kind === 'rock' ? 0 : Math.sin(d.wob * 5) * 1)), y = Math.round(d.y);
+  if (d.kind === 'rock') return drawBm(c, CL_ROCK, x - 5, y - 4, CL_ROCK_PAL);
+  if (d.kind === 'ball') return drawBm(c, CL_BALL, x - 5, y - 5);
+  if (d.kind === 'sitrus') return drawBm(c, CL_SITRUS, x - 6, y - 8, CL_SITRUS_PAL);
+  const im = img('berry');
+  if (!im) return disc(c, x, y, 5, 5, '#4060c8');
+  // a fruta do sprite fica na parte de baixo do quadro 30x30; o centro dela fica em ~(15, 20)
+  c.drawImage(im, x - 15, y - 20);
+}
+function cl_draw() {
+  ctx = screenCtx;
+  const key = monKey(s), f = footOf(key);
+  drawBiome(ctx, biomeOf(s.sp), false);
+  // atores numa camada própria, escurecida com a hora do dia como no habitat
+  ctx = actorsCtx; ctx.clearRect(0, 0, W, H);
+  // sombra de quem está caindo (cresce perto do chão)
+  for (const d of cl.drops) { const k = clamp(d.y / FEET, 0, 1); if (k > .3) R(ctx, Math.round(d.x - 2 - 3 * k), FEET - 1, Math.round(4 + 6 * k), 1, 'rgba(20,16,30,.25)'); }
+  const lift = cl.run > 0 ? Math.floor(cl.run * 10) % 2 * 2 : 0;
+  drawShadow(key, cl.x, cl.dir, lift);
+  const blink = cl.stun > 0 && Math.floor(cl.stun * 12) % 2;
+  drawPokemon(key, cl.x, FEET - lift, { dir: cl.dir, alpha: blink ? .45 : 1 });
+  for (const d of cl.drops) cl_drawDrop(ctx, d);
+  const ph = phaseAt();
+  if (PHASE_ACTOR[ph]) { ctx.globalCompositeOperation = 'source-atop'; ctx.fillStyle = PHASE_ACTOR[ph]; ctx.fillRect(0, 0, W, H); ctx.globalCompositeOperation = 'source-over'; }
+  ctx = screenCtx; ctx.drawImage(actors, 0, 0);
+  const cx = Math.round(cl.x) - 32 + (cl.dir > 0 ? 63 - f.cx : f.cx), top = FEET - cl.h - lift;
+  // atordoado: estrelinhas girando sobre a cabeça
+  if (cl.stun > 0) for (let i = 0; i < 3; i++) { const a = clock * 8 + i * 2.1; drawBm(ctx, BM.star, cx + Math.cos(a) * 10 - 2, top - 6 + Math.sin(a) * 3); }
+  for (const p of cl.fx) {
+    if (p.txt) pixelText(p.txt, p.x, p.y, p.col);
+    else R(ctx, Math.round(p.x), Math.round(p.y), 2, 2, p.dust ? '#a89878' : p.col === 'oran' ? '#4060c8' : p.col === 'sitrus' ? '#f8d030' : '#e83838');
+  }
+  cl_hud();
+  if (cl.phase === 'count') {
+    const n = Math.ceil(cl.count);
+    cl_big(n >= 1 ? String(n) : 'JÁ!', 120, 58, n >= 1 ? '#f8f8f8' : '#f8d030', n >= 1 ? 3 : 2);
+  }
+  if (cl.paused && cl.phase !== 'end') {
+    ctx.fillStyle = 'rgba(16,16,32,.55)'; ctx.fillRect(0, 0, W, H);
+    cl_big('PAUSA', 120, 56, '#f8f8f8', 2); pixelText('P OU TOQUE: JOGAR', 120, 84, '#c8d0e0');
+  }
+  if (cl.phase === 'end') cl_drawEnd();
+}
+function cl_big(t, x, y, col, z) { ctx.save(); ctx.translate(x, y); ctx.scale(z, z); pixelText(t, 0, 0, col); ctx.restore(); }
+function cl_hud() {
+  // pontos (esquerda), tempo (barra no meio), sequência/combo (direita)
+  pixelText(String(cl.score).padStart(4, '0'), 22, 4, '#f8f8f8');
+  const left = 1 - cl.t / CL_TIME, bw = 84, bx = 78;
+  R(ctx, bx - 1, 5, bw + 2, 7, '#202028'); R(ctx, bx, 6, bw, 5, '#506070');
+  R(ctx, bx, 6, Math.round(bw * left), 5, left > .33 ? '#58d070' : left > .16 ? '#f8d030' : '#f85838');
+  R(ctx, bx, 6, Math.round(bw * left), 1, 'rgba(255,255,255,.35)');
+  if (cl.streak >= 2) {
+    const on = cl.streak > 5;
+    pixelText(`SEQ ${cl.streak}`, 204, 4, on ? '#f8d030' : '#f8f8f8');
+    if (on && Math.floor(clock * 4) % 2) pixelText('x1.5', 216, 14, '#f8d030');
+  }
+}
+function cl_drawEnd() {
+  const r = cl.res, k = Math.min(1, cl.endT / .25);
+  ctx.fillStyle = `rgba(16,16,32,${.45 * k})`; ctx.fillRect(0, 0, W, H);
+  // caixa branca de borda dupla, como as do FRLG
+  const bx = 36, by = 24, bw = 168, bh = 104;
+  R(ctx, bx, by, bw, bh, '#202028'); R(ctx, bx + 2, by + 2, bw - 4, bh - 4, '#f8f8f8'); R(ctx, bx + 4, by + 4, bw - 8, bh - 8, '#5878a8'); R(ctx, bx + 5, by + 5, bw - 10, bh - 10, '#f8f8f8');
+  pixelText('COLHEITA', 120, by + 10, '#5878a8');
+  cl_big(r.rate.txt, 120, by + 24, r.rate.col, 2);
+  pixelText(`${cl.score} PONTOS`, 120, by + 46, '#404048');
+  pixelText(r.record ? 'NOVO RECORDE!' : `RECORDE ${r.best}`, 120, by + 58, r.record ? '#f85838' : '#707880');
+  let line = `+${r.gain} EXP`; const nb = r.got.poke + r.got.great;
+  if (nb) line += `  +${nb}`;
+  pixelText(line, nb ? 112 : 120, by + 72, '#3878c8');
+  if (nb) drawBm(ctx, CL_BALL, 112 + line.length * 4 + 2, by + 71);
+  if (r.stone) pixelText(ITEMS[r.stone].name, 120, by + 84, '#8858c0');
+  // seta vermelha do FRLG: pode sair
+  if (cl.endT > .8 && Math.floor(clock * 2) % 2) for (let i = 0; i < 4; i++) R(ctx, bx + bw - 18 + i, by + bh - 14 + i, 7 - 2 * i, 1, '#e83838');
+}
+
+/* ── explore.js ── */
+/* Exploração (spec B, C): escolha da área, passos na grama alta, itens achados e a tabela de encontros.
+   O passeio fica em G.outing ({ area, hp, maxHp, steps, startedAt }); cada passo já paga o custo e grava.
+   O encontro sorteado vai para G.enc na hora (antes da animação) e a batalha (battle.js) assume. */
+extendDefaults({ prog: { lastArea: 'floresta', stepsSinceStone: 0, exploreLockUntil: 0, fossilFind: 0, legend: {}, charm: false } });
+
+const EX_AREAS = { floresta: 'FLORESTA DE VIRIDIAN', vulcao: 'MONTE BRASA', praia: 'ILHAS ESPUMA' };
+const EX_KEYS = Object.keys(EX_AREAS);
+/* Tabela de encontros */
+// nunca selvagens: formas de pedra (16) e de troca (4), fósseis (estágio 0), iniciais 1/4/7 e lendários (regra própria)
+const EX_NEVER = new Set([26, 31, 34, 36, 38, 40, 45, 59, 62, 71, 91, 103, 121, 134, 135, 136, 65, 68, 76, 94, 138, 140, 142, 1, 4, 7, ...LEGENDS]);
+const EX_NOCT = new Set([41, 42, 43, 44, 48, 49, 52, 53, 35, 39, 92, 93, 96, 97, 88, 89, 109, 110, 104, 105]);
+const EX_DIUR = new Set([10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 84, 85, 83, 123]);
+const EX_TIERS = ['C', 'I', 'R', 'MR'];
+// exceções à regra da taxa de captura (índice em EX_TIERS)
+const EX_TIER_FIX = { 25: 1, 63: 1, 133: 2, 131: 2, 137: 2, 147: 2, 148: 2, 132: 3, 113: 3, 143: 3, 115: 3, 128: 3, 123: 3, 127: 3, 149: 3, 139: 3, 141: 3, 2: 3, 3: 3, 5: 3, 6: 3, 8: 3, 9: 3 };
+const EX_PHASE_W = { NOITE: [50, 28, 16, 6], DIA: [55, 28, 13, 4] };
+const EX_LEG = { 144: { area: 'praia', lv: P => clamp(P + 5, 35, 50) }, 145: { area: 'floresta', lv: P => clamp(P + 5, 35, 50) },
+  146: { area: 'vulcao', lv: P => clamp(P + 5, 35, 50) }, 150: { night: true, lv: P => clamp(P + 8, 45, 70) }, 151: { lv: P => clamp(P, 30, 50) } };
+
+function exTier(id) {
+  if (id in EX_TIER_FIX) return EX_TIER_FIX[id];
+  const cr = DEX[id].catch; let t = cr >= 190 ? 0 : cr >= 120 ? 1 : cr >= 45 ? 2 : 3;
+  return DEX[id].stage === 2 ? Math.min(3, t + 1) : t;   // 3º estágio sobe um nível de raridade
+}
+const exTierOpen = t => t < 2 || (t === 2 && G.prog.badges >= 1) || (t === 3 && G.prog.badges >= 3);
+// iniciais evoluídos viram selvagens (MR) na insígnia 5; OMASTAR e KABUTOPS na 6
+function exWildOk(id) {
+  if (EX_NEVER.has(id)) return false;
+  if ([2, 3, 5, 6, 8, 9].includes(id)) return G.prog.badges >= 5;
+  if (id === 139 || id === 141) return G.prog.badges >= 6;
+  return exTierOpen(exTier(id));
+}
+function exTimeF(id, ph) {
+  let f = 1;
+  if (EX_NOCT.has(id)) f *= ph === 'NOITE' ? 3 : ph === 'DIA' ? .5 : 1;
+  if (EX_DIUR.has(id) && ph === 'NOITE') f *= .3;
+  if ((ph === 'AMANHECER' || ph === 'ENTARDECER') && (id === 25 || id === 63 || id === 133)) f *= 1.5;
+  if (ph === 'ENTARDECER' && DEX[id].types.includes('FANTASMA')) f *= 2;
+  return f;
+}
+function exPick(list, wf) {
+  let sum = 0; const w = list.map(x => (sum += wf(x), sum));
+  if (!(sum > 0)) return null;
+  const r = Math.random() * sum; return list[w.findIndex(v => r < v)];
+}
+// lendário elegível nesta área e fase? Sorteia com a pena (2% + 3% por falha); no pós-jogo, 2% fixo uma vez por semana
+function exRollLegend(area, ph, now) {
+  for (const id of [144, 145, 146, 150, 151]) {
+    const r = EX_LEG[id], L = G.prog.legend[id];
+    const unlocked = id === 151 ? !!((G.prog.legend[150] && G.prog.legend[150].caught) || dexHas('caught', 150)) : !!(L && L.unlockedAt);
+    if (!unlocked || (r.area && r.area !== area) || (r.night && ph !== 'NOITE') || (L && L.backAt > now)) continue;
+    const caught = (L && L.caught) || dexHas('caught', id);
+    if (caught && !G.hof) continue;
+    let p = caught ? .02 : .02 + .03 * (L ? L.misses || 0 : 0);
+    if (id === 151 && ph === 'AMANHECER') p *= 3;
+    if (Math.random() < p) { if (caught) btLegendRec(id).backAt = now + 7 * 864e5; return id; }
+    if (!caught) btLegendRec(id).misses = (btLegendRec(id).misses || 0) + 1;
+  }
+  return 0;
+}
+// sorteio do encontro, na ordem da spec: novidade garantida > lendário > raridade > espécie
+function exRollEncounter(area, ph = phaseAt()) {
+  const now = Date.now(), all = [];
+  for (let id = 1; id <= 151; id++) if (exWildOk(id)) all.push(id);
+  let id = 0, legend = false, pity = false;
+  if (G.prog.sinceNew >= 7) {
+    const pool = all.filter(i => !dexHas('caught', i));
+    if (pool.length) { id = pool[randInt(0, pool.length - 1)]; pity = true; }
+  }
+  if (!id) { id = exRollLegend(area, ph, now); legend = !!id; }
+  if (!id) {
+    const tw = EX_PHASE_W[ph === 'NOITE' ? 'NOITE' : 'DIA'];
+    let t = exPick([0, 1, 2, 3].filter(exTierOpen), i => tw[i]);
+    for (; t >= 0 && !id; t--) id = exPick(all.filter(i => exTier(i) === t),
+      i => (dexHas('caught', i) ? 1 : 3) * (biomeOf(i) === area ? 1 : .15) * exTimeF(i, ph)) || 0;
+    if (!id) id = 16;
+  }
+  const P = s.level, d = DEX[id];
+  let lv;
+  if (legend) lv = EX_LEG[id].lv(P);
+  else { const fl = [2, 10, 18][Math.min(2, d.stage)]; lv = clamp(Math.round(.85 * P) + randInt(-2, 1) + exTier(id), fl, Math.max(fl, P + 6)); }
+  lv = clamp(lv, 1, 100);
+  const maxHp = btStats(id, lv).hp, L = legend && G.prog.legend[id];
+  const hp = L && L.hp > 0 && now < L.hpUntil ? Math.min(L.hp, maxHp) : maxHp;
+  // emboscada noturna: não-noturnos às vezes estão dormindo
+  const asleep = !legend && ph === 'NOITE' && !EX_NOCT.has(id) && Math.random() < .2;
+  return { sp: id, lv, shiny: Math.random() < (G.prog.charm ? 1 / 256 : 1 / 512), hp, maxHp, asleep, sleepTurns: asleep ? randInt(1, 3) : 0,
+    turn: 0, area, id: btRid(), owner: BT_TAB, at: now, legend, pity, petHp0: null, animar: false, pump: false, endured: false,
+    introDone: false, owe: false, done: null };
+}
+
+/* Passeio */
+function exNewOuting(area) {
+  const max = btStats(s.sp, s.level).hp;
+  return { area: EX_AREAS[area] ? area : 'floresta', hp: Math.min(max, Math.ceil(max * (.5 + s.energy / 200))), maxHp: max, steps: 0, startedAt: Date.now(), owner: BT_TAB, at: Date.now() };
+}
+// condições para sair e para cada passo (null = pode)
+function exBlock() {
+  const n = N(), lock = G.prog.exploreLockUntil - Date.now();
+  if (exOutElsewhere(G.outing)) return `${n} está explorando em outra aba.`;
+  if (s.asleep) return 'Está dormindo... deixe-o descansar.';
+  if (s.sick) return `${n} está doente. Cuide dele primeiro.`;
+  if (s.pendingEvo) return `Hã? ${n} está prestes a evoluir! Hora de voltar para casa.`;
+  if (s.berry) return `Primeiro deixe ${n} comer a FRUTA!`;
+  if (lock > 0) return `${n} ainda está se recuperando... (${Math.ceil(lock / 60e3)}min)`;
+  if (s.energy < 25) return `${n} está cansado demais para explorar.`;
+  if (s.hunger < 20) return 'Está com fome! Dê uma fruta antes de sair.';
+  if (s.happy < 15) return `${n} não está com vontade de sair...`;
+  return null;
+}
+// START → EXPLORAR (ou tecla E): lista de áreas no estilo FRLG, com o cursor na última usada
+function exOpen() {
+  if (!G || scene !== 'habitat' || evo || pendingChoice || training) return Sfx.deny();
+  syncFromStorage(); if (!G || scene !== 'habitat') return;
+  // encontro pendente (recarregou, ou outra aba): resolve ele antes de sair de novo
+  if (G.enc) { Menu.closeAll(); if (exTakeEnc('user') === 'busy') Sfx.deny(); return; }
+  const why = exBlock(); if (why) { Menu.closeAll(); sayNow(why); return Sfx.deny(); }
+  Menu.open({ title: 'EXPLORAR', sel: Math.max(0, EX_KEYS.indexOf(G.prog.lastArea)),
+    items: [...EX_KEYS.map(k => ({ label: EX_AREAS[k], fn: () => { Menu.closeAll(); exStart(k); } })), { label: 'VOLTAR', fn: () => Menu.close() }] });
+}
+function exStart(area) {
+  if (G.enc) { if (exTakeEnc('user') === 'busy') Sfx.deny(); return; }
+  const why = exBlock(); if (why) { sayNow(why); return Sfx.deny(); }
+  G.prog.lastArea = area; G.outing = exNewOuting(area); EX.mine = G.outing.startedAt; save();
+  go('explorar', { area });
+}
+addStartItem({ label: 'EXPLORAR', order: 10, fn: exOpen });
+HAB_KEYS.e = exOpen;
+
+/* Cena */
+const EX = { tok: 0, phase: 'idle', walkT: 0, transT: 0, item: null, parts: [], mine: 0 };   // mine: startedAt do passeio desta aba
+// outra aba pode encerrar ou trocar o passeio (passeio órfão limpo em casa): esta percebe e volta, sem recriar por cima
+const exMine = () => !!(G && G.outing && G.outing.startedAt === EX.mine);
+function exLost() {
+  if (scene !== 'explorar') return;
+  EX.tok++; if (pendingChoice && EX.phase === 'ask') closeChoice();
+  EX.phase = 'idle'; goHome(); say('O passeio terminou em outra aba.');
+}
+const EX_ICO = {
+  grass: ['.H...H...', '.H.H.H.H.', 'HG.H.GHH.', 'HGHGHGHGH', 'GGGGGGGGG', 'GGHGGGHGG'],
+  map: ['KKKKKKKKK', 'KGGCCGGGK', 'KGCCGGYGK', 'KGGGGGGGK', 'KGGRGGCCK', 'KGGGGCCCK', 'KKKKKKKKK'],
+  house: ['....K....', '...KRK...', '..KRRRK..', '.KRRRRRK.', 'KKKKKKKKK', '.KWWWWWK.', '.KDDWCWK.', '.KDDWWWK.', '.KKKKKKK.'],
+};
+const exIco = k => bmSvg(EX_ICO[k], BT_PAL);
+function exKnobs() {
+  const ph = EX.phase, ask = ph === 'ask', off = !(ph === 'idle' || ask);
+  const k = [
+    ask ? { label: 'SIM', icon: 'SIM', fn: () => pendingChoice && answer(true), inChoice: true } : { label: 'ANDAR', icon: exIco('grass'), fn: exStep, disabled: off },
+    { label: 'BOLSA', icon: btIco(BT_BM.bag), fn: () => exFromAsk() && exBag(), disabled: off, inChoice: ask },   // fecham o "Continuar?" e abrem o menu
+    { label: 'ÁREA', icon: exIco('map'), fn: () => exFromAsk() && exArea(), disabled: off, inChoice: ask },
+    ask ? { label: 'NÃO', icon: 'NÃO', fn: () => pendingChoice && answer(false), inChoice: true } : { label: 'CASA', icon: exIco('house'), fn: () => EX.phase === 'idle' && exHome(), disabled: off },
+  ];
+  k.center = { fn: () => { if (pendingChoice) return; if (!msgAdvance() && EX.phase === 'idle') exStep(); } };
+  return k;
+}
+function exSetPhase(p) { EX.phase = p; if (scene === 'explorar' && !Menu.top) setKnobs(exKnobs()); }
+// BOLSA/ÁREA com a pergunta aberta: fecha a pergunta e fica parado na grama
+function exFromAsk() {
+  if (EX.phase === 'ask') { closeChoice(); exSetPhase('idle'); }
+  return EX.phase === 'idle';
+}
+SCENES.explorar = {
+  get knobs() { return exKnobs(); },
+  enter(arg) {
+    ADV.tw = []; EX.tok++; EX.item = null; EX.parts = []; EX.walkT = 0;
+    if (!G.outing) G.outing = exNewOuting(G.prog.lastArea);
+    EX.mine = G.outing.startedAt; EX.phase = 'idle';
+    if (arg && arg.after) { exSetPhase('wait'); exAfter(); }
+    else sayNow(`${EX_AREAS[G.outing.area]}! Toque em ANDAR para entrar na grama alta.`);
+  },
+  exit() { ADV.tw = []; EX.tok++; if (pendingChoice && EX.phase === 'ask') closeChoice(); },
+  update(dt) {
+    advTick(dt);
+    if (EX.phase === 'walk') {
+      const before = EX.walkT; EX.walkT += dt;
+      if (Math.floor(before / .4) !== Math.floor(EX.walkT / .4)) Sfx.noise(.12, { freq: 2800 + Math.random() * 1200, q: .9, vol: .13 });   // farfalhar
+    }
+    if (EX.phase === 'trans') EX.transT += dt;
+    for (const p of EX.parts) { p.life += dt; p.x += p.vx * dt; p.y += p.vy * dt; }
+    EX.parts = EX.parts.filter(p => p.life < p.max);
+  },
+  draw(c) { exDraw(c); },
+  key(e, k) {
+    // botão focado: Enter/Espaço passa a mensagem, senão deixa o clique nativo acontecer (o núcleo cancelaria)
+    if (e.target.closest && e.target.closest('button') && (k === 'enter' || k === ' ')) { if (e.repeat || msgAdvance()) e.preventDefault(); return true; }
+    if ((k === 'enter' || k === ' ' || k === 'z') && !e.repeat) { e.preventDefault(); if (!msgAdvance() && EX.phase === 'idle') exStep(); return true; }
+    if ((k === 'x' || k === 'escape' || k === 'backspace') && EX.phase === 'idle') { e.preventDefault(); exHome(); return true; }
+    if (k === 'i' && EX.phase === 'idle') { exBag(); return true; }
+    return false;
+  },
+};
+function exHome() {
+  if (G) { if (exMine()) G.outing = null; save(); say(`${N()} voltou para casa.`); }
+  goHome();
+}
+async function exStep() {
+  if (EX.phase !== 'idle' || scene !== 'explorar' || pendingChoice) return Sfx.deny();
+  syncFromStorage(); if (!G || scene !== 'explorar') return;
+  // nunca sorteia por cima de um encontro guardado (outra aba ou recarregamento)
+  if (G.enc) { const r = exTakeEnc('user'); if (r === 'busy') Sfx.deny(); else if (r !== 'battle') goHome(); return; }
+  if (!exMine()) return exLost();
+  const tok = EX.tok, why = exBlock();
+  if (why) { Sfx.deny(); exSetPhase('wait'); await talk(why); return tok === EX.tok && exHome(); }
+  // custo do passo, gravado já (recarregar não devolve)
+  const mul = MUL(), now = Date.now();
+  s.energy = clamp(s.energy - 6 * mul.e); s.hunger = clamp(s.hunger - 4 * mul.h); s.hygiene = clamp(s.hygiene - 4);
+  s.happy = clamp(s.happy + 1); s.lastAttention = now;
+  G.outing.steps++; G.prog.stepsSinceStone++; save(); updateUI();
+  EX.walkT = 0; exSetPhase('walk'); Sfx.click();
+  sayNow(`${N()} entrou na grama alta...`);
+  await advWait(3); if (tok !== EX.tok) return;
+  if (Math.random() < .85) {
+    const enc = exRollEncounter(G.outing.area);
+    G.enc = enc; dexMark(enc.sp, false); G.prog.sinceNew++; save();
+    fire('encounter', enc);
+    EX.transT = 0; exSetPhase('trans');
+    Sfx.seq([[1046, .06], [784, .06], [1046, .06], [784, .06], [1318, .14]], { vol: .07 });
+    await advWait(RM.matches ? .5 : 1.1); if (tok !== EX.tok) return;
+    go('batalha');
+  } else {
+    exSetPhase('item'); await exItem(); if (tok === EX.tok) exAfter();
+  }
+}
+// item achado (tabela da spec B, com as trocas por insígnia e a pena da pedra)
+async function exItem() {
+  const o = G.outing, b = G.prog.badges, area = o.area;
+  let k = G.prog.stepsSinceStone >= 40 ? 'stone'
+    : exPick(['poke', 'great', 'ultra', 'pocao', 'stone', 'doce', 'cabo', 'oran', 'fossil'], x => ({ poke: 35, great: 12, ultra: 5, pocao: 14, stone: 18, doce: 5, cabo: 4, oran: 5, fossil: 2 })[x]);
+  if (k === 'ultra' && b < 4) k = 'great';
+  if (k === 'great' && b < 2) k = 'poke';
+  if (k === 'cabo' && b < 3) k = 'pocao';
+  if (k === 'fossil' && area !== 'vulcao') k = 'poke';
+  if (k === 'stone') { k = area === 'floresta' ? (phaseAt() === 'NOITE' ? 'lua' : 'folha') : area === 'vulcao' ? (Math.random() < .5 ? 'fogo' : 'trovao') : 'agua'; G.prog.stepsSinceStone = 0; }
+  if (k === 'fossil') { k = ['helix', 'domo', 'ambar'][G.prog.fossilFind % 3]; G.prog.fossilFind++; }
+  EX.item = { k, t: 0 };
+  for (let i = 0; i < 5; i++) EX.parts.push({ x: 120 + (Math.random() - .5) * 20, y: 96, vx: (Math.random() - .5) * 40, vy: -20 - Math.random() * 20, life: 0, max: .8 });
+  Sfx.seq([[784, .08], [1046, .08], [1318, .16]], { vol: .07 });
+  if (k === 'oran') {   // comida na hora, não vai para a BOLSA
+    s.hunger = clamp(s.hunger + 15); save(); updateUI();
+    await talk('Você encontrou FRUTA ORAN!'); Sfx.crunch(); await talk(`${N()} comeu a FRUTA ORAN ali mesmo!`);
+  } else {
+    bagAdd(k, 1); save();
+    await talk(`Você encontrou ${ITEMS[k].name}!`); await talk(`Você guardou ${ITEMS[k].name} na BOLSA.`);
+  }
+  EX.item = null;
+}
+// depois de batalha ou item: confere as condições (senão volta sozinho) e pergunta se continua
+async function exAfter() {
+  const tok = EX.tok;
+  exSetPhase('wait');
+  await advQuiet(); if (tok !== EX.tok || scene !== 'explorar') return;
+  syncFromStorage(); if (!G || scene !== 'explorar') return;
+  const why = exBlock();
+  if (why) { Sfx.deny(); await talk(why); return tok === EX.tok && exHome(); }
+  exSetPhase('ask');
+  ask('Continuar explorando?', yes => { exSetPhase('idle'); if (yes) exStep(); else exHome(); });
+}
+function exBag() {
+  if (EX.phase !== 'idle') return Sfx.deny();
+  const o = G.outing;
+  Menu.open({ title: 'BOLSA', items: [
+    { label: 'POÇÃO', sub: '×' + (G.bag.pocao || 0), disabled: !bagHas('pocao'), fn: () => {
+      if (o.hp >= o.maxHp) { sayNow(`O PS de ${N()} já está cheio!`); return Sfx.deny(); }
+      bagUse('pocao'); const n = Math.min(20, o.maxHp - o.hp); o.hp += n; save(); Menu.closeAll(); Sfx.happy();
+      sayNow(`${N()} recuperou ${n} PS!`);
+    } },
+    ...BALLS.filter(k => G.bag[k] > 0).map(k => ({ label: ITEMS[k].name, sub: '×' + G.bag[k], disabled: true })),
+    { label: 'VOLTAR', fn: () => Menu.close() }] });
+}
+function exArea() {
+  if (EX.phase !== 'idle') return Sfx.deny();
+  Menu.open({ title: 'ÁREA', sel: Math.max(0, EX_KEYS.indexOf(G.outing.area)),
+    items: [...EX_KEYS.map(k => ({ label: EX_AREAS[k], sub: k === G.outing.area ? '◀' : '', fn: () => {
+      Menu.closeAll(); if (k === G.outing.area) return;
+      G.outing.area = k; G.prog.lastArea = k; save(); Sfx.whoosh(); sayNow(`Você foi para ${EX_AREAS[k]}.`);
+    } })), { label: 'VOLTAR', fn: () => Menu.close() }] });
+}
+
+/* Ao abrir o jogo / voltar para casa: encontro recente continua (anti-reroll); velho foge; passeio velho acaba */
+const exEncFresh = () => G && G.enc && Date.now() - num(G.enc.at, 0) < 30 * 60e3;
+let exResumeT = 0;
+// passeio de outra aba ainda viva (batimento pelo tick, como a batalha): esta aba não o encerra
+const exOutElsewhere = o => !!(o && o.owner && o.owner !== BT_TAB && Date.now() - num(o.at, 0) < 120e3);
+on('boot', () => { if (G && G.outing && !exEncFresh() && !exOutElsewhere(G.outing)) { G.outing = null; save(); } });
+on('home', () => {
+  if (!G) return;
+  if (G.enc) { clearTimeout(exResumeT); exResumeT = setTimeout(exResume, 500); return; }
+  if (G.outing && !exOutElsewhere(G.outing)) { G.outing = null; save(); }
+});
+// desde quando esta aba roda sem pausa: com a máquina dormindo todas param juntas, e a outra precisa de um tick para renovar
+let exAwake = 0, exLastTick = 0;
+on('tick', now => {
+  if (now - exLastTick > 10e3) exAwake = now;
+  exLastTick = now;
+  const o = G && G.outing; if (!o) { if (G && scene === 'explorar') setTimeout(exLost); return; }
+  // na batalha (que tem dona única) o passeio vai junto com ela
+  if (scene === 'batalha') { EX.mine = o.startedAt; o.owner = BT_TAB; o.at = now; return; }
+  if (scene === 'explorar') { if (exMine()) { o.owner = BT_TAB; o.at = now; } else setTimeout(exLost); return; }
+  // em casa: passeio órfão (aba fechada ou morta) acaba; o núcleo grava logo depois do tick
+  if (scene === 'habitat' && !G.enc && !exOutElsewhere(o) && now - exAwake > 10e3) G.outing = null;
+});
+// recarregar ou fechar: solta o passeio na hora
+window.addEventListener('pagehide', () => { if (G && G.outing && G.outing.owner === BT_TAB) { G.outing.owner = null; save(); } });
+// em casa: espera menus e perguntas fecharem; batalha em outra aba → tenta de novo a cada 15 s (o batimento dela vence em 2 min)
+function exResume(how = 'auto') {
+  if (!G || !G.enc || scene !== 'habitat') return;
+  if (evo || pendingChoice || Menu.top || training) { exResumeT = setTimeout(() => exResume(how), 1000); return; }
+  if (exTakeEnc(how) === 'busy') exResumeT = setTimeout(() => exResume('retry'), 15e3);
+}
+// encontro guardado: conclui o que já foi decidido, retoma o recente (se nenhuma outra aba está nele) ou deixa fugir.
+// how: 'user' (avisa já), 'auto' (entra na fila de mensagens), 'retry' (calado)
+function exTakeEnc(how) {
+  const e = G.enc, nm = DEX[e.sp].name;
+  if (!e.id) e.id = btRid();
+  if (btElsewhere(e)) {
+    const t = 'Batalha em andamento em outra aba.';
+    if (how === 'user') sayNow(t); else if (how === 'auto') say(t);
+    return 'busy';
+  }
+  BT.e = e; BT.o = G.outing;
+  // resultado já gravado, nocaute ou desmaio sem narração (fechou bem na hora): conclui com as recompensas/penas
+  if (e.done || !(e.hp > 0) || (G.outing && !(num(G.outing.hp, 1) > 0))) {
+    if (!e.done) btSettle(e.hp > 0 ? { fainted: true } : { won: true }, e);
+    btFinish(e, true); return 'done';
+  }
+  if (exEncFresh() && !s.asleep && !s.sick) {
+    if (!G.outing) G.outing = exNewOuting(e.area);
+    go('batalha', { resume: true });
+    return 'battle';
+  }
+  if (e.legend) btLegendMiss(e, false);
+  G.enc = null; G.outing = null; save();
+  say(`O ${nm} selvagem fugiu enquanto você estava fora.`);
+  return 'fled';
+}
+// testes (#dev): as contas da aventura no console
+on('boot', () => { if (window.PKG) window.PKG.adv = { BT, EX, ADV, exRollEncounter, exTier, exWildOk, exNewOuting, btStats, btMoves, btChecks, btDamage }; });
+// desmaiou de exaustão parado na grama (a simulação continua lá fora): volta para casa
+on('tick', () => {
+  if (scene === 'explorar' && EX.phase === 'idle' && !Menu.top && s && s.asleep) { say(`${N()} está exausto!`); exHome(); }
+});
+
+/* Desenho: o cenário do bioma, a grama alta na frente e o POKéMON andando */
+const EX_GEM = { lua: '#b0a8d8', fogo: '#f07030', agua: '#4890f0', trovao: '#f8d030', folha: '#58b048', helix: '#b08850', domo: '#a07850', ambar: '#e8a830', doce: '#58a8f8', pocao: '#c060c0', cabo: '#a0a8b8' };
+const EX_GRASS = { floresta: ['#2f6f2a', '#3f8f38', '#5cb048', '#88d060'], vulcao: ['#5a5a28', '#767a34', '#98a040', '#b8c060'], praia: ['#22705a', '#2f9070', '#48b088', '#78d0a8'] };
+const exAct = document.createElement('canvas'); exAct.width = W; exAct.height = H;
+const exActCtx = exAct.getContext('2d'); exActCtx.imageSmoothingEnabled = false;
+// uma fileira de tufos (lâminas afinando para cima); scroll = andar, sway = vento
+function exGrass(c, y0, hMax, cols, scroll, walking, seed) {
+  const step = 7, sh = ((scroll % step) + step) % step;
+  for (let i = -1; i <= W / step + 1; i++) {
+    const n = i + Math.floor(scroll / step), x = i * step - sh + ((n * 37 + seed) % 5);
+    const near = walking && Math.abs(x - 120) < 30 ? Math.sin(clock * 30 + n) * 2 : 0;
+    for (let bl = 0; bl < 3; bl++) {
+      const hh = Math.round(hMax * (.6 + (((n * 13 + bl * 7 + seed) % 9) / 9) * .4)), bx = x + bl * 2 - 2;
+      const sway = Math.sin(clock * 1.6 + n * .7 + bl) * 1.5 + near, col = cols[(n + bl + seed) % 2 ? 1 : 2];
+      for (let yy = 0; yy < hh; yy++) { const k = yy / hh, w = k < .5 ? 2 : 1; R(c, Math.round(bx + sway * k), y0 - yy, w, 1, yy === hh - 1 ? cols[3] : col); }
+    }
+  }
+}
+function exDraw(c) {
+  const o = G.outing, area = o && EX_AREAS[o.area] ? o.area : 'floresta', cols = EX_GRASS[area], ph = phaseAt();
+  drawBiome(c, area, false);
+  // atores (grama + POKéMON) numa camada própria, para receber a cor da hora do dia só onde há pixel
+  const a = exActCtx; a.clearRect(0, 0, W, H);
+  const walking = EX.phase === 'walk', scroll = EX.walkT * 26;
+  exGrass(a, 128, 20, cols, scroll * .6, false, 3);
+  ctx = a;
+  const lift = walking ? Math.floor(EX.walkT * 8) % 2 : 0;
+  drawPokemon(monKey(s), 120, 138 - lift, { dir: 1 });
+  R(a, 0, 138, W, H - 138, cols[0]);
+  exGrass(a, 146, 22, cols, scroll, walking, 0);
+  exGrass(a, 160, 18, cols, scroll * 1.3, walking, 5);
+  ctx = c;
+  if (PHASE_ACTOR[ph]) { a.globalCompositeOperation = 'source-atop'; a.fillStyle = PHASE_ACTOR[ph]; a.fillRect(0, 0, W, H); a.globalCompositeOperation = 'source-over'; }
+  c.drawImage(exAct, 0, 0);
+  // item achado: aparece sobre a cabeça
+  if (EX.item) {
+    const k = EX.item.k, y = 78 - Math.round(Math.abs(Math.sin(clock * 5)) * 3), gem = EX_GEM[k];
+    if (BALLS.includes(k)) drawBm(c, BT_BM.ball, 117, y, BT_BALL_PAL[k]);
+    else if (k === 'oran' && IMG.berry) c.drawImage(IMG.berry, 105, y - 14);
+    else if (gem) { disc(c, 120, y + 3, 5, 5, '#202028'); disc(c, 120, y + 3, 4, 4, gem); R(c, 118, y + 1, 2, 2, 'rgba(255,255,255,.7)'); }
+    else drawBm(c, BM.star, 118, y, PAL);
+  }
+  for (const p of EX.parts) if (Math.floor(p.life * 12) % 2 === 0) drawBm(c, BM.star, p.x - 2, p.y - 2, PAL);
+  // placa: área e PS do passeio
+  if (o) {
+    const name = EX_AREAS[area];
+    btBox(c, 4, 4, 172, 32);
+    btText(c, name, 10, 9);
+    btBar(c, 26, 23, 70, o.hp, o.maxHp);
+    btText(c, `${o.hp}/${o.maxHp}`, 168, 21, '#404048', 'right');
+  }
+  // transição FRLG: 3 clarões brancos e barras fechando (sem clarões com "reduzir movimento")
+  if (EX.phase === 'trans') {
+    const t = EX.transT, fl = RM.matches ? 0 : .6;
+    if (t < fl && Math.floor(t / .1) % 2 === 0) R(c, 0, 0, W, H, 'rgba(248,248,248,.9)');
+    else if (t >= fl) { const k = Math.min(1, (t - fl) / .45); for (let i = 0; i < 8; i++) { const w = Math.ceil(W * k); R(c, i % 2 ? W - w : 0, i * 20, w, 20, '#000'); } }
+  }
+}
+
+/* ── hall.js ── */
+/* ════════════ HALL DA FAMA ════════════
+   startHall(): o encerramento quando a POKéDEX chega a 151 (o módulo de progresso chama, com o POKéMON em casa e acordado).
+   Tela preta → o time desfila (ativo + os 5 de maior nível do PC) → os capturados sobem como créditos → PROF. CARVALHO → DIPLOMA.
+   1ª vez (sem G.hof): ao chegar no DIPLOMA grava G.hof = { at, team } e dispara 'hallDone' (o prêmio é de quem ouve).
+   Com G.hof é reprise (CARTÃO): mostra o time gravado e não concede nada. startHall({ diploma: true }) vai direto ao DIPLOMA.
+   A (toque) avança, B pula para o DIPLOMA; no DIPLOMA, A ou B volta para casa. */
+const HL_STARS = (() => { const r = rng(151); return Array.from({ length: 70 }, () => ({ x: Math.floor(r() * W), y: Math.floor(r() * H), b: r() })); })();
+const HL_CONF = ['#f85838', '#f8d030', '#58d080', '#40b8f0', '#e868b0', '#f8f8f8'];
+const HL_COLS = 4, HL_ROW = 68, HL_TOP = 36;   // créditos: 4 por linha
+let hl = null;
+
+function startHall(opt = {}) {
+  if (!G || !s) return;
+  hl = hl_make(); go('hall', opt);
+}
+function hl_make() {
+  const replay = !!G.hof, saved = replay && Array.isArray(G.hof.team) ? G.hof.team.filter(m => m && m.sp >= 1 && m.sp <= 151) : [];
+  const caught = []; for (let id = 1; id <= 151; id++) if (dexHas('caught', id)) caught.push(id);
+  return { replay, team: saved.length ? saved : hl_team(), caught, phase: '', t: 0, i: 0, at: replay ? num(G.hof.at, Date.now()) : Date.now(), music: 0 };
+}
+// o ativo e os 5 de maior nível do PC (empate: o mais antigo)
+function hl_team() {
+  const top = [...G.pc].sort((a, b) => b.level - a.level || a.caughtAt - b.caughtAt).slice(0, 5);
+  return [s, ...top].map(m => ({ sp: m.sp, level: m.level, shiny: !!m.shiny }));
+}
+const hl_key = m => 'f' + m.sp + (m.shiny ? 's' : '');
+
+function hl_phase(p) {
+  hl.phase = p; hl.t = 0;
+  if (p === 'intro') { sayNow('Bem-vindo ao HALL DA FAMA!'); hl_fanfare(); }
+  else if (p === 'team') { hl.i = 0; hl_member(); }
+  else if (p === 'lineup') { sayNow('Seu time campeão!'); Sfx.happy(); }   // tira da caixa a fala do último membro
+  else if (p === 'credits') { hl.music = 0; say('Parabéns! Você completou a POKéDEX de KANTO!'); }
+  else if (p === 'prof') { sayNow('PROF. CARVALHO: Fantástico! Você completou a POKéDEX!'); Sfx.levelUp(); }
+  else if (p === 'diploma') hl_diploma();
+}
+function hl_member() { const m = hl.team[hl.i]; hl.t = 0; sayNow(`${DEX[m.sp].name}${m.shiny ? ' BRILHANTE' : ''} · Nv. ${m.level}`); Sfx.cry(m.sp); }
+function hl_diploma() {
+  hl.phase = 'diploma'; hl.t = 0;
+  Sfx.evoDone(); Sfx.seq([[0, .9], [1046, .12], [1318, .12], [1568, .4]], { vol: .06 });
+  if (hl.replay || G.hof) { sayNow('DIPLOMA da POKéDEX de KANTO.'); return; }
+  // 1ª vez: grava antes de qualquer outra coisa (fechar o app agora não repete o HALL nem o prêmio)
+  G.hof = { at: hl.at, team: hl.team }; hl.replay = true; save();
+  sayNow('Seu time entrou para o HALL DA FAMA!');
+  fire('hallDone');
+}
+function hl_fanfare() {
+  Sfx.seq([[523, .12], [523, .12], [523, .12], [784, .36], [659, .12], [784, .12], [1046, .6]], { vol: .07 });
+  Sfx.seq([[262, .36], [330, .36], [392, .36], [523, .72]], { type: 'triangle', vol: .1 });
+}
+const HL_TUNE = [[784, .2], [659, .2], [523, .2], [659, .2], [698, .4], [880, .4], [784, .6], [0, .2], [659, .2], [698, .2], [784, .2], [1046, .2], [988, .4], [784, .4], [880, .8]];
+
+// A / toque: pula para a próxima parte (com um respiro, para um toque duplo não pular duas)
+function hl_next() {
+  if (!hl || hl.t < .35) return;
+  Sfx.click();
+  if (hl.phase === 'intro') hl_phase('team');
+  else if (hl.phase === 'team') { if (++hl.i < hl.team.length) hl_member(); else hl_phase('lineup'); }
+  else if (hl.phase === 'lineup') hl_phase('credits');
+  else if (hl.phase === 'credits') hl_phase('prof');
+  else if (hl.phase === 'prof') hl_phase('diploma');
+  else if (hl.phase === 'diploma' && hl.t > .8) hl_end();
+}
+function hl_skip() {
+  if (!hl) return;
+  if (hl.phase === 'diploma') { if (hl.t > .8) hl_end(); return; }
+  Sfx.click(); hl_phase('diploma');
+}
+// a fala do HALL não pode ficar na caixa do habitat (nem aparecer depois por cima do CARTÃO).
+// Com avisos na fila (prêmios do 'hallDone') eles mesmos a substituem: não podem ser descartados.
+function hl_end() { hl = null; goHome(); if (!msg.queue.length) sayNow(`${DEX[s.sp].name} ficou feliz de voltar para casa!`); }
+
+SCENES.hall = {
+  enter(opt) {
+    if (!hl) hl = hl_make();   // entrou por go('hall') direto
+    setKnobs([{ label: 'AVANÇAR', icon: '▶', fn: hl_next }, null, null, { label: 'PULAR', icon: '▶▶', fn: hl_skip }]);
+    knobDefs.center = { fn: hl_next };
+    if (opt && opt.diploma) hl_diploma(); else hl_phase('intro');
+  },
+  exit(next) { if (next !== 'hall') hl = null; },
+  update(dt) {
+    if (!hl) return;
+    hl.t += dt;
+    const p = hl.phase, still = RM.matches;
+    if (p === 'intro' && hl.t > 3.2) hl_phase('team');
+    else if (p === 'team' && hl.t > 2.8) { if (++hl.i < hl.team.length) hl_member(); else hl_phase('lineup'); }
+    else if (p === 'lineup' && hl.t > 3.4) hl_phase('credits');
+    else if (p === 'credits') {
+      if (hl.t >= hl.music) { hl.music = hl.t + 6.4; Sfx.seq(HL_TUNE, { type: 'triangle', vol: .07 }); }
+      const rows = Math.ceil(hl.caught.length / HL_COLS), len = HL_TOP + rows * HL_ROW + H;
+      if (hl.t * (still ? 40 : 64) > len) hl_phase('prof');
+    } else if (p === 'prof' && hl.t > 5) hl_phase('diploma');
+  },
+  draw(c) {
+    if (!hl) return R(c, 0, 0, W, H, '#000');
+    const p = hl.phase;
+    if (p === 'prof') return hl_drawProf(c);
+    if (p === 'diploma') return hl_drawDiploma(c);
+    hl_drawSky(c, p !== 'intro');
+    if (p === 'intro') {
+      // o texto acende devagar (sem piscar)
+      c.globalAlpha = Math.min(1, Math.max(0, (hl.t - .4) / .8));
+      hl_text(c, 'BEM-VINDO AO', 120, 62, '#f8d030'); hl_text(c, 'HALL DA FAMA!', 120, 78, '#f8d030');
+      c.globalAlpha = 1;
+    } else if (p === 'team') hl_drawMember(c);
+    else if (p === 'lineup') hl_drawLineup(c);
+    else if (p === 'credits') hl_drawCredits(c);
+  },
+  key(e, k) {
+    if (k === 'enter' || k === ' ' || k === 'z') { if (!e.repeat) hl_next(); }
+    else if (k === 'escape' || k === 'x' || k === 'backspace') { if (!e.repeat) hl_skip(); }
+    else if (!k.startsWith('arrow')) return false;
+    e.preventDefault(); return true;
+  },
+  pointer() { hl_next(); },
+};
+
+/* ── desenho ── */
+function hl_text(c, t, x, y, col, size = 8, align = 'center') {
+  c.font = `${size}px "Press Start 2P", monospace`; c.textAlign = align; c.textBaseline = 'top';
+  c.fillStyle = 'rgba(0,0,0,.6)'; c.fillText(t, x + 1, y + 1); c.fillStyle = col; c.fillText(t, x, y);
+}
+// céu estrelado; confete caindo (sem confete nem cintilar com "reduzir movimento")
+function hl_drawSky(c, party) {
+  R(c, 0, 0, W, H, '#080818');
+  const still = RM.matches, T = clock;
+  for (let i = 0; i < HL_STARS.length; i++) {
+    const st = HL_STARS[i], a = still ? .5 + st.b * .4 : .35 + .55 * (.5 + .5 * Math.sin(T * 1.3 + i * 1.7));
+    c.globalAlpha = a; R(c, st.x, st.y, 1, 1, st.b > .8 ? '#f8e8a0' : '#c8d8f8'); if (st.b > .93) { R(c, st.x - 1, st.y, 3, 1, '#f8e8a0'); R(c, st.x, st.y - 1, 1, 3, '#f8e8a0'); }
+  }
+  c.globalAlpha = 1;
+  if (!party || still) return;
+  for (let i = 0; i < 36; i++) {
+    const sp = 22 + (i % 5) * 7, y = ((T * sp + i * 41) % (H + 20)) - 10, x = (i * 67 + Math.sin(T * 1.5 + i) * 8 + 240) % W;
+    R(c, Math.round(x), Math.round(y), 2, (Math.floor(T * 4 + i) % 2) ? 3 : 2, HL_CONF[i % HL_CONF.length]);
+  }
+}
+function hl_spark(c, x, y) { R(c, x - 3, y, 7, 1, '#f8e8a0'); R(c, x, y - 3, 1, 7, '#f8e8a0'); R(c, x - 1, y - 1, 3, 3, '#f8d030'); R(c, x, y, 1, 1, '#fff'); }
+function hl_spot(c, x, y) { disc(c, x, y, 34, 6, 'rgba(248,232,160,.18)'); disc(c, x, y, 24, 4, 'rgba(248,232,160,.22)'); }
+function hl_drawMember(c) {
+  const m = hl.team[hl.i]; if (!m) return;
+  hl_text(c, 'HALL DA FAMA', 120, 8, '#f8d030');
+  // entra deslizando pela direita (parado com "reduzir movimento")
+  const k = RM.matches ? 1 : Math.min(1, hl.t / .7), x = Math.round(120 + (1 - k) * (1 - k) * 200);
+  hl_spot(c, x, 112);
+  drawPokemon(hl_key(m), x, 112, {});
+  if (k >= 1) {
+    // brilhante: nome dourado e um brilho em pixel (a fonte pixel não tem o ✦)
+    const nm = DEX[m.sp].name; hl_text(c, nm, 120, 122, m.shiny ? '#f8d030' : '#f8f8f8');
+    if (m.shiny) hl_spark(c, Math.round(120 + c.measureText(nm).width / 2) + 6, 125);
+    hl_text(c, `Nv. ${m.level}`, 120, 136, '#a8c8f8');
+  }
+  hl_text(c, `${hl.i + 1}/${hl.team.length}`, 232, 8, '#8890b0', 8, 'right');
+}
+function hl_drawLineup(c) {
+  hl_text(c, 'HALL DA FAMA', 120, 6, '#f8d030');
+  const n = hl.team.length, top = Math.min(3, n), bottom = n - top;
+  hl.team.forEach((m, i) => {
+    const row = i < top ? 0 : 1, cnt = row ? bottom : top, j = row ? i - top : i;
+    const x = Math.round(120 + (j - (cnt - 1) / 2) * 72), y = n > 3 ? (row ? 150 : 88) : 120;
+    hl_spot(c, x, y); drawPokemon(hl_key(m), x, y, {});
+  });
+}
+function hl_drawCredits(c) {
+  const off = hl.t * (RM.matches ? 40 : 64), base = H - off;
+  if (base + 8 > -12) hl_text(c, 'POKéMON CAPTURADOS', 120, base + 8, '#f8d030');
+  hl.caught.forEach((id, i) => {
+    const r = Math.floor(i / HL_COLS), col = i % HL_COLS, y = base + HL_TOP + r * HL_ROW;
+    if (y < -HL_ROW || y > H + 4) return;
+    const x = 30 + col * 60;
+    drawPokemon('f' + id + (dexHas('shiny', id) ? 's' : ''), x, y + 46, {});
+    hl_text(c, dxNo(id), x, y + 48, '#c8d8f8');
+  });
+  // faixas escuras em cima e embaixo: os créditos "saem" de trás delas
+  R(c, 0, 0, W, 4, '#080818'); R(c, 0, H - 4, W, 4, '#080818');
+}
+function hl_drawProf(c) {
+  c.drawImage(bg('lab'), 0, 0);
+  R(c, 10, 10, 220, 64, '#202840'); R(c, 12, 12, 216, 60, '#f8f8f8'); R(c, 14, 14, 212, 56, '#f8f8f8');
+  R(c, 12, 12, 216, 1, '#a8d0f0'); R(c, 12, 71, 216, 1, '#a8d0f0');
+  const t = Math.min(1, hl.t / .6);
+  c.globalAlpha = t;
+  hl_text(c, 'PROF. CARVALHO:', 120, 20, '#e05040'); hl_text(c, 'Fantástico! Você', 120, 38, '#3a3a44'); hl_text(c, 'completou a POKéDEX!', 120, 54, '#3a3a44');
+  c.globalAlpha = 1;
+  drawShadow(monKey(s), 120, -1, 0);
+  drawPokemon(monKey(s), 120, FEET, {});
+}
+function hl_drawDiploma(c) {
+  R(c, 0, 0, W, H, '#5a3a20');
+  for (let y = 0; y < H; y += 4) R(c, 0, y, W, 1, '#4e321a');   // mesa de madeira
+  R(c, 8, 5, 224, 150, '#f8f0d0'); R(c, 8, 5, 224, 1, '#fff8e8');
+  R(c, 8, 154, 224, 1, '#c8b890');
+  // moldura dupla dourada com cantos
+  const fr = (i, col) => { R(c, 8 + i, 5 + i, 224 - 2 * i, 1, col); R(c, 8 + i, 154 - i, 224 - 2 * i, 1, col); R(c, 8 + i, 5 + i, 1, 150 - 2 * i, col); R(c, 231 - i, 5 + i, 1, 150 - 2 * i, col); };
+  fr(3, '#b08838'); fr(4, '#d8b050'); fr(7, '#b08838');
+  for (const [x, y] of [[11, 8], [222, 8], [11, 145], [222, 145]]) { R(c, x, y, 7, 7, '#b08838'); R(c, x + 2, y + 2, 3, 3, '#f8d030'); }
+  hl_text(c, 'DIPLOMA', 120, 16, '#a03020', 16);
+  R(c, 56, 36, 128, 1, '#d8b050');
+  hl_text(c, 'Este documento certifica', 120, 44, '#3a3a44');
+  hl_text(c, 'que você completou a', 120, 58, '#3a3a44');
+  hl_text(c, 'POKéDEX de KANTO', 120, 74, '#2050a0');
+  hl_text(c, cdDate(hl.at), 120, 92, '#3a3a44');
+  // assinatura
+  c.strokeStyle = '#3a3a44'; c.lineWidth = 1; c.beginPath();
+  for (let i = 0; i <= 40; i++) { const x = 116 + i * 2.2, y = 120 + Math.sin(i * .9) * 4 * Math.sin(i / 40 * Math.PI) - i * .12; i ? c.lineTo(x, y) : c.moveTo(x, y); }
+  c.stroke();
+  R(c, 106, 127, 108, 1, '#3a3a44');
+  hl_text(c, 'PROF. CARVALHO', 160, 131, '#3a3a44');
+  // selo: uma POKé BOLA dourada com fitas
+  R(c, 34, 128, 5, 16, '#c03028'); R(c, 47, 128, 5, 16, '#c03028'); R(c, 34, 143, 2, 2, '#f8f0d0'); R(c, 50, 143, 2, 2, '#f8f0d0');
+  disc(c, 43, 122, 15, 15, '#b08838'); disc(c, 43, 122, 13, 13, '#f8d030');
+  disc(c, 43, 122, 10, 10, '#f8f8f8'); c.save(); c.beginPath(); c.rect(30, 108, 28, 14); c.clip(); disc(c, 43, 122, 10, 10, '#e83838'); c.restore();
+  R(c, 33, 121, 21, 2, '#202028'); disc(c, 43, 122, 3, 3, '#202028'); disc(c, 43, 122, 2, 2, '#f8f8f8');
+  // ▼ vermelho: pode tocar para sair
+  if (hl.t > .8 && (RM.matches || Math.floor(hl.t * 1.5) % 2 === 0)) for (let i = 0; i < 4; i++) R(c, 219 + i, 143 + i, 7 - 2 * i, 1, '#e05040');
+}
+
+/* ── options.js ── */
+/* ════════════ OPÇÕES: exportar / importar o jogo ════════════
+   Código = 'PKG2.d.<base64url do JSON comprimido>.<crc32 8 hex>' (ou 'PKG2.r.<base64url do JSON>.<crc>' sem
+   CompressionStream). O CRC cobre os bytes que vão no código. Importar troca o jogo inteiro (nada é mesclado);
+   o jogo substituído fica em .bak para DESFAZER. */
+const OP_VER = 2, OP_BAK = SAVE_KEY + '.bak';
+const OP_BAD = 'Código inválido ou corrompido.';
+
+// bytes <-> base64url (em blocos: String.fromCharCode(...grande) estoura a pilha)
+function op_b64(bytes) {
+  let bin = ''; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function op_unb64(str) {
+  const bin = atob(str.replace(/-/g, '+').replace(/_/g, '/')), out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+async function op_pipe(bytes, Stream) {
+  return new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new Stream('deflate-raw'))).arrayBuffer());
+}
+const op_hex = n => n.toString(16).padStart(8, '0');
+
+async function op_encode(g) {
+  let bytes = new TextEncoder().encode(JSON.stringify(g)), mode = 'r';
+  if (typeof CompressionStream === 'function') { try { bytes = await op_pipe(bytes, CompressionStream); mode = 'd'; } catch {} }
+  return `PKG${OP_VER}.${mode}.${op_b64(bytes)}.${op_hex(crc32(bytes, 0, bytes.length))}`;
+}
+// devolve { g, raw } ou { err } (texto para o jogador)
+async function op_decode(code) {
+  code = String(code || '').replace(/\s+/g, '');
+  const p = code.split('.'), mv = /^PKG(\d+)$/.exec(p[0] || '');
+  if (!mv || p.length !== 4) return { err: OP_BAD };
+  if (+mv[1] > OP_VER) return { err: 'Código de versão mais nova.' };
+  if (+mv[1] < OP_VER || !/^[dr]$/.test(p[1]) || !/^[0-9a-f]{8}$/i.test(p[3]) || !/^[A-Za-z0-9_-]+$/.test(p[2])) return { err: OP_BAD };
+  let bytes; try { bytes = op_unb64(p[2]); } catch { return { err: OP_BAD }; }
+  if (op_hex(crc32(bytes, 0, bytes.length)) !== p[3].toLowerCase()) return { err: OP_BAD };
+  if (p[1] === 'd') {
+    if (typeof DecompressionStream !== 'function') return { err: 'Este navegador não consegue abrir este código.' };
+    try { bytes = await op_pipe(bytes, DecompressionStream); } catch { return { err: OP_BAD }; }
+  }
+  let o; try { o = JSON.parse(new TextDecoder().decode(bytes)); } catch { return { err: OP_BAD }; }
+  if (o && typeof o === 'object' && num(o.v, 0) > OP_VER) return { err: 'Código de versão mais nova.' };
+  const g = sanitize(o); if (!g) return { err: OP_BAD };
+  return { g };
+}
+
+/* Painel por cima da tela (dentro de .screen-wrap): caixa de texto + botões; os botões redondos espelham os botões */
+let op_panel = null;   // { el, prevKnobs, guard }
+/* Com o painel aberto fica uma entrada vazia na pilha do Menu: o núcleo trata Menu.top como "tem algo por cima"
+   e não começa evolução, HALL, toques no habitat nem o START por baixo do painel. Ela nunca é desenhada
+   (ninguém chama Menu.render com ela no topo); se alguém esvaziar a pilha (troca de cena), o painel fecha junto. */
+function op_open(title, html, knobs) {
+  op_close(true);
+  Menu.closeAll();
+  const el = document.createElement('div');
+  el.className = 'op-panel'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', title);
+  el.innerHTML = `<div class="op-title">${title}</div>${html}`;
+  document.querySelector('.screen-wrap').appendChild(el);
+  const prevKnobs = knobDefs, guard = { items: [], sel: 0, prevKnobs, onBack: () => op_close() };
+  op_panel = { el, prevKnobs, guard };
+  Menu.stack.push(guard);
+  setKnobs(knobs);
+  return el;
+}
+function op_close(silent) {
+  if (!op_panel) return;
+  const p = op_panel; op_panel = null; p.el.remove();
+  const i = Menu.stack.indexOf(p.guard); if (i >= 0) Menu.stack.splice(i, 1);
+  // no habitat volta aos botões dele, a não ser que a ficha avulsa da POKéDEX esteja aberta por baixo
+  const pop = typeof dx !== 'undefined' && dx.mode === 'popup';
+  setKnobs(pop ? dx.popKnobs : scene === 'habitat' ? null : p.prevKnobs);
+  if (!silent) Sfx.click();
+}
+setInterval(() => { if (op_panel && !Menu.stack.includes(op_panel.guard)) op_close(true); }, 250);
+// teclado com o painel aberto: o jogo não vê as teclas (nem Enter abrindo o START por baixo); digitar na caixa funciona
+window.addEventListener('keydown', e => {
+  if (!op_panel || pendingChoice) return;
+  e.stopImmediatePropagation();   // nem a ficha avulsa da POKéDEX (também em captura) vê a tecla
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key.toLowerCase(), typing = e.target.closest && e.target.closest('textarea');
+  if (k === 'escape' || (!typing && (k === 'x' || k === 'backspace'))) { e.preventDefault(); op_close(); return; }
+  if (!typing && k >= '1' && k <= '4') { e.preventDefault(); if (!e.repeat) knobPress(+k - 1); }
+}, true);
+// pílulas MENU e DADOS com o painel aberto: fecham o painel em vez de abrir algo por baixo dele
+window.addEventListener('click', e => {
+  if (op_panel && e.target.closest && e.target.closest('#btnMenu, #btnData')) { e.stopPropagation(); e.preventDefault(); op_close(); }
+}, true);
+
+async function op_copy(ta) {
+  const t = ta.value;
+  try { await navigator.clipboard.writeText(t); }
+  catch {
+    // sem a API (http, navegador antigo): seleciona e usa o comando antigo
+    ta.focus(); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch {}
+    if (!ok) { sayNow('Não deu para copiar. Selecione o código e copie à mão.'); return Sfx.deny(); }
+  }
+  sayNow('Código copiado! Guarde-o em um lugar seguro.'); Sfx.happy();
+}
+async function op_share(t) {
+  if (!navigator.share) return Sfx.deny();
+  try { await navigator.share({ title: 'Pokégotchi', text: t }); } catch {}
+}
+
+async function op_export() {
+  if (!G) return Sfx.deny();
+  save();
+  let code; try { code = await op_encode(G); } catch { sayNow('Não deu para gerar o código.'); return Sfx.deny(); }
+  const share = !!navigator.share;
+  const el = op_open('EXPORTAR',
+    `<textarea class="op-code" readonly spellcheck="false" aria-label="Código do jogo"></textarea>` +
+    `<div class="op-row"><button type="button" class="op-btn" data-a="copy">COPIAR</button>` +
+    (share ? `<button type="button" class="op-btn" data-a="share">COMPARTILHAR</button>` : '') +
+    `<button type="button" class="op-btn" data-a="close">FECHAR</button></div>`,
+    [{ label: 'COPIAR', icon: 'OK', fn: () => op_copy(ta) }, share ? { label: 'COMPART.', icon: '»', fn: () => op_share(code) } : null,
+      null, { label: 'FECHAR', icon: '◀', fn: () => op_close() }]);
+  const ta = el.querySelector('textarea'); ta.value = code;
+  ta.addEventListener('focus', () => ta.select());
+  ta.addEventListener('click', () => ta.select());
+  el.addEventListener('click', e => {
+    const b = e.target.closest('.op-btn'); if (!b) return;
+    if (b.dataset.a === 'copy') op_copy(ta); else if (b.dataset.a === 'share') op_share(code); else op_close();
+  });
+  el.querySelector('.op-btn').focus({ preventScroll: true });
+  sayNow('Copie o código e cole em IMPORTAR no outro aparelho.');
+}
+
+function op_import() {
+  if (!G) return Sfx.deny();
+  const canPaste = !!(navigator.clipboard && navigator.clipboard.readText);
+  const el = op_open('IMPORTAR',
+    `<textarea class="op-code" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Cole aqui o código (PKG2...)" aria-label="Código para importar"></textarea>` +
+    `<div class="op-row">` + (canPaste ? `<button type="button" class="op-btn" data-a="paste">COLAR</button>` : '') +
+    `<button type="button" class="op-btn" data-a="go">IMPORTAR</button><button type="button" class="op-btn" data-a="close">CANCELAR</button></div>`,
+    [{ label: 'IMPORTAR', icon: 'OK', fn: () => op_doImport(ta.value) }, canPaste ? { label: 'COLAR', icon: '+', fn: () => op_paste(ta) } : null,
+      null, { label: 'CANCELAR', icon: '◀', fn: () => pendingChoice ? answer(false) : op_close(), inChoice: true }]);
+  const ta = el.querySelector('textarea');
+  el.addEventListener('click', e => {
+    const b = e.target.closest('.op-btn'); if (!b) return;
+    if (b.dataset.a === 'paste') op_paste(ta); else if (b.dataset.a === 'go') op_doImport(ta.value); else op_close();
+  });
+  // no celular, focar a caixa abriria o teclado por cima de tudo: só foca com mouse
+  if (matchMedia('(pointer: fine)').matches) ta.focus({ preventScroll: true });
+  sayNow('Cole o código de um jogo exportado e toque em IMPORTAR.');
+}
+async function op_paste(ta) {
+  try { ta.value = (await navigator.clipboard.readText()) || ''; Sfx.click(); }
+  catch { sayNow('Toque e segure na caixa para colar.'); Sfx.deny(); }
+}
+
+let op_busy = false;
+const op_when = t => { const d = new Date(t), z = n => String(n).padStart(2, '0'); return `${z(d.getDate())}/${z(d.getMonth() + 1)} ${z(d.getHours())}:${z(d.getMinutes())}`; };
+async function op_doImport(code) {
+  if (op_busy || !op_panel) return;
+  if (!String(code || '').trim()) { sayNow('Cole um código primeiro.'); return Sfx.deny(); }
+  op_busy = true;
+  try {
+    const r = await op_decode(code);
+    if (r.err) { sayNow(r.err); return Sfx.deny(); }
+    // aviso por progresso (o savedAt daqui é sempre "agora": o núcleo salva a cada 2 s)
+    const g = r.g, a = g.active, caught = g.dex.caught.split('1').length - 1;
+    const old = !!G && (caught < dexCount('caught') || g.prog.badges < G.prog.badges);
+    // a prévia vai no painel: a caixa de texto tem 3 linhas e, no celular, cortaria a pergunta
+    const ta = op_panel.el.querySelector('textarea'), pv = document.createElement('div');
+    pv.className = 'op-prev';
+    // linhas curtas à esquerda: a caixa SIM/NÃO cobre o canto inferior direito da tela
+    pv.innerHTML = `<b>${DEX[a.sp].name} Nv. ${a.level}</b>` +
+      `<span>Capturados ${caught}/151</span><span>${g.prog.badges} insígnia${g.prog.badges === 1 ? '' : 's'}</span>` +
+      `<span>Salvo em ${g.savedAt ? op_when(g.savedAt) : '--/-- --:--'}</span><img src="${spriteURL(monKey(a))}" alt="">`;
+    const row = op_panel.el.querySelector('.op-row');
+    ta.hidden = true; row.hidden = true; ta.after(pv);
+    if (old) Sfx.alert();
+    const yes = await confirmYN(old ? 'Este jogo tem menos progresso que o seu. Substituir?' : 'Substituir o jogo atual por este?', { safeNo: true });
+    pv.remove(); ta.hidden = false; row.hidden = false;
+    if (!yes) { if (G && op_panel) sayNow('Nada mudou.'); return; }
+    op_replace(g);
+    sayNow('Jogo importado!'); Sfx.evoDone();
+  } finally { op_busy = false; }
+}
+/* Dia do jogo importado: a sequência vem do código, mas o presente e os tetos do dia já pagos aqui não pagam
+   de novo. Data = a maior das duas; no mesmo dia, cada contador fica com o maior valor. */
+function op_mergeDaily(cur, imp) {
+  const out = clone(imp), cd = cur.maxDate || '', id = imp.maxDate || '';
+  out.lastSafety = Math.max(num(cur.lastSafety, 0), num(imp.lastSafety, 0));
+  if (cd < id) return out;   // o código é de um dia mais novo: fica como veio
+  const perDay = f => { for (const key in DEFAULTS.daily) if (!/^(streak|lastSafety)$/.test(key)) f(key); };
+  if (cd === id) {
+    perDay(k => {
+      if (typeof out[k] === 'number') out[k] = Math.max(num(cur[k], 0), out[k]);
+      else if (typeof out[k] === 'boolean') out[k] = !!cur[k] || out[k];
+      else if (typeof out[k] === 'string' && String(cur[k] || '') > out[k]) out[k] = String(cur[k]);
+    });
+    out.streak = Math.max(num(cur.streak, 0), out.streak);
+    return out;
+  }
+  // este aparelho já virou um dia mais novo: os contadores são os de hoje daqui; a sequência continua se o código for de ontem
+  const [y, m, d] = cd.split('-').map(Number), prev = localDate(new Date(y, m - 1, d - 1, 12).getTime());
+  perDay(k => { out[k] = clone(cur[k]); });
+  out.streak = id === prev ? out.streak + 1 : 1;
+  return out;
+}
+// troca o jogo atual por g, guardando o atual em .bak
+function op_replace(g) {
+  save();
+  try { const cur = localStorage.getItem(SAVE_KEY); if (cur) localStorage.setItem(OP_BAK, cur); } catch {}
+  const now = Date.now();
+  g.lastTick = g.savedAt = now; g.enc = null; g.outing = null;   // sem simular o tempo parado nem retomar batalhas
+  if (G && G.daily) g.daily = op_mergeDaily(G.daily, g.daily);
+  g.rev = Math.max(g.rev, G ? G.rev : 0);
+  op_close(true);
+  cancelTraining(); training = null; sweep = null; berryFx = null; evo = null; away = null;
+  setGame(g); save();
+  fire('imported', G);
+  goHome(); updateUI();
+}
+
+addOption({ label: 'EXPORTAR', order: 10, fn: op_export });
+addOption({ label: 'IMPORTAR', order: 20, fn: op_import });
+addOption({ label: 'DESFAZER IMPORTAÇÃO', order: 30, fn: async () => {
+  let raw = null; try { raw = localStorage.getItem(OP_BAK); } catch {}
+  let g = null; try { g = raw && sanitize(JSON.parse(raw)); } catch {}
+  if (!g) { sayNow('Não há importação para desfazer.'); return Sfx.deny(); }
+  Menu.closeAll();
+  const a = g.active;
+  if (!await confirmYN(`Voltar ao jogo de antes da importação (${DEX[a.sp].name} Nv. ${a.level})?`, { safeNo: true })) { if (G && scene !== 'select') sayNow('Nada mudou.'); return; }
+  op_replace(g);   // o jogo importado vai para o .bak: dá para refazer
+  sayNow('Importação desfeita!'); Sfx.happy();
+} });
+
+/* ── pc.js ── */
+/* ════════════ PC do PROF. CARVALHO ════════════
+   12 CAIXAS x 30 (G.pc na ordem de guarda: caixa = índice / 30). Tela cheia em HTML por cima do canvas:
+   o ativo à esquerda (fora das caixas), a caixa 6x5 à direita. ESCOLHER: ATIVAR, DADOS, USAR ITEM, TROCAR, SOLTAR.
+   Nada daqui guarda POKéMON por referência entre esperas: outra aba pode trocar o G (sempre busca pelo uid). */
+extendDefaults({ prog: { fossils: 0, stoneTradeEvos: 0, trades: 0 } });
+
+const PC_BOXES = 12, PC_SLOTS = 30, PC_SWAP_MS = 30 * 60e3;
+const PC_WALL = ['#78b0e0', '#88c878', '#e0a070', '#c090d8', '#e0d070', '#70c8c0', '#e08898', '#98a8c8', '#b8c870', '#d8a8e0', '#90d0a8', '#e8b858'];
+const pc = { box: 0, cur: 0, row: 0, sheet: null, busy: false, el: null, html: '' };   // cur: 0-29 na caixa, -1 = o ativo
+const pc_wait = ms => new Promise(r => setTimeout(r, ms));
+const pc_idx = () => pc.box * PC_SLOTS + pc.cur;
+const pc_monAt = () => pc.cur < 0 ? s : G.pc[pc_idx()] || null;
+const pc_find = uid => G.pc.find(m => m.uid === uid) || null;
+const pc_tradeTo = m => (DEX[m.sp].evo.find(e => e.trade) || {}).to;
+const pc_types = d => d.types.map(t => `<span class="pc-type" style="background:${TYPE_COLOR[t]}">${t}</span>`).join('');
+// o brilhante é montado na 1ª vez (assíncrono): redesenha logo depois para trocar o sprite normal pelo dele
+let pc_redraw = 0, pc_tries = 0;   // tentativas limitadas: sem paleta brilhante, fica o normal
+const pc_img = m => {
+  const k = monKey(m), url = spriteURL(k);
+  if (m.shiny && !SHINY_URL[k] && !pc_redraw && pc_tries < 8) { pc_tries++; pc_redraw = setTimeout(() => { pc_redraw = 0; if (!pc.busy) pc_render(); }, 250); }
+  return `<img src="${url}" alt="">`;
+};
+
+function openPC() {
+  if (!G || !s || scene !== 'habitat' || evo || pendingChoice) return Sfx.deny();
+  if (training) { say('Termine o treino primeiro!'); return Sfx.deny(); }
+  syncFromStorage(); if (!G || scene !== 'habitat') return;
+  go('pc'); Sfx.click(); sayNow('Acessou o PC do PROF. CARVALHO.');
+}
+
+/* ── desenho (HTML) ── */
+function pc_render() {
+  if (!pc.el || !G) return;
+  pc.box = Math.max(0, Math.min(PC_BOXES - 1, pc.box));
+  const base = pc.box * PC_SLOTS, n = G.pc.slice(base, base + PC_SLOTS).length, m = pc_monAt();
+  let cells = '';
+  for (let i = 0; i < PC_SLOTS; i++) {
+    const c = G.pc[base + i];
+    cells += `<button type="button" class="pc-cell${i === pc.cur ? ' sel' : ''}" data-slot="${i}" aria-label="${c ? `${N(c)} Nv ${c.level}` : 'vazio'}">` +
+      (c ? pc_img(c) + (c.shiny ? '<i class="pc-shiny">✦</i>' : '') : '') + '</button>';
+  }
+  const info = !m ? '<div class="pc-nm">—</div><div class="pc-dim">VAZIO</div>' :
+    `<div class="pc-nm">${N(m)}${m.shiny ? ' ✦' : ''}</div><div>Nv ${m.level}</div><div class="pc-types">${pc_types(DEX[m.sp])}</div>`;
+  const html =
+    `<div class="pc-side">` +
+      `<button type="button" class="pc-card pc-act${pc.cur < 0 ? ' sel' : ''}" data-slot="-1"><span class="pc-lbl">HABITAT</span>${pc_img(s)}<span class="pc-nm">${N(s)}${s.shiny ? ' ✦' : ''}</span><span>Nv ${s.level}</span></button>` +
+      `<div class="pc-card pc-info">${info}<div class="pc-dim pc-total">PC ${G.pc.length}/${PC_BOXES * PC_SLOTS}</div></div>` +
+    `</div><div class="pc-main">` +
+      `<div class="pc-head"><button type="button" class="pc-arr" data-d="-1" aria-label="Caixa anterior">◀</button><span class="pc-title">CAIXA ${pc.box + 1} <small class="pc-dim">${n}/${PC_SLOTS}</small></span><button type="button" class="pc-arr" data-d="1" aria-label="Próxima caixa">▶</button></div>` +
+      `<div class="pc-grid" style="--wall:${PC_WALL[pc.box]}">${cells}</div>` +
+    `</div>` + (pc.sheet != null ? pc_sheetHTML() : '') + `<div class="pc-link" hidden></div>`;
+  // só troca o DOM se algo mudou: o tick redesenha a cada 2 s e não pode roubar o toque/foco nem reiniciar o cursor piscando
+  if (html !== pc.html) { pc.html = html; pc.el.innerHTML = html; }
+}
+// ficha (DADOS): o estado congelado no PC (ou o do ativo)
+function pc_sheetHTML() {
+  // sumiu (outra aba soltou/ativou): fecha a ficha e devolve os botões do PC
+  const m = pc.sheet === -1 ? s : pc_find(pc.sheet); if (!m) { pc.sheet = null; if (scene === 'pc') setKnobs(SCENES.pc.knobs); return ''; }
+  const d = DEX[m.sp], need = needExp(m.level), dt = new Date(m.caughtAt);
+  const bar = (lbl, v) => { v = Math.round(v); return `<div class="pc-bar"><span>${lbl}</span><b><i style="width:${v}%;background:${barColor(v)}"></i></b><span>${v}</span></div>`; };
+  return `<div class="pc-sheet" role="dialog" aria-label="Dados de ${d.name}">` +
+    `<div class="pc-sh-l">${pc_img(m)}<div>No.${String(d.id).padStart(3, '0')}</div><div class="pc-nm">${d.name}</div>${m.shiny ? '<div class="pc-shtxt">✦ BRILHANTE</div>' : ''}</div>` +
+    `<div class="pc-sh-r">` +
+      `<div>Nv ${m.level} · EXP ${m.level >= 100 ? 'MAX' : `${Math.floor(m.exp)}/${need}`}${m.sick ? ' <span class="pc-type" style="background:#9850b8">DOENTE</span>' : ''}</div>` +
+      `<div class="pc-types">${pc_types(d)}</div>` +
+      bar('FOME', m.hunger) + bar('ENERGIA', m.energy) + bar('FELIC.', m.happy) + bar('HIGIENE', m.hygiene) +
+      `<div class="pc-evo">${evoText(d)}</div>` +
+      `<div class="pc-dim">${pc.sheet === -1 ? 'NO HABITAT' : 'NO PC'} · ${ITEMS[m.ball] ? ITEMS[m.ball].name : ''} · ${String(dt.getDate()).padStart(2, '0')}/${String(dt.getMonth() + 1).padStart(2, '0')}/${dt.getFullYear()}</div>` +
+    `</div></div>`;
+}
+
+/* ── cursor e caixas ── */
+function pc_box(d) {
+  if (pc.busy) return Sfx.deny();
+  pc.box = (pc.box + d + PC_BOXES) % PC_BOXES; if (pc.cur < 0) pc.cur = pc.row * 6;
+  Sfx.click(); pc_render();
+}
+function pc_move(dx, dy) {
+  if (pc.cur < 0) { if (dx > 0) pc.cur = pc.row * 6; else return; }
+  else {
+    const x = pc.cur % 6, y = Math.floor(pc.cur / 6);
+    if (dx < 0 && x === 0) pc.cur = -1;                               // à esquerda da caixa fica o ativo
+    else if (dx > 0 && x === 5) { pc.box = (pc.box + 1) % PC_BOXES; pc.cur = y * 6; }
+    else if (dy && (y + dy < 0 || y + dy > 4)) return;
+    else pc.cur += dx + dy * 6;
+    if (pc.cur >= 0) pc.row = Math.floor(pc.cur / 6);
+  }
+  Sfx.click(); pc_render();
+}
+function pc_select(slot) {
+  if (slot === pc.cur) return pc_choose();   // tocar de novo no mesmo = ESCOLHER
+  pc.cur = slot; if (slot >= 0) pc.row = Math.floor(slot / 6);
+  Sfx.click(); pc_render();
+}
+
+/* ── ESCOLHER ── */
+function pc_choose() {
+  if (pc.busy || pendingChoice) return Sfx.deny();
+  syncFromStorage(); if (!G || scene !== 'pc') return;
+  const m = pc_monAt(); if (!m) { pc_render(); return Sfx.deny(); }
+  if (pc.cur < 0) return Menu.open({ title: `${N(s)} Nv ${s.level}`, items: [
+    { label: 'DADOS', fn: () => { Menu.closeAll(); pc_openSheet(-1); } }, { label: 'CANCELAR', fn: () => Menu.close() }] });
+  const uid = m.uid;
+  Menu.open({ title: `${N(m)} Nv ${m.level}`, items: [
+    { label: 'ATIVAR', fn: () => pc_activate(uid) },
+    { label: 'DADOS', fn: () => { Menu.closeAll(); pc_openSheet(uid); } },
+    { label: 'USAR ITEM', fn: () => pc_itemMenu(uid) },
+    ...(pc_tradeTo(m) ? [{ label: 'TROCAR', sub: 'x' + (G.bag.cabo || 0), fn: () => pc_trade(uid) }] : []),
+    { label: 'SOLTAR', fn: () => pc_release(uid) },
+    { label: 'CANCELAR', fn: () => Menu.close() }] });
+}
+
+// ATIVAR: em casa, acordado, parado, sem fruta nem sujeira no chão, e 30 min desde a última troca
+function pc_swapWhy() {
+  if (G.outing) return `${N()} está fora de casa.`;
+  if (evo || training) return `${N()} está ocupado agora.`;
+  if (s.asleep) return `${N()} está dormindo... Acenda as luzes primeiro.`;
+  if (s.berry || pk.mode === 'eat') return `Primeiro deixe ${N()} comer a FRUTA!`;
+  if (s.poops.length) return 'Limpe o habitat antes da mudança.';
+  const left = G.prog.swapAt + PC_SWAP_MS - Date.now();
+  if (left > 0 && G.prog.swapAt <= Date.now()) return `O PC ainda está transferindo dados... (${Math.ceil(left / 60e3)}min)`;
+  return null;
+}
+function pc_activate(uid) {
+  syncFromStorage(); if (!G || !pc_find(uid)) { Menu.closeAll(); pc_render(); return Sfx.deny(); }
+  const why = pc_swapWhy(); if (why) { sayNow(why); return Sfx.deny(); }
+  Menu.closeAll(); goHome();
+  // a volta para casa simula o tempo no PC: pode ter aparecido sujeira
+  const why2 = pc_swapWhy(); if (why2) { sayNow(why2); return Sfx.deny(); }
+  if (!pc_find(uid)) return Sfx.deny();
+  const old = N(); swapActive(uid);
+  say(`${old}, volte!`); say(`Vai, ${N()}! Eu escolho você!`); Sfx.cry(s.sp);
+}
+
+// USAR ITEM num POKéMON do PC: DOCE RARO ou pedra; tudo na hora, sem animação
+function pc_itemMenu(uid) {
+  const m = pc_find(uid); if (!m) return Sfx.deny();
+  const items = [...(bagHas('doce') ? [{ label: `${bag_icon('doce')}${ITEMS.doce.name}`, sub: 'x ' + G.bag.doce, fn: () => pc_candy(uid) }] : []),
+    ...bag_stonesFor(m.sp).map(e => ({ label: `${bag_icon(e.k)}${ITEMS[e.k].name}`, sub: 'x ' + G.bag[e.k], fn: () => pc_stone(uid, e.k) }))];
+  if (!items.length) { sayNow(`Nenhum item da BOLSA serve para ${N(m)}.`); return Sfx.deny(); }
+  Menu.open({ title: 'USAR ITEM', wide: true, items: [...items, { label: 'VOLTAR', fn: () => Menu.close() }] });
+}
+// evolução na hora (PC): marca a POKéDEX e avisa os módulos como a do habitat
+function pc_evolve(m, to) {
+  const from = m.sp; m.sp = to; m.happy = clamp(m.happy + 10);
+  dexMark(to, true, m.shiny); fire('evolved', m, from); m.pendingEvo = !!levelEvo(m);
+  say(`Parabéns! Seu ${DEX[from].name} evoluiu para ${DEX[to].name}!`); Sfx.evoDone();
+}
+function pc_candy(uid) {
+  syncFromStorage(); const m = G && pc_find(uid); if (!m) return Sfx.deny();
+  if (!bag_candy(m, false)) return;
+  const e = levelEvo(m); if (e) { pc_evolve(m, e.to); save(); }
+  Menu.closeAll(); pc_render();
+}
+async function pc_stone(uid, k) {
+  let m = pc_find(uid); const to = m && bag_stoneTo(m.sp, k); if (!to) return Sfx.deny();
+  if (bag_stoneEvos(m.sp).length > 1) {   // EEVEE: a pedra escolhe a forma
+    bag_preview(to, m.shiny);
+    const ok = await confirmYN(`Usar a ${ITEMS[k].name}? ${N(m)} vai evoluir para ${DEX[to].name}!`);
+    bag_preview(null); if (!ok || scene !== 'pc') return;
+  }
+  syncFromStorage(); m = G && pc_find(uid);
+  if (!m || bag_stoneTo(m.sp, k) !== to || !bagUse(k)) return Sfx.deny();
+  G.prog.stoneTradeEvos++; pc_evolve(m, to); save();
+  Menu.closeAll(); pc_render();
+}
+
+// TROCAR: gasta 1 CABO DE TROCA; o resultado é gravado antes da animação (recarregar no meio não perde nem duplica nada)
+async function pc_trade(uid) {
+  let m = pc_find(uid); const to = m && pc_tradeTo(m); if (!to) return Sfx.deny();
+  if (!bagHas('cabo')) { sayNow('Você precisa de um CABO DE TROCA.'); return Sfx.deny(); }
+  const ok = await confirmYN(`Usar 1 CABO DE TROCA para trocar ${N(m)}?`); if (!ok || scene !== 'pc') return;   // fechado de fora: vale NÃO
+  syncFromStorage(); m = G && pc_find(uid);
+  if (!m || pc_tradeTo(m) !== to || !bagUse('cabo')) return Sfx.deny();
+  const from = m.sp, shiny = m.shiny;
+  m.sp = to; m.happy = clamp(m.happy + 10); m.pendingEvo = !!levelEvo(m);
+  G.prog.trades++; G.prog.stoneTradeEvos++; dexMark(to, true, shiny); fire('evolved', m, from); save();
+  Menu.closeAll(); pc.busy = true;
+  // botões apagados enquanto a troca roda (só A/toque passam as mensagens)
+  setKnobs(Object.assign(SCENES.pc.knobs.map(d => ({ ...d, disabled: true })), { center: null }));
+  const k = id => 'f' + id + (shiny ? 's' : '');
+  try {
+    // a frase do FRLG não cabe nas 3 linhas da caixa no celular: vai em duas
+    await talk(`PROF. CARVALHO vai trocar ${DEX[from].name} com um amigo...`); await talk('...e trazê-lo de volta!');
+    await pc_linkAnim(k(from), k(to));
+    Sfx.evoDone();
+    await talk(`Parabéns! Seu ${DEX[from].name} evoluiu para ${DEX[to].name}!`);
+  } finally { pc.busy = false; if (scene === 'pc') { setKnobs(SCENES.pc.knobs); const l = pc.el && pc.el.querySelector('.pc-link'); if (l) l.hidden = true; pc_render(); } }
+}
+// animação do cabo: o POKéMON vai ao outro aparelho, volta e evolui (silhueta piscando)
+async function pc_linkAnim(fromKey, toKey) {
+  const l = pc.el && pc.el.querySelector('.pc-link'); if (!l) return;
+  const fast = RM.matches ? .4 : 1;
+  l.innerHTML = '<div class="pc-gba"></div><div class="pc-cable"><i></i></div><div class="pc-gba"></div>' +
+    `<img class="pc-lmon" src="${spriteURL(fromKey)}" alt="">`;
+  l.hidden = false;
+  const im = l.querySelector('.pc-lmon');
+  await pc_wait(500 * fast);
+  l.classList.add('go'); Sfx.whoosh(); await pc_wait(1300 * fast);
+  l.classList.remove('go'); l.classList.add('back'); Sfx.whoosh(); await pc_wait(1300 * fast);
+  l.classList.remove('back'); l.classList.add('evo'); Sfx.cry(+fromKey.replace(/\D/g, ''));
+  for (let i = 0, n = RM.matches ? 4 : 12; i < n; i++) {
+    im.src = spriteURL(i % 2 ? toKey : fromKey); Sfx.blip(320 + i * 70);
+    await pc_wait(RM.matches ? 500 : 260 - i * 14);
+  }
+  im.src = spriteURL(toKey); l.classList.remove('evo'); await pc_wait(300);
+}
+
+// SOLTAR: duas confirmações; devolve uma bola (GRANDE BOLA se já evoluiu)
+async function pc_release(uid) {
+  let m = pc_find(uid); if (!m) return Sfx.deny();
+  const name = N(m);
+  if (!await confirmYN(`Soltar ${name}?`, { safeNo: true })) return;
+  if (!await confirmYN(`Tem certeza? ${name} não vai voltar.`, { safeNo: true }) || scene !== 'pc') return;
+  syncFromStorage(); if (!G) return;
+  const i = G.pc.findIndex(x => x.uid === uid); if (i < 0) return Sfx.deny();
+  const ball = DEX[G.pc[i].sp].stage >= 1 ? 'great' : 'poke';
+  const had = G.bag[ball] || 0;
+  G.pc.splice(i, 1); bagAdd(ball, 1); save();
+  Menu.closeAll(); pc_render();
+  // com 99 na BOLSA o bagAdd não soma nada: não dá para dizer que recebeu
+  sayNow(`Tchau, ${name}!`); say(G.bag[ball] > had ? `Você recebeu 1 ${ITEMS[ball].name}.` : `A BOLSA já está cheia de ${ITEMS[ball].name}S.`); Sfx.click();
+}
+
+/* ── DADOS ── */
+function pc_openSheet(uid) {
+  pc.sheet = uid; pc_render();
+  setKnobs([{ label: 'ANTERIOR', icon: '◀', fn: () => pc_sheetStep(-1) }, null, { label: 'PRÓXIMO', icon: '▶', fn: () => pc_sheetStep(1) },
+    { label: 'VOLTAR', icon: '◀', fn: pc_closeSheet }]);
+  knobDefs.center = { fn: pc_closeSheet };
+  Sfx.click();
+}
+function pc_closeSheet() { pc.sheet = null; setKnobs(SCENES.pc.knobs); Sfx.click(); pc_render(); }
+// anda pela ordem: o ativo, depois o PC; o cursor da caixa acompanha
+function pc_sheetStep(d) {
+  const list = [-1, ...G.pc.map(m => m.uid)], i = Math.max(0, list.indexOf(pc.sheet)), j = (i + d + list.length) % list.length;
+  pc.sheet = list[j];
+  if (j === 0) pc.cur = -1; else { pc.box = Math.floor((j - 1) / PC_SLOTS); pc.cur = (j - 1) % PC_SLOTS; pc.row = Math.floor(pc.cur / 6); }
+  Sfx.click(); pc_render();
+}
+
+function pc_exit() { if (pc.busy || pendingChoice) return Sfx.deny(); Sfx.click(); goHome(); }
+SCENES.pc = {
+  knobs: Object.assign([
+    { label: '◀ CAIXA', icon: '◀', fn: () => pc_box(-1) }, { label: 'ESCOLHER', icon: 'OK', fn: () => pc_choose() },
+    { label: 'CAIXA ▶', icon: '▶', fn: () => pc_box(1) }, { label: 'SAIR', icon: 'X', fn: () => pc_exit() }], { center: { fn: () => pc_choose() } }),
+  enter() {
+    pc.sheet = null; pc.busy = false; pc_tries = 0; pc.html = '';
+    pc.el = document.createElement('div'); pc.el.className = 'pc-layer'; pc.el.id = 'pcLayer';
+    document.querySelector('.screen-wrap').appendChild(pc.el);
+    pc.el.addEventListener('click', pc_click);
+    pc_render();
+  },
+  exit() { if (pendingChoice) closeChoice(); if (pc.el) pc.el.remove(); pc.el = null; pc.sheet = null; pc.busy = false; bag_preview(null); },
+  draw(c) { R(c, 0, 0, W, H, '#28406a'); },
+  key(e, k) {
+    if (pc.busy) return false;   // A/Enter ainda passa as mensagens da troca
+    const dir = { arrowleft: [-1, 0], arrowright: [1, 0], arrowup: [0, -1], arrowdown: [0, 1], a: [-1, 0], d: [1, 0], w: [0, -1], s: [0, 1] }[k];
+    const A = k === 'enter' || k === ' ' || k === 'z', B = k === 'escape' || k === 'x' || k === 'backspace';
+    if (!dir && !A && !B && !['q', 'e', 'pageup', 'pagedown'].includes(k)) return false;
+    e.preventDefault();
+    if (pc.sheet != null) { if (A || B) { if (!e.repeat) pc_closeSheet(); } else if (dir) pc_sheetStep(dir[0] || dir[1]); return true; }
+    if (dir) pc_move(dir[0], dir[1]);
+    else if (k === 'q' || k === 'pageup') pc_box(-1);
+    else if (k === 'e' || k === 'pagedown') pc_box(1);
+    else if (e.repeat) return true;
+    else if (A) pc_choose();
+    else if (B) pc_exit();
+    return true;
+  },
+};
+function pc_click(e) {
+  if (pc.busy || pendingChoice) return;
+  if (Menu.top) { Menu.closeAll(); Sfx.click(); return; }   // tocar fora do menu fecha
+  if (pc.sheet != null) return pc_closeSheet();
+  const arr = e.target.closest('.pc-arr'); if (arr) return pc_box(+arr.dataset.d);
+  const c = e.target.closest('[data-slot]'); if (c) pc_select(+c.dataset.slot);
+}
+// outra aba mudou o save / a simulação andou: redesenha (sem atrapalhar a animação da troca)
+on('tick', () => { if (scene === 'pc' && !pc.busy) pc_render(); });
+
+addStartItem({ label: 'PC', order: 50, fn: openPC });
+HAB_KEYS.k = openPC;
+
+/* ── pokedex.js ── */
+/* ════════════ POKéDEX ════════════
+   Cena 'pokedex' (START → POKéDEX, tecla D): a lista dos 151 em HTML por cima da tela e a ficha de cada espécie.
+   showDexEntry(id): só a ficha, por cima de qualquer cena (a 1ª captura de uma espécie, como no FRLG).
+   Devolve uma Promise que resolve quando o jogador fecha a ficha; a cena de baixo continua onde estava. */
+
+// nunca aparecem na grama (spec C): formas de pedra e de troca, fóssil estágio 0, iniciais
+const DX_NEVER = new Set([26, 31, 34, 36, 38, 40, 45, 59, 62, 71, 91, 103, 121, 134, 135, 136, 65, 68, 76, 94, 138, 140, 142, 1, 4, 7]);
+const DX_AREA = { floresta: 'FLORESTA DE VIRIDIAN', vulcao: 'MONTE BRASA', praia: 'ILHAS ESPUMA' };
+const DX_STAT = ['PS', 'ATQ', 'DEF', 'AT.E', 'DF.E', 'VEL'];
+const DX_BALL = bmSvg(['..KKK..', '.KRRRK.', 'KRRRRRK', 'KKKWKKK', 'KWWWWWK', '.KWWWK.', '..KKK..']);
+const dxNo = id => 'Nº' + String(id).padStart(3, '0');
+// onde a espécie vive. Estágios 1/2 dos iniciais viram selvagens na 5ª insígnia, OMASTAR e KABUTOPS na 6ª [fan]
+function dexArea(id) {
+  if (LEGENDS.includes(id)) return 'LENDÁRIO';
+  const b = G ? G.prog.badges : 0;
+  if (DX_NEVER.has(id) || ([2, 3, 5, 6, 8, 9].includes(id) && b < 5) || ((id === 139 || id === 141) && b < 6)) return 'NÃO É SELVAGEM';
+  return DX_AREA[biomeOf(id)];
+}
+// DEX guarda altura em decímetros e peso em hectogramas
+const dxMeasure = (v, u) => (v / 10).toFixed(1).replace('.', ',') + ' ' + u;
+
+// botão redondo que repete enquanto apertado (listas longas). O clique que encerra um aperto longo não anda de novo.
+// step() devolve false quando não há mais o que fazer (a tela fechou): o repetidor para sozinho.
+function dxHoldKnob(label, icon, step) {
+  let timer = 0, repeated = false;
+  const stop = () => { clearTimeout(timer); clearInterval(timer); timer = 0; };
+  return { label, icon, up: stop,
+    down() { stop(); repeated = false; timer = setTimeout(() => { repeated = true; if (step() === false) return stop(); timer = setInterval(() => { if (step() === false) stop(); }, 90); }, 380); },
+    fn() { stop(); if (repeated) { repeated = false; return; } step(); } };
+}
+
+const dx = { el: null, list: null, page: null, mode: null, view: 'list', sel: 0, id: 0, shiny: false, done: null, prevKnobs: null, popKnobs: null, popScene: '' };
+
+function dx_build() {
+  if (dx.el) return;
+  const el = document.createElement('div'); el.className = 'dx'; el.hidden = true;
+  el.innerHTML = '<div class="dx-head"><span class="dx-title">POKéDEX</span><span class="dx-shc"></span></div>' +
+    '<div class="dx-count"><span class="dx-seen"></span><span class="dx-caught"></span></div>' +
+    '<div class="dx-list" role="listbox" aria-label="POKéDEX"></div><div class="dx-page" hidden></div>';
+  document.querySelector('.screen-wrap').appendChild(el);
+  dx.el = el; dx.list = el.querySelector('.dx-list'); dx.page = el.querySelector('.dx-page');
+  // toque numa linha: escolhe e abre (as não vistas só recebem o cursor)
+  dx.list.addEventListener('click', e => {
+    const r = e.target.closest('.dx-row'); if (!r) return;
+    dx_select(+r.dataset.id - 1); dx_ok();
+  });
+  // na ficha avulsa, tocar fora da figura e do ✦ fecha (os botões redondos podem ser de outra cena)
+  el.addEventListener('click', e => { if (e.target.closest('.dx-shbtn')) dx_toggleShiny(); else if (e.target.closest('.dx-pic')) Sfx.cry(dx.id); else if (dx.mode === 'popup') dx_close(); });
+  // outra aba zerou o jogo (volta à escolha do inicial sem passar pelo exit da cena): some junto
+  new MutationObserver(() => { if (!$('selectLayer').hidden) dx_close(); }).observe($('selectLayer'), { attributes: true, attributeFilter: ['hidden'] });
+}
+
+// cabeçalho vermelho: na lista, os contadores; na ficha, Nº e nome (sobra altura para os dados em tela de celular)
+function dx_header() {
+  const q = c => dx.el.querySelector(c);
+  if (dx.view === 'page') {
+    const id = dx.id;
+    q('.dx-title').textContent = `${dxNo(id)} ${DEX[id].name}`;
+    q('.dx-shc').innerHTML = (dexHas('caught', id) ? DX_BALL : '') + (dexHas('shiny', id) && dexHas('caught', id)
+      ? `<button type="button" class="dx-shbtn${dx.shiny ? ' on' : ''}" tabindex="-1" aria-label="Ver cores ${dx.shiny ? 'normais' : 'brilhantes'}">✦</button>` : '');
+    return;
+  }
+  q('.dx-title').textContent = 'POKéDEX';
+  q('.dx-seen').textContent = `VISTOS: ${dexCount('seen')}`;
+  q('.dx-caught').textContent = `CAPTURADOS: ${dexCount('caught')} / 151`;
+  q('.dx-shc').textContent = G.hof ? `BRILHANTES: ${dexCount('shiny')} / 151` : '';
+}
+function dx_rowHTML(id) {
+  const d = DEX[id], seen = dexHas('seen', id), caught = dexHas('caught', id), sel = id - 1 === dx.sel;
+  const pic = caught ? `<img src="${SPRITES['f' + id] || ''}" alt="" loading="lazy">` : seen ? `<img class="dx-sil" src="${SPRITES['f' + id] || ''}" alt="" loading="lazy">` : '';
+  const mk = (caught ? DX_BALL : '') + (dexHas('shiny', id) ? '<b class="dx-shy" title="Brilhante capturado">✦</b>' : '');
+  return `<div class="dx-row${sel ? ' sel' : ''}${seen ? '' : ' unseen'}" role="option" aria-selected="${sel}" data-id="${id}">` +
+    `<span class="dx-ico">${pic}</span><span>${dxNo(id)}</span><span class="dx-nm">${seen ? d.name : '-----'}</span><span class="dx-mk">${mk}</span></div>`;
+}
+function dx_renderList() {
+  dx_header();
+  let h = ''; for (let id = 1; id <= 151; id++) h += dx_rowHTML(id);
+  dx.list.innerHTML = h;
+}
+function dx_select(i, center) {
+  i = Math.max(0, Math.min(150, i));
+  const old = dx.list.children[dx.sel], row = dx.list.children[i];
+  if (old) { old.classList.remove('sel'); old.setAttribute('aria-selected', 'false'); }
+  dx.sel = i;
+  if (row) { row.classList.add('sel'); row.setAttribute('aria-selected', 'true'); row.scrollIntoView({ block: center ? 'center' : 'nearest' }); }
+}
+function dx_move(d) {
+  if (!dx.el || dx.el.hidden || dx.view !== 'list') return false;
+  const i = Math.max(0, Math.min(150, dx.sel + d));
+  if (i === dx.sel) return false;
+  dx_select(i); Sfx.click();
+}
+
+function dx_show() {
+  dx.el.hidden = false; dx.el.parentNode.appendChild(dx.el);   // por último no DOM: fica sobre camadas de outros módulos
+}
+function dx_openList() {
+  dx.view = 'list'; dx.page.hidden = true; dx.list.hidden = false; dx.el.classList.remove('paged');
+  dx_renderList(); dx_select(dx.sel, true);
+  setKnobs([dxHoldKnob('▲', '▲', () => dx_move(-1)), dxHoldKnob('▼', '▼', () => dx_move(1)),
+    { label: 'OK', icon: 'OK', fn: dx_ok }, { label: 'VOLTAR', icon: '◀', fn: dx_back }]);
+  knobDefs.center = { fn: dx_ok };
+}
+function dx_ok() {
+  const id = dx.sel + 1;
+  if (!dexHas('seen', id)) return Sfx.deny();
+  Sfx.click(); dx_openPage(id);
+}
+function dx_back() {
+  if (dx.mode === 'popup') return dx_close();
+  if (dx.view === 'page') { Sfx.click(); dx_openList(); return; }
+  Sfx.click(); goHome();
+}
+
+// ficha de uma espécie: completa se capturada, só a silhueta se apenas vista
+function dx_openPage(id, quiet) {
+  dx.view = 'page'; dx.id = id; dx.shiny = false; dx.sel = id - 1;
+  dx.list.hidden = true; dx.page.hidden = false; dx.el.classList.add('paged');
+  dx_renderPage();
+  if (dexHas('caught', id) && !quiet) Sfx.cry(id);
+  const pop = dx.mode === 'popup';
+  setKnobs(pop ? (dx.popKnobs = [null, null, { label: 'OK', icon: 'OK', fn: dx_close }, { label: 'VOLTAR', icon: '◀', fn: dx_close }])
+    : [{ label: '▲', icon: '▲', fn: () => dx_step(-1) }, { label: '▼', icon: '▼', fn: () => dx_step(1) },
+      { label: 'OK', icon: 'OK', fn: dx_pageOk }, { label: 'VOLTAR', icon: '◀', fn: dx_back }]);
+  knobDefs.center = { fn: pop ? dx_close : dx_pageOk };
+}
+function dx_renderPage() {
+  const id = dx.id, d = DEX[id], caught = dexHas('caught', id);
+  const key = 'f' + id + (dx.shiny ? 's' : ''), src = caught ? spriteURL(key) : SPRITES['f' + id] || '';
+  dx_header();
+  if (!caught) {
+    dx.page.innerHTML = `<div class="dx-pbody"><div class="dx-pic"><img class="dx-sil" src="${src}" alt=""></div>` +
+      '<div class="dx-info"><div>Capture para ver os dados.</div></div></div>';
+    return;
+  }
+  // o PNG brilhante é montado na 1ª vez (assíncrono): até lá spriteURL devolve o normal, então redesenha logo depois
+  if (dx.shiny && !SHINY_URL[key]) setTimeout(() => { if (dx.view === 'page' && dx.id === id && dx.shiny && SHINY_URL[key]) dx_renderPage(); }, 150);
+  dx.page.innerHTML =
+    `<div class="dx-pbody"><div class="dx-pic${dx.shiny ? ' shiny' : ''}"><img src="${src}" alt="${d.name}"></div><div class="dx-info">` +
+    `<div class="types">${d.types.map(t => `<span class="type" style="background:${TYPE_COLOR[t]}">${t}</span>`).join('')}</div>` +
+    `<div><span class="dx-lbl">ALTURA</span> ${dxMeasure(d.h, 'm')}</div><div><span class="dx-lbl">PESO</span> ${dxMeasure(d.w, 'kg')}</div>` +
+    `<div><span class="dx-lbl">ÁREA</span> ${dexArea(id)}</div></div></div>` +
+    `<div class="dx-stats">${d.base.map((b, i) => `<div class="dx-st"><span>${DX_STAT[i]}</span><span class="b"><i style="width:${Math.min(100, b / 130 * 100)}%"></i></span><span class="n">${b}</span></div>`).join('')}</div>` +
+    `<div class="dx-evo">${evoText(d).replace(/→/g, '»')}</div>`;   // a fonte pixel não tem a seta
+}
+function dx_pageOk() { if (dexHas('shiny', dx.id)) dx_toggleShiny(); else Sfx.cry(dx.id); }
+function dx_toggleShiny() {
+  if (dx.view !== 'page' || !dexHas('shiny', dx.id) || !dexHas('caught', dx.id)) return Sfx.deny();
+  dx.shiny = !dx.shiny; dx_renderPage(); Sfx.cry(dx.id);
+}
+// ▲▼ na ficha: a espécie vista anterior/seguinte (como no FRLG)
+function dx_step(d) {
+  for (let id = dx.id + d; id >= 1 && id <= 151; id += d) if (dexHas('seen', id)) { Sfx.click(); dx_openPage(id); return; }
+  Sfx.deny();
+}
+
+// teclado: ▲▼ anda, ◀▶ pula 7 linhas (na ficha: cores brilhantes), A abre, B volta
+function dx_key(e, k) {
+  const A = k === 'enter' || k === ' ' || k === 'z', B = k === 'escape' || k === 'x' || k === 'backspace';
+  const up = k === 'arrowup' || k === 'w', down = k === 'arrowdown' || k === 's', side = k === 'arrowleft' || k === 'arrowright';
+  if (dx.view === 'list') {
+    if (up || down) dx_move(up ? -1 : 1);
+    else if (side || k === 'pageup' || k === 'pagedown') dx_move(k === 'arrowleft' || k === 'pageup' ? -7 : 7);
+    else if (k === 'home' || k === 'end') { dx_select(k === 'home' ? 0 : 150); Sfx.click(); }
+    else if (A) { if (!e.repeat) dx_ok(); }
+    else if (B) { if (!e.repeat) dx_back(); }
+    else return false;
+  } else if (dx.mode === 'popup') {
+    if (side) { if (!e.repeat) dx_toggleShiny(); }
+    else if (A || B) { if (!e.repeat) dx_close(); }
+    else if (!up && !down) return false;
+  } else {
+    if (up || down) dx_step(up ? -1 : 1);
+    else if (side) { if (!e.repeat) dx_toggleShiny(); }
+    else if (k === 'pageup' || k === 'pagedown') dx.page.scrollTop += (k === 'pageup' ? -.6 : .6) * dx.page.clientHeight;   // ficha longa (EEVEE) em tela pequena
+    else if (A) { if (!e.repeat) dx_pageOk(); }
+    else if (B) { if (!e.repeat) dx_back(); }
+    else return false;
+  }
+  e.preventDefault(); return true;
+}
+// na ficha avulsa a cena de baixo não pode receber as teclas: escuta antes de todo mundo (captura) e para a propagação
+function dx_popKey(e) {
+  if (!dx_popAlive()) return;
+  if (pendingChoice || Menu.top || e.ctrlKey || e.metaKey || e.altKey) return;   // menu aberto por cima (pílula MENU): as teclas são dele
+  const k = e.key.toLowerCase();
+  if (k >= '1' && k <= '4') { e.stopImmediatePropagation(); e.preventDefault(); if (!e.repeat) $(KNOB_IDS[+k - 1]).click(); return; }
+  if (!dx_key(e, k) && k === 'm') return;   // só o SOM passa; o resto (F, T, C...) não pode agir na cena escondida
+  e.stopImmediatePropagation();
+}
+
+function showDexEntry(id) {
+  id = Math.floor(+id);
+  if (!G || !(id >= 1 && id <= 151) || !dexHas('seen', id)) return Promise.resolve();
+  dx_build();
+  if (dx.mode === 'scene') { dx_openPage(id); return Promise.resolve(); }
+  if (dx.mode === 'popup') { dx_openPage(id); return dx.wait; }
+  dx.mode = 'popup'; dx.prevKnobs = knobDefs; dx.popScene = scene;
+  window.addEventListener('keydown', dx_popKey, true);
+  requestAnimationFrame(dx_watch);
+  dx.wait = new Promise(res => { dx.done = res; });
+  dx_show(); dx_openPage(id);
+  return dx.wait;
+}
+// fecha a POKéDEX (cena ou ficha avulsa); a avulsa devolve os botões da cena de baixo e resolve a Promise
+function dx_close() {
+  if (!dx.el || !dx.mode) return;
+  const pop = dx.mode === 'popup', done = dx.done;
+  dx.el.hidden = true; dx.mode = null; dx.done = null;
+  if (pop) {
+    window.removeEventListener('keydown', dx_popKey, true);
+    // os botões da ficha podem estar na tela ou guardados por um menu aberto por cima: os dois voltam aos da cena de baixo
+    for (const m of Menu.stack) if (m.prevKnobs === dx.popKnobs) m.prevKnobs = dx.prevKnobs;
+    if (knobDefs === dx.popKnobs) setKnobs(dx.prevKnobs);
+    dx.prevKnobs = dx.popKnobs = null; Sfx.click(); done && done();
+  }
+}
+
+// a cena de baixo trocou (sem ser a volta para casa): a ficha avulsa perdeu os botões e pode ficar coberta, então fecha
+function dx_popAlive() {
+  if (dx.mode !== 'popup') return false;
+  if (scene === dx.popScene || scene === 'habitat') return true;
+  dx_close(); return false;
+}
+function dx_watch() { if (dx_popAlive()) requestAnimationFrame(dx_watch); }
+
+SCENES.pokedex = {
+  enter(arg) { dx_build(); dx_close(); dx.mode = 'scene'; dx_show(); if (arg && arg.id && dexHas('seen', arg.id)) dx_openPage(arg.id); else dx_openList(); },
+  exit() { if (dx.mode === 'scene') dx_close(); },
+  draw(c) { R(c, 0, 0, W, H, '#b8261f'); },
+  key: dx_key,
+};
+// a ficha avulsa sobrevive à volta para casa (quem chamou pode não ter esperado): retoma os botões, e ao fechar
+// eles voltam a ser os do habitat. A cena da POKéDEX já foi fechada pelo exit.
+on('home', () => { if (dx.mode === 'popup') { dx.prevKnobs = null; dx.popScene = 'habitat'; dx_openPage(dx.id, true); } });
+on('newGame', dx_close);
+
+addStartItem({ label: 'POKéDEX', order: 20, fn: () => go('pokedex') });
+HAB_KEYS.d = () => { Sfx.click(); go('pokedex'); };
+// testes (#dev): a ficha avulsa e o HALL no console
+on('boot', () => { if (window.PKG) Object.assign(window.PKG, { showDexEntry, startHall, dexArea }); });
+
+/* ── progress.js ── */
+/* ════════════ Progresso: insígnias, medalhas, presentes do PROF. CARVALHO ════════════
+   Presente diário, POKé BOLAS por bom cuidado, rede de segurança de bolas, as 8 insígnias de Kanto,
+   as medalhas e o gatilho do HALL DA FAMA. As recompensas vão para o save na hora; as mensagens
+   esperam o POKéMON estar em casa (fila prog.notes, no save: fechar o app no meio não as perde). */
+extendDefaults({
+  prog: { medals: [], wins: 0, careDays: 0, nightCaps: 0, stoneTradeEvos: 0, trades: 0, fossils: 0, starterGifts: 0,
+    charm: false, legend: {}, miniBest: 0, legendsCaught: 0, notes: [] },
+  daily: { date: '', maxDate: '', streak: 0, careMin: 0, careBalls: 0, careDayCounted: false, miniGames: 0, miniBalls: 0,
+    lastSafety: 0, giftDate: '' },
+});
+
+const PG_BADGE_NAMES = ['', 'ROCHA', 'CASCATA', 'TROVÃO', 'ARCO-ÍRIS', 'ALMA', 'PÂNTANO', 'VULCÃO', 'TERRA'];
+const badgeName = n => PG_BADGE_NAMES[n] || '';
+// onde corre o boato de cada lendário
+const PG_RUMOR = { 144: 'nas ILHAS ESPUMA', 145: 'na FLORESTA DE VIRIDIAN', 146: 'no MONTE BRASA', 150: 'em algum lugar, à noite' };
+const pg_lvl30 = () => s.level >= 30 || G.pc.some(m => m.level >= 30);
+// condição de cada insígnia (a anterior já é exigida por pg_check, que vai em ordem)
+const PG_BADGES = [null,
+  { ok: c => c >= 10, items: [['poke', 10]], hint: 'POKéMON mais raros vão aparecer agora!' },
+  { ok: c => c >= 25 && G.prog.careDays >= 3, items: [['great', 5], ['agua', 1]], hint: 'Agora você pode usar GRANDES BOLAS!', starter: true },
+  { ok: c => c >= 40 && G.prog.wins >= 15, items: [['trovao', 1], ['cabo', 1], ['helix', 1]], hint: 'POKéMON muito raros vão aparecer agora!' },
+  { ok: c => c >= 55 && G.prog.miniBest >= 200, items: [['folha', 1], ['ultra', 3], ['domo', 1]], hint: 'Agora você pode usar ULTRA BOLAS!', starter: true },
+  { ok: c => c >= 70 && G.prog.stoneTradeEvos >= 1, items: [['lua', 1], ['cabo', 2]], legend: 144, hint: 'As evoluções dos iniciais agora vivem na natureza!' },
+  { ok: c => c >= 85 && pg_lvl30(), items: [['fogo', 1], ['ambar', 1]], legend: 145, hint: 'OMASTAR e KABUTOPS agora vivem na natureza!' },
+  { ok: c => c >= 100 && G.prog.nightCaps >= 10, items: [['lua', 1], ['cabo', 1], ['ultra', 5]], legend: 146 },
+  { ok: c => c >= 120 && [144, 145, 146].every(id => dexHas('caught', id)), items: [['master', 1]], legend: 150 },
+];
+const PG_STONES = ['lua', 'fogo', 'agua', 'trovao', 'folha'];
+// medalhas automáticas (MESTRE DO TREINO e MESTRE POKéMON vêm de ganchos)
+const PG_MEDALS = [
+  { name: 'BRILHO', ok: () => dexCount('shiny') >= 1, items: [['ultra', 5]] },
+  { name: 'VETERANO', ok: () => G.prog.wins >= 100, items: [['great', 5]] },
+  { name: 'FIEL', ok: () => G.daily.streak >= 7, items: [['ultra', 3]] },
+  { name: 'COLHEDOR', ok: () => G.prog.miniBest >= 350, items: [['stone', 1]] },
+  { name: 'PALEONTÓLOGO', ok: () => G.prog.fossils >= 3, items: [['ultra', 3]] },
+  { name: 'NEGOCIANTE', ok: () => G.prog.trades >= 4, items: [['cabo', 1]] },
+  { name: 'CAÇADOR DE LENDAS', ok: () => LEGENDS.every(id => dexHas('caught', id)), items: [['ultra', 5]] },
+];
+
+// "10 POKé BOLAS", "1 PEDRA DA LUA", "3 DOCES RAROS"
+function pg_itemTxt(k, n) {
+  let nm = ITEMS[k].name;
+  if (n > 1) nm = nm.replace(/BOLA$/, 'BOLAS').replace(/^GRANDE /, 'GRANDES ').replace(/^DOCE RARO$/, 'DOCES RAROS').replace(/^CABO /, 'CABOS ').replace(/^PEDRA /, 'PEDRAS ')
+    .replace(/^FÓSSIL /, 'FÓSSEIS ').replace(/^POÇÃO$/, 'POÇÕES');
+  return `${n} ${nm}`;
+}
+function pg_give(k, n) {
+  if (k === 'stone') k = PG_STONES[randInt(0, PG_STONES.length - 1)];   // COLHEDOR: uma pedra qualquer
+  bagAdd(k, n); pg_note(`Você recebeu ${pg_itemTxt(k, n)}!`);
+}
+
+/* Fila de mensagens do progresso: uma de cada vez, só em casa, com a caixa livre (um sayNow de outra parte
+   do jogo não apaga a fila inteira, e o som toca quando a mensagem aparece). Fica no save como [texto, som]. */
+const PG_SFX = { happy: () => Sfx.happy(), fan: () => pg_fanfare(), medal: () => Sfx.levelUp(), evo: () => Sfx.evoDone() };
+function pg_note(text, sfx) { const q = G.prog.notes; q.push([text, sfx || '']); if (q.length > 40) q.splice(0, q.length - 40); }
+function pg_pump() {
+  // nem no treino (apagaria a instrução), nem com menu ou o painel de OPÇÕES aberto (op_panel vem de options.js)
+  if (!G || !G.prog.notes.length || !atHome() || document.hidden || pendingChoice || evo || training || sweep || Menu.top || op_panel
+    || msg.queue.length || !msgIdle()) return;
+  const e = G.prog.notes.shift(); save();
+  if (!Array.isArray(e) || typeof e[0] !== 'string') return;   // save adulterado
+  const sfx = String(e[1] || ''); say(e[0]);
+  if (/^cry:\d+$/.test(sfx)) Sfx.cry(+sfx.slice(4)); else if (Object.hasOwn(PG_SFX, sfx)) PG_SFX[sfx]();
+}
+setInterval(pg_pump, 250);
+// fanfarra curta de insígnia (no estilo do jingle de item importante)
+const pg_fanfare = () => { Sfx.seq([[784, .1], [784, .1], [784, .1], [1046, .3], [0, .06], [932, .12], [1046, .45]], { vol: .07 });
+  Sfx.seq([[392, .3], [523, .3], [466, .18], [523, .45]], { type: 'triangle', vol: .1 }); };
+
+/* Virada do dia: só quando a data local passa da maior já vista (relógio para trás nunca paga duas vezes) */
+function pg_day() {
+  if (!G) return;
+  const D = G.daily, today = localDate();
+  if (D.maxDate && today <= D.maxDate) return;
+  const y = new Date(); y.setHours(12, 0, 0, 0); y.setDate(y.getDate() - 1);   // meio-dia evita erro no horário de verão
+  D.streak = D.maxDate === localDate(y.getTime()) ? D.streak + 1 : 1;
+  // zera os contadores do dia (inclusive os de outros módulos), menos a sequência e a rede de segurança
+  for (const k in DEFAULTS.daily) {
+    if (k === 'streak' || k === 'lastSafety') continue;
+    if (typeof D[k] === 'number') D[k] = 0; else if (typeof D[k] === 'boolean') D[k] = false;
+  }
+  D.date = D.maxDate = D.giftDate = today;
+  const b = G.prog.badges;
+  bagAdd('poke', 5); pg_note('PROF. CARVALHO: Separei 5 POKé BOLAS para você hoje!', 'happy');
+  if (b >= 2) pg_give('great', 2);
+  if (b >= 4) pg_give('ultra', 1);
+  if (D.streak % 7 === 0) {
+    pg_note(`PROF. CARVALHO: ${D.streak} dias seguidos! Isto é para você.`);
+    if (b >= 4) pg_give('ultra', 1); else pg_give('great', 3);
+  }
+  save();
+}
+
+/* POKé BOLA por bom cuidado: 1 a cada 60 min bem cuidados (simulados também), no máx. 4 por dia */
+on('wellCared', min => {
+  if (!G) return;
+  pg_day();
+  const D = G.daily; D.careMin += min;
+  if (!D.careDayCounted && D.careMin >= 60) { D.careDayCounted = true; G.prog.careDays++; }
+  const target = Math.min(4, Math.floor(D.careMin / 60));
+  while (D.careBalls < target) {
+    D.careBalls++; bagAdd('poke', 1);
+    // duas mensagens: numa só, nomes de 10 letras passam das 3 linhas da caixa no celular
+    pg_note(`PROF. CARVALHO viu como você cuida bem de ${N()}!`, 'happy'); pg_note('Você ganhou 1 POKé BOLA!');
+  }
+});
+
+// rede de segurança: sem bolas, o professor manda 5 (no máx. a cada 6 h)
+function pg_safety() {
+  if (!G || !atHome() || ballCount() >= 3) return;
+  const now = Date.now();
+  if (now - G.daily.lastSafety < 6 * 3600e3 && G.daily.lastSafety <= now) return;   // relógio para trás não trava
+  G.daily.lastSafety = now; bagAdd('poke', 5);
+  pg_note('PROF. CARVALHO: Tome 5 POKé BOLAS. Boa sorte!', 'happy'); save();
+}
+
+function pg_legendUnlock(id) {
+  const L = G.prog.legend;
+  if (!L[id]) L[id] = { unlockedAt: Date.now(), misses: 0, thrown: 0, hp: null, hpUntil: 0, backAt: 0, caught: false };
+  return L[id];
+}
+// próximo inicial de presente: BULBASAUR -> CHARMANDER -> SQUIRTLE, pulando a linha escolhida no começo
+function pg_starterGift() {
+  const list = STARTERS.filter(id => id !== G.prog.firstStarter), id = list[G.prog.starterGifts];
+  if (!id) return;
+  G.prog.starterGifts++;
+  receiveMon(id, 5, {}, 'gift');
+  pg_note(`PROF. CARVALHO: Cuide bem deste ${DEX[id].name}! Ele está no seu PC.`, 'cry:' + id);
+}
+function pg_badge(n) {
+  const B = PG_BADGES[n];
+  G.prog.badges = n;
+  pg_note(`Você recebeu a INSÍGNIA ${badgeName(n)}!`, 'fan');
+  for (const [k, q] of B.items) pg_give(k, q);
+  if (B.starter) pg_starterGift();
+  if (B.legend) { pg_legendUnlock(B.legend); pg_note(`Dizem que um POKéMON lendário foi visto ${PG_RUMOR[B.legend]}...`); }
+  if (B.hint) pg_note(B.hint);
+}
+function pg_medal(name, items) {
+  if (G.prog.medals.includes(name)) return false;
+  G.prog.medals.push(name);
+  pg_note(`Você recebeu a medalha ${name}!`, 'medal');
+  for (const [k, q] of items || []) pg_give(k, q);
+  return true;
+}
+// confere insígnias (em ordem: a N exige a N-1) e medalhas; pg_busy evita reentrar pelo 'caught' do presente
+let pg_busy = false;
+function pg_check() {
+  if (!G || !s || pg_busy) return;
+  pg_busy = true;
+  try {
+    let changed = false;
+    const c = dexCount('caught');
+    while (G.prog.badges < 8 && PG_BADGES[G.prog.badges + 1].ok(c)) { pg_badge(G.prog.badges + 1); changed = true; }
+    for (const m of PG_MEDALS) if (!G.prog.medals.includes(m.name) && m.ok()) changed = pg_medal(m.name, m.items) || changed;
+    if (changed) { save(); updateUI(); }
+  } finally { pg_busy = false; }
+}
+
+// HALL DA FAMA: POKéDEX completa, em casa e acordado (fora do 'home' em andamento, para não trocar de cena dentro dele)
+function pg_hall() {
+  setTimeout(() => {
+    if (G && s && atHome() && !G.hof && !s.asleep && !evo && !pendingChoice && !Menu.top && !training && !sweep && !document.hidden
+      && !op_panel && !msg.queue.length && msgIdle() && !G.prog.notes.length && !G.outing && !G.enc && dexCount('caught') === 151)
+      typeof startHall === 'function' && startHall();
+  }, 0);
+}
+
+on('boot', () => { if (G) { pg_day(); pg_check(); } });
+on('home', () => { pg_day(); pg_safety(); pg_check(); pg_hall(); });
+on('tick', () => { pg_day(); pg_safety(); pg_check(); pg_hall(); });   // completou em casa (evolução, presente) ou acordou
+on('caught', (m, how) => {
+  if (!G) return;
+  // o contador de fósseis é só deste gancho: o módulo que revive o fóssil não mexe em prog.fossils
+  if (how === 'fossil') G.prog.fossils++;
+  if (LEGENDS.includes(m.sp)) {
+    pg_legendUnlock(m.sp).caught = true;
+    G.prog.legendsCaught = LEGENDS.filter(id => G.prog.legend[id] && G.prog.legend[id].caught).length;
+    // MEW só depois de MEWTWO
+    if (m.sp === 150 && !G.prog.legend[151]) { pg_legendUnlock(151); pg_note('Dizem que um POKéMON parecido com MEWTWO foi visto...'); }
+  }
+  pg_check(); save();
+});
+on('battleEnd', r => {
+  if (!G || !r) return;
+  // prog.wins é contado pela batalha, junto com o resultado gravado (aqui contaria em dobro)
+  if (r.caught && (r.night ?? phaseAt() === 'NOITE')) G.prog.nightCaps++;
+  pg_check(); save();
+});
+on('evolved', () => pg_check());
+on('levelUp', () => pg_check());
+on('minigame', r => {
+  if (!G || !r) return;
+  G.prog.miniBest = Math.max(G.prog.miniBest, Math.floor(num(r.score, 0)));
+  pg_check(); save();
+});
+on('trained', notes => {
+  if (!G || !Array.isArray(notes)) return;
+  if (notes.length >= 3 && notes.every(q => q === 0) && pg_medal('MESTRE DO TREINO', [['doce', 3]])) save();
+});
+on('hallDone', () => {
+  if (!G) return;
+  G.prog.charm = true;
+  // o HALL pode ser revisto (CARTÃO): o amuleto só é anunciado na primeira vez
+  if (!pg_medal('MESTRE POKéMON', [])) { save(); return; }
+  pg_note('Você recebeu o AMULETO BRILHANTE!', 'evo'); pg_note('POKéMON brilhantes vão aparecer mais vezes.');
+  save(); updateUI();
+});
+
 
 /* ════════════ Boot ════════════ */
 function paintHabitatKnobs() {
@@ -4503,7 +7467,7 @@ async function start() {
   requestAnimationFrame(t => { lastFrame = t; requestAnimationFrame(frame); });
 }
 // ganchos de teste (só com #dev no endereço): o estado e as funções principais no console
-if (location.hash === '#dev') window.PKG = { get G() { return G; }, get s() { return s; }, get scene() { return scene; }, go, save, setGame, receiveMon, swapActive, dexMark, bagAdd, startEvolution, DEX, SCENES, Menu, phaseAt };
+if (location.hash === '#dev') window.PKG = { get G() { return G; }, get s() { return s; }, get scene() { return scene; }, go, save, setGame, receiveMon, swapActive, dexMark, bagAdd, startEvolution, DEX, SCENES, Menu, phaseAt, on, fire, talk, say };
 window.claude?.hot?.snapshot?.(() => ({ saved: true }));
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start();
 })();
