@@ -31,7 +31,9 @@ async function warmExternal() {
 }
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CORE).then(c => c.addAll(CORE_FILES)).then(warmExternal).then(() => self.skipWaiting()));
+  // cache: 'reload' pula o cache HTTP do GitHub Pages (10 min): a versão nova nunca guarda a página velha
+  const fresh = CORE_FILES.map(u => new Request(u, { cache: 'reload' }));
+  e.waitUntil(caches.open(CORE).then(c => c.addAll(fresh)).then(warmExternal).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', e => {
@@ -55,8 +57,8 @@ self.addEventListener('fetch', e => {
     e.respondWith(
       fetch(req)
         .then(res => {
-          if (res.ok && !res.redirected) { const copy = res.clone(); caches.open(CORE).then(c => c.put('./index.html', copy)); }
-          return res;
+          if (res.ok && !res.redirected) { const copy = res.clone(); caches.open(CORE).then(c => c.put('./index.html', copy)); return res; }
+          return caches.match('./index.html').then(hit => hit || res);   // erro do servidor: abre a cópia que já temos
         })
         .catch(() => caches.match('./index.html').then(hit => hit || caches.match('./'))),
     );

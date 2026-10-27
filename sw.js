@@ -1,7 +1,7 @@
 /* Service worker do Pokégotchi: deixa o jogo instalável e jogável offline.
    O build (tools/build.php) troca o marcador da versão por um hash do index.html, manifest e ícones,
    então cada publicação nova gera um cache novo e apaga o antigo. */
-const VERSION = '28a383ca28';
+const VERSION = 'fc90876482';
 const CORE = `pokegotchi-core-${VERSION}`;
 const RUNTIME = 'pokegotchi-runtime-v1';   // fontes do Google e Tailwind (de outros domínios)
 const CORE_FILES = [
@@ -31,7 +31,9 @@ async function warmExternal() {
 }
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CORE).then(c => c.addAll(CORE_FILES)).then(warmExternal).then(() => self.skipWaiting()));
+  // cache: 'reload' pula o cache HTTP do GitHub Pages (10 min): a versão nova nunca guarda a página velha
+  const fresh = CORE_FILES.map(u => new Request(u, { cache: 'reload' }));
+  e.waitUntil(caches.open(CORE).then(c => c.addAll(fresh)).then(warmExternal).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', e => {
@@ -55,8 +57,8 @@ self.addEventListener('fetch', e => {
     e.respondWith(
       fetch(req)
         .then(res => {
-          if (res.ok && !res.redirected) { const copy = res.clone(); caches.open(CORE).then(c => c.put('./index.html', copy)); }
-          return res;
+          if (res.ok && !res.redirected) { const copy = res.clone(); caches.open(CORE).then(c => c.put('./index.html', copy)); return res; }
+          return caches.match('./index.html').then(hit => hit || res);   // erro do servidor: abre a cópia que já temos
         })
         .catch(() => caches.match('./index.html').then(hit => hit || caches.match('./'))),
     );
