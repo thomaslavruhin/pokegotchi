@@ -97,6 +97,7 @@ function exNewOuting(area) {
 // condições para sair e para cada passo (null = pode)
 function exBlock() {
   const n = N(), lock = G.prog.exploreLockUntil - Date.now();
+  if (exOutElsewhere(G.outing)) return `${n} está explorando em outra aba.`;
   if (s.asleep) return 'Está dormindo... deixe-o descansar.';
   if (s.sick) return `${n} está doente. Cuide dele primeiro.`;
   if (s.pendingEvo) return `Hã? ${n} está prestes a evoluir! Hora de voltar para casa.`;
@@ -279,7 +280,11 @@ on('home', () => {
   if (G.enc) { clearTimeout(exResumeT); exResumeT = setTimeout(exResume, 500); return; }
   if (G.outing && !exOutElsewhere(G.outing)) { G.outing = null; save(); }
 });
-on('tick', now => { if (G && G.outing && (scene === 'explorar' || scene === 'batalha')) { G.outing.owner = BT_TAB; G.outing.at = now; } });
+on('tick', now => {
+  if (!G || !G.outing) return;
+  if (scene === 'explorar' || scene === 'batalha') { G.outing.owner = BT_TAB; G.outing.at = now; }
+  else if (scene === 'habitat' && !G.enc && !exOutElsewhere(G.outing)) G.outing = null;   // o núcleo grava logo depois do tick
+});
 // recarregar ou fechar: solta o passeio na hora
 window.addEventListener('pagehide', () => { if (G && G.outing && G.outing.owner === BT_TAB) { G.outing.owner = null; save(); } });
 // em casa: espera menus e perguntas fecharem; batalha em outra aba → tenta de novo a cada 15 s (o batimento dela vence em 2 min)

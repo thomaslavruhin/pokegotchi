@@ -160,7 +160,8 @@ function pg_check() {
 // HALL DA FAMA: POKéDEX completa, em casa e acordado (fora do 'home' em andamento, para não trocar de cena dentro dele)
 function pg_hall() {
   setTimeout(() => {
-    if (G && s && atHome() && !G.hof && !s.asleep && !evo && !pendingChoice && !Menu.top && dexCount('caught') === 151)
+    if (G && s && atHome() && !G.hof && !s.asleep && !evo && !pendingChoice && !Menu.top && !training && !sweep && !document.hidden
+      && !op_panel && !msg.queue.length && msgIdle() && dexCount('caught') === 151)
       typeof startHall === 'function' && startHall();
   }, 0);
 }

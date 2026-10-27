@@ -1631,7 +1631,11 @@ window.addEventListener('keydown', e => {
   if (pendingChoice) {
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); (document.activeElement === $('choiceYes') ? $('choiceNo') : $('choiceYes')).focus(); }
     if (e.key === 'Escape' || e.key === 'Backspace' || e.key === 'x' || e.key === 'X') { e.preventDefault(); answer(false); }
-    if ((e.key === 'z' || e.key === 'Z') && !e.repeat) { e.preventDefault(); answer(document.activeElement !== $('choiceNo')); }
+    if ((e.key === 'z' || e.key === 'Z') && !e.repeat) {
+      e.preventDefault(); const f = document.activeElement;
+      if (f === $('choiceYes') || f === $('choiceNo')) answer(f === $('choiceYes'));
+      else $(pendingChoice.kind === 'reset' || pendingChoice.safeNo ? 'choiceNo' : 'choiceYes').focus({ preventScroll: true });   // foco saiu (toque na tela): Z não confirma às cegas
+    }
     if (e.key >= '1' && e.key <= '4' && knobDefs && !e.repeat) { e.preventDefault(); $(KNOB_IDS[+e.key - 1]).click(); }   // cena com SIM/NÃO nos botões
     return;
   }

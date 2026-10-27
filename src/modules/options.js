@@ -172,7 +172,7 @@ async function op_doImport(code) {
     if (old) Sfx.alert();
     const yes = await confirmYN(old ? 'Este jogo tem menos progresso que o seu. Substituir?' : 'Substituir o jogo atual por este?', { safeNo: true });
     pv.remove(); ta.hidden = false; row.hidden = false;
-    if (!yes) { sayNow('Nada mudou.'); return; }
+    if (!yes) { if (G && op_panel) sayNow('Nada mudou.'); return; }
     op_replace(g);
     sayNow('Jogo importado!'); Sfx.evoDone();
   } finally { op_busy = false; }
@@ -222,7 +222,7 @@ addOption({ label: 'DESFAZER IMPORTAÇÃO', order: 30, fn: async () => {
   if (!g) { sayNow('Não há importação para desfazer.'); return Sfx.deny(); }
   Menu.closeAll();
   const a = g.active;
-  if (!await confirmYN(`Voltar ao jogo de antes da importação (${DEX[a.sp].name} Nv. ${a.level})?`, { safeNo: true })) { sayNow('Nada mudou.'); return; }
+  if (!await confirmYN(`Voltar ao jogo de antes da importação (${DEX[a.sp].name} Nv. ${a.level})?`, { safeNo: true })) { if (G && scene !== 'select') sayNow('Nada mudou.'); return; }
   op_replace(g);   // o jogo importado vai para o .bak: dá para refazer
   sayNow('Importação desfeita!'); Sfx.happy();
 } });
