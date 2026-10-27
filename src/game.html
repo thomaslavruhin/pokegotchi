@@ -570,7 +570,8 @@ const MUL = (m = s) => { const b = STAGE_MUL[sizeClass(m.sp)]; return m.sp === 1
 
 /* Ganchos: os módulos se inscrevem em eventos do núcleo.
    'tick' (cada logicTick), 'home' (voltou ao habitat), 'wellCared' (min, t) (cuidado em dia, simulado),
-   'levelUp' (mon), 'evolved' (mon, fromId), 'caught' (mon, how), 'boot', 'newGame' */
+   'levelUp' (mon), 'evolved' (mon, fromId), 'caught' (mon, how), 'trained' ([notas 0-3]), 'boot', 'newGame'.
+   Os módulos também disparam os seus (ver docs/MODULOS.md). */
 const HOOKS = {};
 const on = (evt, fn) => (HOOKS[evt] = HOOKS[evt] || []).push(fn);
 const fire = (evt, ...a) => { for (const fn of HOOKS[evt] || []) { try { fn(...a); } catch (e) { console.error(evt, e); } } };
@@ -995,7 +996,6 @@ function openStart() {
   if (training) { say('Termine o treino primeiro!'); return Sfx.deny(); }
   Menu.open({ items: [
     ...START_ITEMS.filter(i => !i.when || i.when()).map(i => ({ label: i.label, fn: i.fn })),
-    { label: 'POKéMON', fn: () => { Menu.closeAll(); if (!dataOpen) $('btnData').click(); } },
     { label: 'OPÇÕES', fn: openOptions },
     { label: 'SAIR', fn: () => Menu.close() }] });
 }
@@ -1008,6 +1008,7 @@ function openOptions() {
 }
 function askReset() { if (!G || evo) return Sfx.deny(); Sfx.click(); ask('Apagar o progresso e escolher outro POKéMON?', 'reset'); }
 TRAIN_MODES.push({ label: 'TREINO', fn: () => train() });
+addStartItem({ label: 'POKéMON', order: 30, fn: () => { Menu.closeAll(); if (!dataOpen) $('btnData').click(); } });
 
 /* ════════════ Partículas ════════════ */
 function burst(x, y, type, n) {
@@ -1157,7 +1158,7 @@ function finishTraining() {
   say(`${N()} ganhou ${gain} EXP, mas ficou cansado e com fome.`);
   if (s.energy < 20) say(`${N()} está exausto... Deixe-o dormir.`);
   if (s.hunger < 15) { say(`${N()} está faminto!`); Sfx.alert(); lastAlertAt = Date.now(); }
-  addExp(gain, true); save(); updateUI();
+  addExp(gain, true); fire('trained', tr.results.map(m => QUAL.findIndex(q => q.mul === m))); save(); updateUI();
 }
 
 /* ════════════ Evolução ════════════ */
