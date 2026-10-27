@@ -1,0 +1,3 @@
+/* Batalha → LUTAR: os nomes dos golpes são longos (LANÇAMENTO DE ROCHA), então quebram em duas linhas */
+.device.bt-moves .act span.lbl { white-space: normal; text-align: center; max-width: 84px; font-size: 6px; line-height: 1.35; min-height: 2.7em; }
+.device.bt-moves .act .knob svg { width: 20px; height: 20px; }
