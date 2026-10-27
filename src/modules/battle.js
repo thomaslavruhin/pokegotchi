@@ -1,9 +1,13 @@
 /* Batalha selvagem (spec D, E): layout do GBA, golpes por tipo, conta da Gen III e captura.
    O encontro vive em G.enc (gravado a cada turno: recarregar não sorteia de novo); o PS do POKéMON ativo
-   vive em G.outing.hp (vale para o passeio inteiro). Narrada em ordem com await talk(). */
+   vive em G.outing.hp (vale para o passeio inteiro). Cada decisão (dano, captura, desmaio) é sorteada e gravada
+   antes da animação; a narração vem depois, em ordem, com await talk(). Recarregar não desfaz nem repete nada. */
 extendDefaults({ prog: { legend: {}, captures: 0, wins: 0, charm: false, exploreLockUntil: 0 } });
 
-const BT_TAB = Math.random().toString(36).slice(2, 8);   // dono do encontro (só informativo)
+const btRid = () => Math.random().toString(36).slice(2, 10);
+const BT_TAB = btRid();   // esta aba: dono do encontro enquanto batalha
+// outra aba está nesta batalha (batimento de menos de 2 min)
+const btElsewhere = e => !!(e && e.owner && e.owner !== BT_TAB && Date.now() - num(e.at, 0) < 120e3);
 // físico x especial pelo tipo do golpe (Gen III)
 const BT_PHYS = new Set(['NORMAL', 'LUTADOR', 'VOADOR', 'VENENO', 'TERRA', 'PEDRA', 'INSETO', 'FANTASMA', 'AÇO']);
 const BT_SPLASH = { name: 'SPLASH', power: 0, type: 'NORMAL', strong: false };
@@ -81,6 +85,7 @@ const BT_BM = {
   run: ['....K....', '....KK...', 'KKKKKWK..', 'KWWWWWWK.', 'KKKKKWK..', '....KK...', '....K....'],
   bag: ['...KKK...', '..K...K..', '.KKKKKKK.', 'KOOOOOOOK', 'KOOYYYOOK', 'KOOOOOOOK', 'KDDDDDDDK', '.KKKKKKK.'],
   ps: ['KKK.KKK', 'K.K.K..', 'KKK.KKK', 'K.....K', 'K...KKK'],
+  nv: ['K...K....', 'KK..K....', 'K.K.K.K.K', 'K..KK.K.K', 'K...K..K.'],   // "Nv" miúdo, como o "Lv" do FRLG
 };
 const BT_BALL_PAL = { poke: BT_PAL, great: { ...BT_PAL, R: '#3870e0' }, ultra: { ...BT_PAL, R: '#383840', W: '#f8d030' }, master: { ...BT_PAL, R: '#8040c0' } };
 const btIco = (bm, pal = BT_PAL) => bmSvg(bm, pal);
@@ -88,34 +93,47 @@ const btIco = (bm, pal = BT_PAL) => bmSvg(bm, pal);
 const btTypeIco = t => `<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="${TYPE_COLOR[t]}" stroke="#202028" stroke-width="1"/><circle cx="4.5" cy="4.5" r="1.5" fill="rgba(255,255,255,.5)"/></svg>`;
 
 /* ── Estado da cena (não persiste: o que importa está em G.enc / G.outing) ── */
-const BT = { tok: 0, mode: 'main', busy: true, e: null, wipe: 0, wildDx: 0, petDx: 0, wildShown: 0, petShown: 0, petMax: 1,
-  blinkW: 0, blinkP: 0, shake: 0, lungeP: 0, lungeW: 0, ball: null, absorb: 0, hideWild: false, sinkW: 0, sinkP: 0, parts: [] };
+const BT = { tok: 0, mode: 'main', busy: true, e: null, o: null, fin: false, wipe: 0, wildDx: 0, petDx: 0, wildShown: 0, petShown: 0, petMax: 1,
+  holdW: false, holdP: false, blinkW: 0, blinkP: 0, shake: 0, lungeP: 0, lungeW: 0, ball: null, absorb: 0, hideWild: false, sinkW: 0, sinkP: 0, parts: [], later: [] };
 const btAlive = tok => tok === BT.tok && scene === 'batalha' && !!G;
+// outra aba gravou (o tick dela) e esta adotou o save: o encontro e o passeio desta batalha voltam para G antes de gravar
+function btSave(e) {
+  if (!G) return;
+  if (e && G.enc && G.enc !== e && G.enc.id === e.id && !btElsewhere(G.enc)) G.enc = e;
+  const o = BT.o; if (o && G.outing && G.outing !== o && G.outing.startedAt === o.startedAt) G.outing = o;
+  save();
+}
 
 SCENES.batalha = {
   get knobs() { return btKnobsMain(); },
   enter(arg) {
     ADV.tw = []; BT.tok++;
     const e = G && G.enc; if (!e) { setTimeout(goHome); return; }
+    if (!e.id) e.id = btRid();
+    // outra aba está nesta batalha: a mensagem vem do exResume, em casa
+    if (btElsewhere(e)) { setTimeout(goHome); return; }
     // o save guarda encontro e passeio como vieram: revalida aqui
-    e.lv = clamp(Math.floor(num(e.lv, 5)), 1, 100); e.maxHp = btStats(e.sp, e.lv).hp; e.hp = clamp(Math.round(num(e.hp, e.maxHp)), 1, e.maxHp);
+    e.lv = clamp(Math.floor(num(e.lv, 5)), 1, 100); e.maxHp = btStats(e.sp, e.lv).hp; e.hp = clamp(Math.round(num(e.hp, e.maxHp)), 0, e.maxHp);
     e.turn = Math.max(0, Math.floor(num(e.turn, 0))); e.sleepTurns = clamp(Math.floor(num(e.sleepTurns, 0)), 0, 3); e.asleep = !!e.asleep && e.sleepTurns > 0;
     if (!EX_AREAS[e.area]) e.area = 'floresta';
     if (!G.outing || typeof G.outing !== 'object') G.outing = exNewOuting(e.area);
     const o = G.outing;
-    o.maxHp = btStats(s.sp, s.level).hp; o.hp = clamp(Math.round(num(o.hp, o.maxHp)), 1, o.maxHp);
+    o.maxHp = btStats(s.sp, s.level).hp; o.hp = clamp(Math.round(num(o.hp, o.maxHp)), 0, o.maxHp);
+    Object.assign(BT, { e, o, fin: false });
+    // resultado já decidido (recarregou no meio da narração), nocaute ou desmaio gravados: só conclui
+    if (e.done || e.hp <= 0 || o.hp <= 0) { if (!e.done) btSettle(e.hp <= 0 ? { won: true } : { fainted: true }, e); btFinish(e, true); setTimeout(goHome); return; }
     if (e.petHp0 == null) e.petHp0 = o.hp;   // custo de energia da batalha = PS perdido nela
     e.owner = BT_TAB; e.at = Date.now(); save();
-    Object.assign(BT, { mode: 'main', e, wipe: RM.matches ? 0 : 1, wildDx: -170, petDx: -150, boxW: false, boxP: false, wildShown: e.hp, petShown: o.hp, petMax: o.maxHp,
-      blinkW: 0, blinkP: 0, shake: 0, lungeP: 0, lungeW: 0, ball: null, absorb: 0, hideWild: false, sinkW: 0, sinkP: 0, parts: [] });
+    Object.assign(BT, { mode: 'main', wipe: RM.matches ? 0 : 1, wildDx: -170, petDx: -150, boxW: false, boxP: false, wildShown: e.hp, petShown: o.hp, petMax: o.maxHp,
+      holdW: false, holdP: false, blinkW: 0, blinkP: 0, shake: 0, lungeP: 0, lungeW: 0, ball: null, absorb: 0, hideWild: false, sinkW: 0, sinkP: 0, parts: [], later: [] });
     btIntro(arg && arg.resume);
   },
-  exit() { ADV.tw = []; BT.tok++; $('device').classList.remove('bt-moves'); },
+  exit() { ADV.tw = []; BT.tok++; btMovesUi(false); },
   update(dt) {
     advTick(dt);
-    const e = BT.e, o = G.outing, rate = m => Math.max(14, m * .9) * dt;   // a barra escorre, não pula
-    if (e) BT.wildShown = btToward(BT.wildShown, Math.max(0, e.hp), rate(e.maxHp));
-    if (o) { BT.petMax = o.maxHp; BT.petShown = btToward(BT.petShown, Math.max(0, o.hp), rate(o.maxHp)); }
+    const e = BT.e, o = BT.o, rate = m => Math.max(14, m * .9) * dt;   // a barra escorre, não pula
+    if (e && !BT.holdW) BT.wildShown = btToward(BT.wildShown, Math.max(0, e.hp), rate(e.maxHp));
+    if (o && !BT.holdP) { BT.petMax = o.maxHp; BT.petShown = btToward(BT.petShown, Math.max(0, o.hp), rate(o.maxHp)); }
     BT.blinkW = Math.max(0, BT.blinkW - dt); BT.blinkP = Math.max(0, BT.blinkP - dt); BT.shake = Math.max(0, BT.shake - dt);
     for (const p of BT.parts) { p.life += dt; p.x += p.vx * dt; p.y += p.vy * dt; }
     BT.parts = BT.parts.filter(p => p.life < p.max);
@@ -123,7 +141,8 @@ SCENES.batalha = {
   draw(c) { btDraw(c); },
   key(e, k) {
     if (BT.mode === 'moves' && !BT.busy && (k === 'x' || k === 'escape' || k === 'backspace')) { e.preventDefault(); btMain(); return true; }
-    if (e.target.closest && e.target.closest('button') && (k === 'enter' || k === ' ')) return false;
+    // botão focado: Enter/Espaço passa a mensagem, senão deixa o clique nativo acontecer (o núcleo cancelaria)
+    if (e.target.closest && e.target.closest('button') && (k === 'enter' || k === ' ')) { if (e.repeat || msgAdvance()) e.preventDefault(); return true; }
     // A no menu principal = LUTAR (o cursor do FRLG começa nele)
     if ((k === 'enter' || k === ' ' || k === 'z') && !e.repeat) { e.preventDefault(); if (!msgAdvance() && !BT.busy && BT.mode === 'main') btFight(); return true; }
     return false;
@@ -132,8 +151,9 @@ SCENES.batalha = {
 const btToward = (v, to, step) => v < to ? Math.min(to, v + step) : Math.max(to, v - step);
 
 /* ── Botões ── */
+const btLive = () => !!(BT.e && !BT.e.done && !BT.fin);
 function btKnobsMain() {
-  const e = G && G.enc, off = BT.busy;
+  const e = BT.e, off = BT.busy;
   return [
     { label: 'LUTAR', icon: btIco(BT_BM.sword), fn: () => !BT.busy && btFight(), disabled: off },
     { label: 'BOLSA', icon: btIco(BT_BM.bag), fn: () => !BT.busy && btBag(), disabled: off },
@@ -142,26 +162,27 @@ function btKnobsMain() {
   ];
 }
 function btSetBusy(b) { BT.busy = b; if (!Menu.top && scene === 'batalha' && BT.mode === 'main') setKnobs(btKnobsMain()); }
-function btMain() { BT.mode = 'main'; $('device').classList.remove('bt-moves'); setKnobs(btKnobsMain()); Sfx.click(); }
+// lista de golpes: o botão do meio vira VOLTAR (rótulo e ícone trocados pelo battle.css)
+function btMovesUi(on) { $('device').classList.toggle('bt-moves', on); $('btnPet').setAttribute('aria-label', on ? 'Voltar' : 'Fazer carinho'); }
+function btMain() { BT.mode = 'main'; btMovesUi(false); setKnobs(btKnobsMain()); Sfx.click(); }
 function btFight() {
-  if (BT.busy || !G.enc) return;
-  BT.mode = 'moves'; $('device').classList.add('bt-moves'); Sfx.click();
+  if (BT.busy || !btLive()) return;
+  BT.mode = 'moves'; btMovesUi(true); Sfx.click();
   const mv = btMoves(s.sp, s.level), defs = [0, 1, 2, 3].map(i => mv[i] ? { label: mv[i].name, icon: btTypeIco(mv[i].type), fn: () => !BT.busy && btTurn({ kind: 'move', mv: mv[i] }) } : null);
-  defs.center = { fn: () => !BT.busy && btMain() };
+  defs.center = { label: 'VOLTAR', icon: '◀', fn: () => !BT.busy && btMain() };
   setKnobs(defs);
 }
 // volta ao "O que X vai fazer?" (ou encerra, se ele desmaiou de cansaço no meio)
 function btMenu() {
-  if (!btAlive(BT.tok) || !G.enc) return;
-  BT.e = G.enc;
-  if (s.asleep || s.energy <= 0) return btEnd({ fled: true, exhausted: true });
-  BT.mode = 'main'; $('device').classList.remove('bt-moves'); btSetBusy(false);
+  if (!btAlive(BT.tok) || !btLive()) return;
+  if (s.asleep || s.energy <= 0) return btEnd({ fled: true, exhausted: true }, BT.e);
+  BT.mode = 'main'; btMovesUi(false); btSetBusy(false);
   sayNow(`O que ${N()} vai fazer?`);
 }
 
 /* ── Fluxo ── */
 async function btIntro(resume) {
-  const tok = BT.tok, e = G.enc, nm = DEX[e.sp].name, quick = RM.matches;
+  const tok = BT.tok, e = BT.e, nm = DEX[e.sp].name, quick = RM.matches;
   btSetBusy(true);
   advTween(quick ? 0 : .45, p => { BT.wipe = 1 - p; });
   Sfx.cry(e.sp);
@@ -169,11 +190,12 @@ async function btIntro(resume) {
   if (!btAlive(tok)) return;
   BT.boxW = true;
   if (e.shiny) btShinyFx();
-  if (resume) await talk(`O ${nm} selvagem ainda está aqui!`);
+  // recarregou antes do fim da abertura: ela se repete inteira (lendário e brilhante nunca passam sem aviso)
+  if (resume && e.introDone) await talk(`O ${nm} selvagem ainda está aqui!`);
   else if (e.legend) { await talk('Gyaoo!'); await talk(`O ${nm} lendário encara você!`); }
   else await talk(`Um ${nm} selvagem apareceu!`);
   if (!btAlive(tok)) return;
-  if (e.shiny && !resume) await talk('Ele está brilhando!');
+  if (e.shiny) await talk('Ele está brilhando!');
   if (e.asleep) await talk(`O ${nm} selvagem está dormindo!`);
   if (!btAlive(tok)) return;
   Sfx.whoosh();
@@ -182,82 +204,109 @@ async function btIntro(resume) {
   BT.boxP = true; Sfx.cry(s.sp); await vai;
   if (!btAlive(tok)) return;
   if (s.hunger < 20) await talk(`${N()} está com fome e sem forças...`);
+  if (!e.introDone) { e.introDone = true; btSave(e); }
+  // recarregou depois da ação do seu POKéMON: o selvagem ainda tem a vez dele
+  if (e.owe) {
+    const r = await btWildAct(e, tok); if (!btAlive(tok)) return;
+    if (r) return btEnd(r, e);
+    e.turn++; e.at = Date.now(); btSave(e);
+  }
   btMenu();
 }
 async function btTurn(act) {
-  const tok = BT.tok; if (!G.enc || BT.busy) return;
+  const tok = BT.tok; if (!btLive() || BT.busy) return;
   syncFromStorage(); if (!btAlive(tok)) return;
-  // outra aba encerrou a batalha: volta para casa; se só regravou, segue com o encontro dela
-  const e = G.enc; if (!e) { btSetBusy(true); goHome(); return; }
-  BT.e = e;
-  BT.mode = 'main'; $('device').classList.remove('bt-moves'); btSetBusy(true); Sfx.click();
+  // outra aba encerrou ou assumiu a batalha: volta para casa (lá o aviso aparece)
+  const e = BT.e, g = G.enc;
+  if (!g || g.id !== e.id || g.done || btElsewhere(g)) { btSetBusy(true); BT.fin = true; goHome(); return; }
+  G.enc = e; e.owner = BT_TAB;
+  BT.mode = 'main'; btMovesUi(false); btSetBusy(true); Sfx.click();
   const pet = btPet(), wild = btWild(e);
   // BOLSA e ANIMAR vão primeiro; golpes pela VELOCIDADE (empate: sorteio)
   const petFirst = act.kind !== 'move' || pet.st.spe > wild.st.spe || (pet.st.spe === wild.st.spe && Math.random() < .5);
+  // a vez do selvagem fica devida já: recarregar no meio do turno não a pula
+  e.owe = petFirst; e.at = Date.now(); btSave(e);
   for (const who of petFirst ? ['pet', 'wild'] : ['wild', 'pet']) {
     const r = who === 'pet' ? await btPetAct(act, e, tok) : await btWildAct(e, tok);
     if (!btAlive(tok)) return;
     if (r) return btEnd(r, e);
   }
-  e.turn++; e.at = Date.now(); save();
+  e.turn++; e.owe = false; e.at = Date.now(); btSave(e);
   btMenu();
 }
 async function btPetAct(act, e, tok) {
-  const nm = DEX[e.sp].name, n = N(), o = G.outing;
+  const nm = DEX[e.sp].name, n = N(), o = BT.o;
   if (act.kind === 'ball') return btThrow(act.k, e, tok);
   if (act.kind === 'pocao') {
-    bagUse('pocao'); const gain = Math.min(20, o.maxHp - o.hp); o.hp += gain; save(); Sfx.happy();
+    bagUse('pocao'); const gain = Math.min(20, o.maxHp - o.hp); o.hp += gain; btSave(e); Sfx.happy();
     await talk('Você usou uma POÇÃO!'); await advUntil(() => BT.petShown === o.hp);
     await talk(`${n} recuperou ${gain} PS!`); return null;
   }
   if (act.kind === 'animar') {
-    e.animar = true; e.pump = true; s.happy = clamp(s.happy + 2); save(); updateUI(); Sfx.happy();
+    e.animar = true; e.pump = true; s.happy = clamp(s.happy + 2); btSave(e); updateUI(); Sfx.happy();
     for (let i = 0; i < 4; i++) BT.parts.push({ type: 'heart', x: 50 + Math.random() * 30, y: 110, vx: (Math.random() - .5) * 20, vy: -25, life: 0, max: 1 });
     await talk(`${n} ficou animado!`); return null;
   }
-  // golpe
+  // golpe: tudo sorteado e gravado antes da narração (a barra fica parada até o golpe acertar)
   if (s.happy < 25 && Math.random() < .2) { await talk(`${n} está emburrado...`); return null; }
-  const mv = act.mv;
+  const mv = act.mv, hit = !!mv.power && !(mv.strong && Math.random() >= .9);
+  let r = null, crit = false, held = false, woke = false;
+  if (hit) {
+    crit = Math.random() < (e.pump ? 1 / 4 : s.happy >= 80 ? 1 / 8 : 1 / 16); e.pump = false;
+    r = btDamage(btPet(), btWild(e), mv, crit);
+    if (r.eff) {
+      // golpe gentil: espécie ainda não capturada não desmaia (fica com 1 PS); lendários e já capturados podem
+      let dmg = r.dmg;
+      if (!e.legend && !dexHas('caught', e.sp) && dmg >= e.hp) { dmg = Math.max(0, e.hp - 1); held = true; }
+      e.hp = Math.max(0, e.hp - dmg); woke = e.asleep && e.hp > 0;
+      if (woke) { e.asleep = false; e.sleepTurns = 0; }
+      BT.holdW = true;
+    }
+  }
+  e.at = Date.now();
+  if (r && r.eff && e.hp <= 0) btSettle({ won: true }, e); else btSave(e);
   await talk(`${n} usou ${mv.name}!`);
   if (!mv.power) { await talk('Mas nada aconteceu!'); return null; }
-  if (mv.strong && Math.random() >= .9) { await talk(`O ataque de ${n} errou!`); return null; }
-  const critCh = e.pump ? 1 / 4 : s.happy >= 80 ? 1 / 8 : 1 / 16; e.pump = false;
-  const crit = Math.random() < critCh, r = btDamage(btPet(), btWild(e), mv, crit);
+  if (!hit) { await talk(`O ataque de ${n} errou!`); return null; }
   if (!r.eff) { await talk(`Não afeta o ${nm} selvagem...`); return null; }
-  // golpe gentil: espécie ainda não capturada não desmaia (fica com 1 PS); lendários e já capturados podem
-  let dmg = r.dmg, held = false;
-  if (!e.legend && !dexHas('caught', e.sp) && dmg >= e.hp) { dmg = Math.max(0, e.hp - 1); held = true; }
-  await btHitFx('wild', r.eff);
-  e.hp = Math.max(0, e.hp - dmg); e.at = Date.now(); save();
+  await btHitFx('wild', r.eff); BT.holdW = false;
   await advUntil(() => BT.wildShown === e.hp);
   if (crit) await talk('Um golpe crítico!');
   if (r.eff > 1) await talk('É super efetivo!'); else if (r.eff < 1) await talk('Não é muito efetivo...');
   if (held) await talk(`O ${nm} selvagem aguentou firme!`);
   if (e.hp <= 0) return btWildFaint(e, tok);
-  if (e.asleep) { e.asleep = false; e.sleepTurns = 0; save(); await talk(`O ${nm} selvagem acordou!`); }
+  if (woke) await talk(`O ${nm} selvagem acordou!`);
   return null;
 }
 async function btWildAct(e, tok) {
-  const nm = DEX[e.sp].name, n = N(), o = G.outing, wild = btWild(e), pet = btPet();
+  const nm = DEX[e.sp].name, n = N(), o = BT.o, wild = btWild(e), pet = btPet();
+  e.owe = false;   // vai junto no próximo save deste turno
   if (e.asleep) {
-    if (--e.sleepTurns <= 0) { e.asleep = false; save(); await talk(`O ${nm} selvagem acordou!`); }
-    else { save(); await talk(`O ${nm} selvagem está dormindo.`); }
+    if (--e.sleepTurns <= 0) { e.asleep = false; btSave(e); await talk(`O ${nm} selvagem acordou!`); }
+    else { btSave(e); await talk(`O ${nm} selvagem está dormindo.`); }
     return null;
   }
-  if (e.sp === 63 && e.turn === 0 && Math.random() < .5) { await talk(`O ${nm} selvagem usou TELETRANSPORTE!`); return btWildFlee(e); }
+  // brilhante nunca foge (nem com TELETRANSPORTE)
+  if (e.sp === 63 && !e.shiny && e.turn === 0 && Math.random() < .5) return btWildFlee(e, `O ${nm} selvagem usou TELETRANSPORTE!`);
   if (!e.legend && !e.shiny && e.hp < e.maxHp * .25 && wild.st.spe > pet.st.spe && Math.random() < .1) return btWildFlee(e);
   // IA: 70% o golpe de maior dano esperado, 30% um qualquer; lendários sempre o melhor
   const mvs = btMoves(e.sp, e.lv), score = m => m.power * (DEX[e.sp].types.includes(m.type) ? 1.5 : 1) * btEff(m.type, s.sp) * (m.strong ? .9 : 1);
   const mv = e.legend || Math.random() < .7 ? mvs.reduce((a, b) => score(b) > score(a) ? b : a) : mvs[randInt(0, mvs.length - 1)];
+  // dano sorteado e gravado antes da narração; desmaio já com as penas no mesmo save (recarregar não o desfaz)
+  const hit = !!mv.power && !(mv.strong && Math.random() >= .9), crit = hit && Math.random() < 1 / 16, r = hit ? btDamage(wild, pet, mv, crit) : null;
+  let endured = false;
+  if (r && r.eff) {
+    let hp = o.hp - r.dmg;
+    if (hp <= 0 && s.happy >= 80 && !e.endured) { hp = 1; endured = e.endured = true; }   // aguenta por você, 1x por batalha
+    o.hp = Math.max(0, hp); BT.holdP = true;
+  }
+  e.at = Date.now();
+  if (o.hp <= 0) btSettle({ fainted: true }, e); else btSave(e);
   await talk(`O ${nm} selvagem usou ${mv.name}!`);
   if (!mv.power) { await talk('Mas nada aconteceu!'); return null; }
-  if (mv.strong && Math.random() >= .9) { await talk(`O ataque do ${nm} selvagem errou!`); return null; }
-  const crit = Math.random() < 1 / 16, r = btDamage(wild, pet, mv, crit);
+  if (!hit) { await talk(`O ataque do ${nm} selvagem errou!`); return null; }
   if (!r.eff) { await talk(`Não afeta ${n}...`); return null; }
-  let endured = false, hp = o.hp - r.dmg;
-  if (hp <= 0 && s.happy >= 80 && !e.endured) { hp = 1; endured = e.endured = true; }   // aguenta por você, 1x por batalha
-  await btHitFx('pet', r.eff);
-  o.hp = Math.max(0, hp); save();
+  await btHitFx('pet', r.eff); BT.holdP = false;
   await advUntil(() => BT.petShown === o.hp);
   if (crit) await talk('Um golpe crítico!');
   if (r.eff > 1) await talk('É super efetivo!'); else if (r.eff < 1) await talk('Não é muito efetivo...');
@@ -271,31 +320,36 @@ async function btWildAct(e, tok) {
 async function btWildFaint(e, tok) {
   Sfx.cry(e.sp); await advTween(RM.matches ? 0 : .5, p => { BT.sinkW = p; });
   await talk(`O ${DEX[e.sp].name} selvagem desmaiou!`);
-  G.prog.wins++; s.happy = clamp(s.happy + 2); save();
-  await btGainExp(e);
+  await btPayExp(e);
   return { won: true };
 }
-async function btWildFlee(e) {
+async function btWildFlee(e, pre) {
+  btSettle({ wildFled: true }, e);
+  if (pre) await talk(pre);
   Sfx.whoosh(); await advTween(RM.matches ? 0 : .4, p => { BT.wildDx = Math.round(170 * p); });
   await talk(`O ${DEX[e.sp].name} selvagem fugiu!`);
   return { wildFled: true };
 }
-// EXP por nocaute ou captura; nível e evolução pendente vêm do addExp do núcleo
-async function btGainExp(e) {
-  const n = Math.round(Math.max(3, Math.round(DEX[e.sp].exp * e.lv / 7 * .1)) * (e.lv > s.level ? 1.2 : 1));
+// EXP do nocaute/captura: anotada no resultado (e.done.exp) e paga aqui, com o nível e a evolução pendente do addExp do núcleo
+const btExpFor = e => Math.round(Math.max(3, Math.round(DEX[e.sp].exp * e.lv / 7 * .1)) * (e.lv > s.level ? 1.2 : 1));
+async function btPayExp(e) {
+  const d = e.done; if (!d || !d.exp || d.expPaid) return;
   const oldL = s.level, oldMax = btStats(s.sp, s.level).hp, known = btMoves(s.sp, s.level).map(m => m.name);
-  await talk(`${N()} ganhou ${n} pontos de EXP.!`);
-  addExp(n, true);
-  if (s.level > oldL && G.outing) { const mx = btStats(s.sp, s.level).hp; G.outing.hp += mx - oldMax; G.outing.maxHp = mx; BT.petShown += mx - oldMax; }
-  save(); updateUI();
+  await talk(`${N()} ganhou ${d.exp} pontos de EXP.!`);
+  if (d.expPaid) return;
+  addExp(d.exp, true); d.expPaid = true;
+  const o = BT.o;
+  if (s.level > oldL && o) { const mx = btStats(s.sp, s.level).hp; o.hp += mx - oldMax; o.maxHp = mx; BT.petShown += mx - oldMax; }
+  btSave(e); updateUI();
   for (const m of btMoves(s.sp, s.level)) if (!known.includes(m.name)) await talk(`${N()} aprendeu ${m.name}!`);
 }
 async function btThrow(k, e, tok) {
   const nm = DEX[e.sp].name, quick = RM.matches;
-  // gasto da bola e pena do lendário gravados antes da animação (recarregar não devolve a bola)
+  // bola gasta, pena do lendário e, se pegou, a captura inteira num save só, antes da animação
   const checks = btChecks(e, k);
   bagUse(k); if (e.legend) btLegendRec(e.sp).thrown++;
-  e.at = Date.now(); save();
+  e.at = Date.now();
+  if (checks >= 4) btSettle({ caught: true, k }, e); else btSave(e);
   sayNow(`Você jogou uma ${ITEMS[k].name}!`); Sfx.whoosh();
   const b = BT.ball = { k, x: 60, y: 112, dx: 0, open: 0, dim: false };
   await advTween(quick ? .2 : .6, p => { b.x = 60 + 116 * p; b.y = 112 - 58 * p + -60 * Math.sin(p * Math.PI) * .9; });
@@ -318,57 +372,86 @@ async function btThrow(k, e, tok) {
     BT.ball = null; BT.absorb = 0;
     await talk(BT_FAIL[shakes]); return null;
   }
-  // pego: grava tudo de uma vez, antes das mensagens
-  const novo = !dexHas('caught', e.sp);
-  receiveMon(e.sp, e.lv, { shiny: !!e.shiny, ball: k }, 'catch');
-  G.prog.captures++; if (e.legend) btLegendRec(e.sp).caught = true;
-  G.enc = null; save();
   b.dim = true; Sfx.seq([[784, .1], [988, .1], [1175, .1], [1568, .3]], { vol: .07 });
   for (let i = 0; i < 6; i++) BT.parts.push({ type: 'star', x: 176, y: 72, vx: (i % 3 - 1) * 28, vy: i < 3 ? -26 : -8, life: 0, max: .9 });
   await talk(`Parabéns! ${nm} foi pego!`);
-  await btGainExp(e);
-  if (novo) await talk(`Os dados de ${nm} foram registrados na POKéDEX.`);
+  await btPayExp(e);
+  if (e.done.novo) await talk(`Os dados de ${nm} foram registrados na POKéDEX.`);
   await talk(`${nm} foi enviado para o PC do PROF. CARVALHO.`);
+  btLater();
   return { caught: true };
 }
-// fim: custo de cuidado, lendário, evento e para onde ir (passeio continua, ou casa)
-async function btEnd(r, e = G.enc) {
-  const tok = BT.tok; if (!e || !G) return;
-  btSetBusy(true);
-  const o = G.outing, now = Date.now(), mul = MUL();
-  const lost = o ? Math.max(0, (e.petHp0 - o.hp) / o.maxHp) : 0;
+// avisos que outros módulos deram na captura (gancho 'caught'): guardados para depois da narração, sem estragar a surpresa
+function btLater() { for (const m of BT.later) msg.queue.push(m); BT.later = []; }
+/* Resultado: btSettle grava tudo o que o resultado muda (captura, vitória, custo de cuidado, desmaio, lendário) num save só
+   e marca e.done; btFinish, depois da narração (ou no próximo boot, se recarregou), paga a EXP que faltou, solta o encontro e avisa. */
+function btSettle(r, e) {
+  if (e.done) return e.done;
+  const o = BT.o, now = Date.now(), mul = MUL();
+  const d = { won: !!r.won, caught: !!r.caught, fled: !!r.fled, fainted: !!r.fainted, exhausted: false, novo: false, night: phaseAt() === 'NOITE', exp: 0, expPaid: false };
+  if (r.caught) {
+    d.novo = !dexHas('caught', e.sp);
+    const q0 = msg.queue.length;
+    receiveMon(e.sp, e.lv, { shiny: !!e.shiny, ball: r.k }, 'catch');
+    BT.later = msg.queue.splice(q0);
+    G.prog.captures++; if (e.legend) btLegendRec(e.sp).caught = true;
+  }
+  if (r.won) { G.prog.wins++; s.happy = clamp(s.happy + 2); }
+  if (r.won || r.caught) d.exp = btExpFor(e);
+  const lost = o ? Math.max(0, (num(e.petHp0, o.hp) - o.hp) / o.maxHp) : 0;
   s.energy = clamp(s.energy - (2 + Math.round(8 * lost))); s.hunger = clamp(s.hunger - 2 * mul.h);
   if (e.legend && !r.caught) btLegendMiss(e, !!r.won);
-  if (r.fainted) { s.energy = Math.max(5, s.energy - 20); s.happy = clamp(s.happy - 8); G.prog.exploreLockUntil = now + 15 * 60e3; }
-  const exhausted = !r.fainted && (r.exhausted || s.energy <= 0);
-  if (exhausted && !s.asleep) { s.asleep = true; s.sleptAt = now; }   // o sono de exaustão de sempre
-  if (G.enc === e) G.enc = null;
-  if (r.fainted || exhausted) G.outing = null;
+  if (r.fainted) { if (o) o.hp = 0; s.energy = Math.max(5, s.energy - 20); s.happy = clamp(s.happy - 8); G.prog.exploreLockUntil = now + 15 * 60e3; }
+  d.exhausted = !r.fainted && (!!r.exhausted || s.energy <= 0);
+  if (d.exhausted && !s.asleep) { s.asleep = true; s.sleptAt = now; }   // o sono de exaustão de sempre
+  e.done = d; e.owe = false; e.at = now;
+  btSave(e); updateUI();
+  return d;
+}
+function btFinish(e, home) {
+  const d = e.done; if (!d || !G) return;
+  if (d.exp && !d.expPaid) { addExp(d.exp, true); d.expPaid = true; }   // recarregou antes do "ganhou EXP"
+  if (e === BT.e) BT.fin = true;
+  if (G.enc && G.enc.id === e.id) G.enc = null;
+  if (d.fainted || d.exhausted || home) G.outing = null;
   save(); updateUI();
-  fire('battleEnd', { won: !!r.won, caught: !!r.caught, fled: !!r.fled, fainted: !!r.fainted, sp: e.sp, shiny: !!e.shiny, night: phaseAt() === 'NOITE' });
-  if (r.fainted) await talk(`${N()} voltou para casa para descansar.`);
-  if (exhausted) await talk(`${N()} está exausto!`);
+  fire('battleEnd', { won: d.won, caught: d.caught, fled: d.fled, fainted: d.fainted, sp: e.sp, shiny: !!e.shiny, night: d.night });
+  if (!home) return;
+  const nm = DEX[e.sp].name;
+  if (d.caught) { if (d.novo) say(`Os dados de ${nm} foram registrados na POKéDEX.`); say(`${nm} foi enviado para o PC do PROF. CARVALHO.`); btLater(); }
+  if (d.fainted) say(`${N()} voltou para casa para descansar.`);
+  else if (d.exhausted) say(`${N()} está exausto!`);
+}
+// fim da narração: conclui e decide para onde ir (passeio continua, ou casa)
+async function btEnd(r, e) {
+  const tok = BT.tok; if (!e || !G) return;
+  btSetBusy(true);
+  const d = btSettle(r, e);
+  if (d.fainted) await talk(`${N()} voltou para casa para descansar.`);
+  if (d.exhausted) await talk(`${N()} está exausto!`);
   if (!btAlive(tok)) return;
-  if (r.fainted || exhausted) goHome(); else go('explorar', { after: true });
+  btFinish(e);
+  if (d.fainted || d.exhausted) goHome(); else go('explorar', { after: true });
 }
 function btRun() {
-  if (BT.busy || !G.enc) return;
+  if (BT.busy || !btLive()) return;
   btSetBusy(true); Sfx.whoosh();
-  const e = G.enc, tok = BT.tok;
+  const e = BT.e, tok = BT.tok;
+  btSettle({ fled: true }, e);
   talk('Fugiu sem problemas!').then(() => btAlive(tok) && btEnd({ fled: true }, e));
   advTween(RM.matches ? 0 : .4, p => { BT.petDx = -Math.round(150 * p); });
 }
 function btCheer() {
-  if (BT.busy || !G.enc) return;
-  if (G.enc.animar) { sayNow(`${N()} já está animado!`); return Sfx.deny(); }
+  if (BT.busy || !btLive()) return;
+  if (BT.e.animar) { sayNow(`${N()} já está animado!`); return Sfx.deny(); }
   btTurn({ kind: 'animar' });
 }
 function btBag() {
-  if (BT.busy || !G.enc) return;
+  if (BT.busy || !btLive()) return;
   const items = BALLS.filter(k => G.bag[k] > 0).map(k => ({ label: ITEMS[k].name, sub: '×' + G.bag[k], fn: () => { Menu.closeAll(); btBall(k); } }));
   if (!items.length) items.push({ label: 'POKé BOLA', sub: '×0', fn: () => { Menu.closeAll(); btBall('poke'); } });
   items.push({ label: 'POÇÃO', sub: '×' + (G.bag.pocao || 0), disabled: !bagHas('pocao'), fn: () => {
-    const o = G.outing; if (o.hp >= o.maxHp) { sayNow(`O PS de ${N()} já está cheio!`); return Sfx.deny(); }
+    const o = BT.o; if (o.hp >= o.maxHp) { sayNow(`O PS de ${N()} já está cheio!`); return Sfx.deny(); }
     Menu.closeAll(); btTurn({ kind: 'pocao' });
   } });
   items.push({ label: 'VOLTAR', fn: () => Menu.close() });
@@ -380,6 +463,21 @@ function btBall(k) {
   if (!bagHas(k)) { sayNow('Não há POKé BOLAS!'); return Sfx.deny(); }
   btTurn({ kind: 'ball', k });
 }
+// só uma aba batalha por vez (spec N5): batimento a cada 15 s pelo tick; quem perde a vez volta para casa
+on('tick', now => {
+  if (scene !== 'batalha' || !BT.e || BT.fin) return;
+  const g = G.enc, e = BT.e;
+  if (g && g.id === e.id && !btElsewhere(g)) {
+    G.enc = e;   // o tick acabou de adotar o save: a batalha segue com o objeto dela
+    if (e.owner !== BT_TAB || now - num(e.at, 0) > 15e3) { e.owner = BT_TAB; e.at = now; }
+  } else if (!BT.busy) { BT.fin = true; goHome(); }
+});
+// recarregar ou fechar: solta a batalha na hora (a mesma aba, ao voltar, retoma sem esperar os 2 min)
+window.addEventListener('pagehide', () => {
+  const g = G && G.enc; if (!g || g.owner !== BT_TAB) return;
+  g.owner = null; if (BT.e && BT.e.id === g.id) BT.e.owner = null;
+  save();
+});
 
 /* ── Efeitos ── */
 async function btHitFx(who, eff) {
@@ -424,6 +522,8 @@ function btText(c, t, x, y, col = '#404048', align = 'left') {
   c.font = '8px "Press Start 2P", monospace'; c.textAlign = align; c.textBaseline = 'top';
   c.fillStyle = '#d8d0b8'; c.fillText(t, x + 1, y + 1); c.fillStyle = col; c.fillText(t, x, y);
 }
+// nível: o "Nv" miúdo e os números em 8px (cabe Nv100 antes do rótulo PS)
+function btLv(c, L, x, y) { drawBm(c, BT_BM.nv, x + 1, y + 3, { K: '#d8d0b8' }); drawBm(c, BT_BM.nv, x, y + 2, { K: '#404048' }); btText(c, String(L), x + 10, y); }
 function btBar(c, x, y, w, v, max) {
   const f = max > 0 ? Math.max(0, v) / max : 0, col = f > .5 ? '#58d080' : f > .2 ? '#f8d030' : '#f05030';
   R(c, x - 14, y - 2, w + 16, 7, '#505058'); drawBm(c, BT_BM.ps, x - 12, y - 1, { K: '#f8d030' });
@@ -471,15 +571,15 @@ function btWildBox(c, e) {
   btText(c, DEX[e.sp].name, 12, 13);
   if (e.shiny) drawBm(c, BM.star, 104, 13, PAL);
   if (dexHas('caught', e.sp)) drawBm(c, BT_BM.ball, 104, 25, BT_PAL);
-  btText(c, 'Nv' + e.lv, 12, 26);
-  btBar(c, 58, 28, 44, BT.wildShown, e.maxHp);
+  btLv(c, e.lv, 12, 26);
+  btBar(c, 62, 28, 40, BT.wildShown, e.maxHp);
 }
 function btPetBox(c, quake) {
   const bx = 124 + quake, by = 102;
   btBox(c, bx, by, 112, 46);
   btText(c, N(), bx + 6, by + 5);
   if (s.shiny) drawBm(c, BM.star, bx + 102, by + 5, PAL);
-  btText(c, 'Nv' + s.level, bx + 6, by + 18);
+  btLv(c, s.level, bx + 6, by + 18);
   btBar(c, bx + 60, by + 20, 46, BT.petShown, BT.petMax);
   btText(c, `${Math.ceil(BT.petShown)}/${BT.petMax}`, bx + 106, by + 29, '#404048', 'right');
   R(c, bx + 6, by + 40, 100, 3, '#505058');

@@ -85,7 +85,8 @@ function exRollEncounter(area, ph = phaseAt()) {
   // emboscada noturna: não-noturnos às vezes estão dormindo
   const asleep = !legend && ph === 'NOITE' && !EX_NOCT.has(id) && Math.random() < .2;
   return { sp: id, lv, shiny: Math.random() < (G.prog.charm ? 1 / 256 : 1 / 512), hp, maxHp, asleep, sleepTurns: asleep ? randInt(1, 3) : 0,
-    turn: 0, area, owner: BT_TAB, at: now, legend, pity, petHp0: null, animar: false, pump: false, endured: false };
+    turn: 0, area, id: btRid(), owner: BT_TAB, at: now, legend, pity, petHp0: null, animar: false, pump: false, endured: false,
+    introDone: false, owe: false, done: null };
 }
 
 /* Passeio */
@@ -110,11 +111,14 @@ function exBlock() {
 function exOpen() {
   if (!G || scene !== 'habitat' || evo || pendingChoice || training) return Sfx.deny();
   syncFromStorage(); if (!G || scene !== 'habitat') return;
+  // encontro pendente (recarregou, ou outra aba): resolve ele antes de sair de novo
+  if (G.enc) { Menu.closeAll(); if (exTakeEnc('user') === 'busy') Sfx.deny(); return; }
   const why = exBlock(); if (why) { Menu.closeAll(); sayNow(why); return Sfx.deny(); }
   Menu.open({ title: 'EXPLORAR', sel: Math.max(0, EX_KEYS.indexOf(G.prog.lastArea)),
     items: [...EX_KEYS.map(k => ({ label: EX_AREAS[k], fn: () => { Menu.closeAll(); exStart(k); } })), { label: 'VOLTAR', fn: () => Menu.close() }] });
 }
 function exStart(area) {
+  if (G.enc) { if (exTakeEnc('user') === 'busy') Sfx.deny(); return; }
   const why = exBlock(); if (why) { sayNow(why); return Sfx.deny(); }
   G.prog.lastArea = area; G.outing = exNewOuting(area); save();
   go('explorar', { area });
@@ -169,7 +173,8 @@ SCENES.explorar = {
   },
   draw(c) { exDraw(c); },
   key(e, k) {
-    if (e.target.closest && e.target.closest('button') && (k === 'enter' || k === ' ')) return false;
+    // botão focado: Enter/Espaço passa a mensagem, senão deixa o clique nativo acontecer (o núcleo cancelaria)
+    if (e.target.closest && e.target.closest('button') && (k === 'enter' || k === ' ')) { if (e.repeat || msgAdvance()) e.preventDefault(); return true; }
     if ((k === 'enter' || k === ' ' || k === 'z') && !e.repeat) { e.preventDefault(); if (!msgAdvance() && EX.phase === 'idle') exStep(); return true; }
     if ((k === 'x' || k === 'escape' || k === 'backspace') && EX.phase === 'idle') { e.preventDefault(); exHome(); return true; }
     if (k === 'i' && EX.phase === 'idle') { exBag(); return true; }
@@ -183,6 +188,8 @@ function exHome() {
 async function exStep() {
   if (EX.phase !== 'idle' || scene !== 'explorar' || pendingChoice) return Sfx.deny();
   syncFromStorage(); if (!G || scene !== 'explorar') return;
+  // nunca sorteia por cima de um encontro guardado (outra aba ou recarregamento)
+  if (G.enc) { const r = exTakeEnc('user'); if (r === 'busy') Sfx.deny(); else if (r !== 'battle') goHome(); return; }
   if (!G.outing) G.outing = exNewOuting(G.prog.lastArea);
   const tok = EX.tok, why = exBlock();
   if (why) { Sfx.deny(); exSetPhase('wait'); await talk(why); return tok === EX.tok && exHome(); }
@@ -262,33 +269,51 @@ function exArea() {
 }
 
 /* Ao abrir o jogo / voltar para casa: encontro recente continua (anti-reroll); velho foge; passeio velho acaba */
-const exEncFresh = () => G && G.enc && Date.now() - (G.enc.at || 0) < 30 * 60e3;
+const exEncFresh = () => G && G.enc && Date.now() - num(G.enc.at, 0) < 30 * 60e3;
+let exResumeT = 0;
 on('boot', () => { if (G && G.outing && !exEncFresh()) { G.outing = null; save(); } });
 on('home', () => {
   if (!G) return;
-  if (G.enc) { setTimeout(exResume, 500); return; }
+  if (G.enc) { clearTimeout(exResumeT); exResumeT = setTimeout(exResume, 500); return; }
   if (G.outing) { G.outing = null; save(); }
 });
-function exResume() {
+// em casa: espera menus e perguntas fecharem; batalha em outra aba → tenta de novo a cada 15 s (o batimento dela vence em 2 min)
+function exResume(how = 'auto') {
   if (!G || !G.enc || scene !== 'habitat') return;
-  if (evo || pendingChoice || Menu.top || training) { setTimeout(exResume, 1000); return; }
+  if (evo || pendingChoice || Menu.top || training) { exResumeT = setTimeout(() => exResume(how), 1000); return; }
+  if (exTakeEnc(how) === 'busy') exResumeT = setTimeout(() => exResume('retry'), 15e3);
+}
+// encontro guardado: conclui o que já foi decidido, retoma o recente (se nenhuma outra aba está nele) ou deixa fugir.
+// how: 'user' (avisa já), 'auto' (entra na fila de mensagens), 'retry' (calado)
+function exTakeEnc(how) {
   const e = G.enc, nm = DEX[e.sp].name;
-  if (!(e.hp > 0)) { G.enc = null; G.outing = null; save(); return; }   // fechou bem na hora do nocaute
+  if (!e.id) e.id = btRid();
+  if (btElsewhere(e)) {
+    const t = 'Batalha em andamento em outra aba.';
+    if (how === 'user') sayNow(t); else if (how === 'auto') say(t);
+    return 'busy';
+  }
+  BT.e = e; BT.o = G.outing;
+  // resultado já gravado, nocaute ou desmaio sem narração (fechou bem na hora): conclui com as recompensas/penas
+  if (e.done || !(e.hp > 0) || (G.outing && !(num(G.outing.hp, 1) > 0))) {
+    if (!e.done) btSettle(e.hp > 0 ? { fainted: true } : { won: true }, e);
+    btFinish(e, true); return 'done';
+  }
   if (exEncFresh() && !s.asleep && !s.sick) {
     if (!G.outing) G.outing = exNewOuting(e.area);
     go('batalha', { resume: true });
-    return;
+    return 'battle';
   }
   if (e.legend) btLegendMiss(e, false);
   G.enc = null; G.outing = null; save();
   say(`O ${nm} selvagem fugiu enquanto você estava fora.`);
+  return 'fled';
 }
 // testes (#dev): as contas da aventura no console
 on('boot', () => { if (window.PKG) window.PKG.adv = { BT, EX, ADV, exRollEncounter, exTier, exWildOk, exNewOuting, btStats, btMoves, btChecks, btDamage }; });
 // desmaiou de exaustão parado na grama (a simulação continua lá fora): volta para casa
 on('tick', () => {
   if (scene === 'explorar' && EX.phase === 'idle' && !Menu.top && s && s.asleep) { say(`${N()} está exausto!`); exHome(); }
-  if (scene === 'batalha' && G.enc) G.enc.at = Date.now();   // batalha aberta continua "recente"
 });
 
 /* Desenho: o cenário do bioma, a grama alta na frente e o POKéMON andando */
