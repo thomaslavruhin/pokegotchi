@@ -45,7 +45,10 @@ async function op_decode(code) {
 }
 
 /* Painel por cima da tela (dentro de .screen-wrap): caixa de texto + botões; os botões redondos espelham os botões */
-let op_panel = null;   // { el, prevKnobs }
+let op_panel = null;   // { el, prevKnobs, guard }
+/* Com o painel aberto fica uma entrada vazia na pilha do Menu: o núcleo trata Menu.top como "tem algo por cima"
+   e não começa evolução, HALL, toques no habitat nem o START por baixo do painel. Ela nunca é desenhada
+   (ninguém chama Menu.render com ela no topo); se alguém esvaziar a pilha (troca de cena), o painel fecha junto. */
 function op_open(title, html, knobs) {
   op_close(true);
   Menu.closeAll();
@@ -53,16 +56,20 @@ function op_open(title, html, knobs) {
   el.className = 'op-panel'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', title);
   el.innerHTML = `<div class="op-title">${title}</div>${html}`;
   document.querySelector('.screen-wrap').appendChild(el);
-  op_panel = { el, prevKnobs: knobDefs };
+  const prevKnobs = knobDefs, guard = { items: [], sel: 0, prevKnobs, onBack: () => op_close() };
+  op_panel = { el, prevKnobs, guard };
+  Menu.stack.push(guard);
   setKnobs(knobs);
   return el;
 }
 function op_close(silent) {
   if (!op_panel) return;
   const p = op_panel; op_panel = null; p.el.remove();
+  const i = Menu.stack.indexOf(p.guard); if (i >= 0) Menu.stack.splice(i, 1);
   setKnobs(scene === 'habitat' ? null : p.prevKnobs);
   if (!silent) Sfx.click();
 }
+setInterval(() => { if (op_panel && !Menu.stack.includes(op_panel.guard)) op_close(true); }, 250);
 // teclado com o painel aberto: o jogo não vê as teclas (nem Enter abrindo o START por baixo); digitar na caixa funciona
 window.addEventListener('keydown', e => {
   if (!op_panel || pendingChoice) return;
@@ -148,23 +155,47 @@ async function op_doImport(code) {
   try {
     const r = await op_decode(code);
     if (r.err) { sayNow(r.err); return Sfx.deny(); }
-    const g = r.g, a = g.active, old = g.savedAt && G && g.savedAt < G.savedAt;
+    // aviso por progresso (o savedAt daqui é sempre "agora": o núcleo salva a cada 2 s)
+    const g = r.g, a = g.active, caught = g.dex.caught.split('1').length - 1;
+    const old = !!G && (caught < dexCount('caught') || g.prog.badges < G.prog.badges);
     // a prévia vai no painel: a caixa de texto tem 3 linhas e, no celular, cortaria a pergunta
     const ta = op_panel.el.querySelector('textarea'), pv = document.createElement('div');
     pv.className = 'op-prev';
     // linhas curtas à esquerda: a caixa SIM/NÃO cobre o canto inferior direito da tela
-    pv.innerHTML = (old ? '<em>Código mais antigo!</em>' : '') + `<b>${DEX[a.sp].name} Nv. ${a.level}</b>` +
-      `<span>Capturados ${g.dex.caught.split('1').length - 1}/151</span><span>${g.prog.badges} insígnia${g.prog.badges === 1 ? '' : 's'}</span>` +
-      `<span>${g.savedAt ? op_when(g.savedAt) : '--/-- --:--'}</span><img src="${spriteURL(monKey(a))}" alt="">`;
+    pv.innerHTML = (old ? '<em>Menos progresso que o seu!</em>' : '') + `<b>${DEX[a.sp].name} Nv. ${a.level}</b>` +
+      `<span>Capturados ${caught}/151</span><span>${g.prog.badges} insígnia${g.prog.badges === 1 ? '' : 's'}</span>` +
+      `<span>Salvo em ${g.savedAt ? op_when(g.savedAt) : '--/-- --:--'}</span><img src="${spriteURL(monKey(a))}" alt="">`;
     const row = op_panel.el.querySelector('.op-row');
     ta.hidden = true; row.hidden = true; ta.after(pv);
     if (old) Sfx.alert();
-    const yes = await confirmYN(old ? 'Este código é mais antigo que o seu jogo. Substituir?' : 'Substituir o jogo atual por este?', { safeNo: true });
+    const yes = await confirmYN(old ? 'Este jogo tem menos progresso que o seu. Substituir?' : 'Substituir o jogo atual por este?', { safeNo: true });
     pv.remove(); ta.hidden = false; row.hidden = false;
     if (!yes) { sayNow('Nada mudou.'); return; }
     op_replace(g);
     sayNow('Jogo importado!'); Sfx.evoDone();
   } finally { op_busy = false; }
+}
+/* Dia do jogo importado: a sequência vem do código, mas o presente e os tetos do dia já pagos aqui não pagam
+   de novo. Data = a maior das duas; no mesmo dia, cada contador fica com o maior valor. */
+function op_mergeDaily(cur, imp) {
+  const out = clone(imp), cd = cur.maxDate || '', id = imp.maxDate || '';
+  out.lastSafety = Math.max(num(cur.lastSafety, 0), num(imp.lastSafety, 0));
+  if (cd < id) return out;   // o código é de um dia mais novo: fica como veio
+  const perDay = f => { for (const key in DEFAULTS.daily) if (!/^(streak|lastSafety)$/.test(key)) f(key); };
+  if (cd === id) {
+    perDay(k => {
+      if (typeof out[k] === 'number') out[k] = Math.max(num(cur[k], 0), out[k]);
+      else if (typeof out[k] === 'boolean') out[k] = !!cur[k] || out[k];
+      else if (typeof out[k] === 'string' && String(cur[k] || '') > out[k]) out[k] = String(cur[k]);
+    });
+    out.streak = Math.max(num(cur.streak, 0), out.streak);
+    return out;
+  }
+  // este aparelho já virou um dia mais novo: os contadores são os de hoje daqui; a sequência continua se o código for de ontem
+  const [y, m, d] = cd.split('-').map(Number), prev = localDate(new Date(y, m - 1, d - 1, 12).getTime());
+  perDay(k => { out[k] = clone(cur[k]); });
+  out.streak = id === prev ? out.streak + 1 : 1;
+  return out;
 }
 // troca o jogo atual por g, guardando o atual em .bak
 function op_replace(g) {
@@ -172,8 +203,7 @@ function op_replace(g) {
   try { const cur = localStorage.getItem(SAVE_KEY); if (cur) localStorage.setItem(OP_BAK, cur); } catch {}
   const now = Date.now();
   g.lastTick = g.savedAt = now; g.enc = null; g.outing = null;   // sem simular o tempo parado nem retomar batalhas
-  // presentes e tetos do dia são deste aparelho: um código velho não paga o dia de novo
-  if (G && G.daily && (G.daily.maxDate || '') >= (g.daily.maxDate || '')) g.daily = clone(G.daily);
+  if (G && G.daily) g.daily = op_mergeDaily(G.daily, g.daily);
   g.rev = Math.max(g.rev, G ? G.rev : 0);
   op_close(true);
   cancelTraining(); training = null; sweep = null; berryFx = null; evo = null; away = null;

@@ -40,7 +40,7 @@ const PG_MEDALS = [
 // "10 POKé BOLAS", "1 PEDRA DA LUA", "3 DOCES RAROS"
 function pg_itemTxt(k, n) {
   let nm = ITEMS[k].name;
-  if (n > 1) nm = nm.replace(/BOLA$/, 'BOLAS').replace(/^DOCE RARO$/, 'DOCES RAROS').replace(/^CABO /, 'CABOS ').replace(/^PEDRA /, 'PEDRAS ')
+  if (n > 1) nm = nm.replace(/BOLA$/, 'BOLAS').replace(/^GRANDE /, 'GRANDES ').replace(/^DOCE RARO$/, 'DOCES RAROS').replace(/^CABO /, 'CABOS ').replace(/^PEDRA /, 'PEDRAS ')
     .replace(/^FÓSSIL /, 'FÓSSEIS ').replace(/^POÇÃO$/, 'POÇÕES');
   return `${n} ${nm}`;
 }
@@ -54,7 +54,9 @@ function pg_give(k, n) {
 const PG_SFX = { happy: () => Sfx.happy(), fan: () => pg_fanfare(), medal: () => Sfx.levelUp(), evo: () => Sfx.evoDone() };
 function pg_note(text, sfx) { const q = G.prog.notes; q.push([text, sfx || '']); if (q.length > 40) q.splice(0, q.length - 40); }
 function pg_pump() {
-  if (!G || !G.prog.notes.length || !atHome() || document.hidden || pendingChoice || evo || msg.queue.length || !msgIdle()) return;
+  // nem no treino (apagaria a instrução), nem com menu ou o painel de OPÇÕES aberto (op_panel vem de options.js)
+  if (!G || !G.prog.notes.length || !atHome() || document.hidden || pendingChoice || evo || training || sweep || Menu.top || op_panel
+    || msg.queue.length || !msgIdle()) return;
   const e = G.prog.notes.shift(); save();
   if (!Array.isArray(e) || typeof e[0] !== 'string') return;   // save adulterado
   const sfx = String(e[1] || ''); say(e[0]);
@@ -98,7 +100,8 @@ on('wellCared', min => {
   const target = Math.min(4, Math.floor(D.careMin / 60));
   while (D.careBalls < target) {
     D.careBalls++; bagAdd('poke', 1);
-    pg_note(`PROF. CARVALHO viu como você cuida bem de ${N()}! Ganhou 1 POKé BOLA.`, 'happy');
+    // duas mensagens: numa só, nomes de 10 letras passam das 3 linhas da caixa no celular
+    pg_note(`PROF. CARVALHO viu como você cuida bem de ${N()}!`, 'happy'); pg_note('Você ganhou 1 POKé BOLA!');
   }
 });
 
@@ -167,6 +170,7 @@ on('home', () => { pg_day(); pg_safety(); pg_check(); pg_hall(); });
 on('tick', () => { pg_day(); pg_safety(); pg_check(); });
 on('caught', (m, how) => {
   if (!G) return;
+  // o contador de fósseis é só deste gancho: o módulo que revive o fóssil não mexe em prog.fossils
   if (how === 'fossil') G.prog.fossils++;
   if (LEGENDS.includes(m.sp)) {
     pg_legendUnlock(m.sp).caught = true;
@@ -196,7 +200,8 @@ on('trained', notes => {
 on('hallDone', () => {
   if (!G) return;
   G.prog.charm = true;
-  pg_medal('MESTRE POKéMON', []);
+  // o HALL pode ser revisto (CARTÃO): o amuleto só é anunciado na primeira vez
+  if (!pg_medal('MESTRE POKéMON', [])) { save(); return; }
   pg_note('Você recebeu o AMULETO BRILHANTE!', 'evo'); pg_note('POKéMON brilhantes vão aparecer mais vezes.');
   save(); updateUI();
 });
