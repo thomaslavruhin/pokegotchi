@@ -29,7 +29,7 @@ function dxHoldKnob(label, icon, step) {
     fn() { stop(); if (repeated) { repeated = false; return; } step(); } };
 }
 
-const dx = { el: null, list: null, page: null, mode: null, view: 'list', sel: 0, id: 0, shiny: false, done: null, prevKnobs: null };
+const dx = { el: null, list: null, page: null, mode: null, view: 'list', sel: 0, id: 0, shiny: false, done: null, prevKnobs: null, popKnobs: null, popScene: '' };
 
 function dx_build() {
   if (dx.el) return;
@@ -44,7 +44,8 @@ function dx_build() {
     const r = e.target.closest('.dx-row'); if (!r) return;
     dx_select(+r.dataset.id - 1); dx_ok();
   });
-  el.addEventListener('click', e => { if (e.target.closest('.dx-shbtn')) dx_toggleShiny(); else if (e.target.closest('.dx-pic')) Sfx.cry(dx.id); });
+  // na ficha avulsa, tocar fora da figura e do ✦ fecha (os botões redondos podem ser de outra cena)
+  el.addEventListener('click', e => { if (e.target.closest('.dx-shbtn')) dx_toggleShiny(); else if (e.target.closest('.dx-pic')) Sfx.cry(dx.id); else if (dx.mode === 'popup') dx_close(); });
   // outra aba zerou o jogo (volta à escolha do inicial sem passar pelo exit da cena): some junto
   new MutationObserver(() => { if (!$('selectLayer').hidden) dx_close(); }).observe($('selectLayer'), { attributes: true, attributeFilter: ['hidden'] });
 }
@@ -118,7 +119,7 @@ function dx_openPage(id, quiet) {
   dx_renderPage();
   if (dexHas('caught', id) && !quiet) Sfx.cry(id);
   const pop = dx.mode === 'popup';
-  setKnobs(pop ? [null, null, { label: 'OK', icon: 'OK', fn: dx_close }, { label: 'VOLTAR', icon: '◀', fn: dx_close }]
+  setKnobs(pop ? (dx.popKnobs = [null, null, { label: 'OK', icon: 'OK', fn: dx_close }, { label: 'VOLTAR', icon: '◀', fn: dx_close }])
     : [{ label: '▲', icon: '▲', fn: () => dx_step(-1) }, { label: '▼', icon: '▼', fn: () => dx_step(1) },
       { label: 'OK', icon: 'OK', fn: dx_pageOk }, { label: 'VOLTAR', icon: '◀', fn: dx_back }]);
   knobDefs.center = { fn: pop ? dx_close : dx_pageOk };
@@ -180,7 +181,8 @@ function dx_key(e, k) {
 }
 // na ficha avulsa a cena de baixo não pode receber as teclas: escuta antes de todo mundo (captura) e para a propagação
 function dx_popKey(e) {
-  if (pendingChoice || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (!dx_popAlive()) return;
+  if (pendingChoice || Menu.top || e.ctrlKey || e.metaKey || e.altKey) return;   // menu aberto por cima (pílula MENU): as teclas são dele
   const k = e.key.toLowerCase();
   if (k >= '1' && k <= '4') { e.stopImmediatePropagation(); e.preventDefault(); if (!e.repeat) $(KNOB_IDS[+k - 1]).click(); return; }
   if (!dx_key(e, k) && k === 'm') return;   // só o SOM passa; o resto (F, T, C...) não pode agir na cena escondida
@@ -193,8 +195,9 @@ function showDexEntry(id) {
   dx_build();
   if (dx.mode === 'scene') { dx_openPage(id); return Promise.resolve(); }
   if (dx.mode === 'popup') { dx_openPage(id); return dx.wait; }
-  dx.mode = 'popup'; dx.prevKnobs = knobDefs;
+  dx.mode = 'popup'; dx.prevKnobs = knobDefs; dx.popScene = scene;
   window.addEventListener('keydown', dx_popKey, true);
+  requestAnimationFrame(dx_watch);
   dx.wait = new Promise(res => { dx.done = res; });
   dx_show(); dx_openPage(id);
   return dx.wait;
@@ -206,10 +209,20 @@ function dx_close() {
   dx.el.hidden = true; dx.mode = null; dx.done = null;
   if (pop) {
     window.removeEventListener('keydown', dx_popKey, true);
-    if (knobDefs && knobDefs.center && (knobDefs.center.fn === dx_close)) setKnobs(dx.prevKnobs);
-    dx.prevKnobs = null; Sfx.click(); done && done();
+    // os botões da ficha podem estar na tela ou guardados por um menu aberto por cima: os dois voltam aos da cena de baixo
+    for (const m of Menu.stack) if (m.prevKnobs === dx.popKnobs) m.prevKnobs = dx.prevKnobs;
+    if (knobDefs === dx.popKnobs) setKnobs(dx.prevKnobs);
+    dx.prevKnobs = dx.popKnobs = null; Sfx.click(); done && done();
   }
 }
+
+// a cena de baixo trocou (sem ser a volta para casa): a ficha avulsa perdeu os botões e pode ficar coberta, então fecha
+function dx_popAlive() {
+  if (dx.mode !== 'popup') return false;
+  if (scene === dx.popScene || scene === 'habitat') return true;
+  dx_close(); return false;
+}
+function dx_watch() { if (dx_popAlive()) requestAnimationFrame(dx_watch); }
 
 SCENES.pokedex = {
   enter(arg) { dx_build(); dx_close(); dx.mode = 'scene'; dx_show(); if (arg && arg.id && dexHas('seen', arg.id)) dx_openPage(arg.id); else dx_openList(); },
@@ -219,7 +232,7 @@ SCENES.pokedex = {
 };
 // a ficha avulsa sobrevive à volta para casa (quem chamou pode não ter esperado): retoma os botões, e ao fechar
 // eles voltam a ser os do habitat. A cena da POKéDEX já foi fechada pelo exit.
-on('home', () => { if (dx.mode === 'popup') { dx.prevKnobs = null; dx_openPage(dx.id, true); } });
+on('home', () => { if (dx.mode === 'popup') { dx.prevKnobs = null; dx.popScene = 'habitat'; dx_openPage(dx.id, true); } });
 on('newGame', dx_close);
 
 addStartItem({ label: 'POKéDEX', order: 20, fn: () => go('pokedex') });

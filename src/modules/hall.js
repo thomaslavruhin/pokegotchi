@@ -29,12 +29,12 @@ function hl_phase(p) {
   hl.phase = p; hl.t = 0;
   if (p === 'intro') { sayNow('Bem-vindo ao HALL DA FAMA!'); hl_fanfare(); }
   else if (p === 'team') { hl.i = 0; hl_member(); }
-  else if (p === 'lineup') Sfx.happy();
+  else if (p === 'lineup') { sayNow('Seu time campeão!'); Sfx.happy(); }   // tira da caixa a fala do último membro
   else if (p === 'credits') { hl.music = 0; say('Parabéns! Você completou a POKéDEX de KANTO!'); }
   else if (p === 'prof') { sayNow('PROF. CARVALHO: Fantástico! Você completou a POKéDEX!'); Sfx.levelUp(); }
   else if (p === 'diploma') hl_diploma();
 }
-function hl_member() { const m = hl.team[hl.i]; hl.t = 0; sayNow(`${DEX[m.sp].name}${m.shiny ? ' ✦' : ''} · Nv. ${m.level}`); Sfx.cry(m.sp); }
+function hl_member() { const m = hl.team[hl.i]; hl.t = 0; sayNow(`${DEX[m.sp].name}${m.shiny ? ' BRILHANTE' : ''} · Nv. ${m.level}`); Sfx.cry(m.sp); }
 function hl_diploma() {
   hl.phase = 'diploma'; hl.t = 0;
   Sfx.evoDone(); Sfx.seq([[0, .9], [1046, .12], [1318, .12], [1568, .4]], { vol: .06 });
@@ -66,7 +66,9 @@ function hl_skip() {
   if (hl.phase === 'diploma') { if (hl.t > .8) hl_end(); return; }
   Sfx.click(); hl_phase('diploma');
 }
-function hl_end() { hl = null; goHome(); }
+// a fala do HALL não pode ficar na caixa do habitat (nem aparecer depois por cima do CARTÃO).
+// Com avisos na fila (prêmios do 'hallDone') eles mesmos a substituem: não podem ser descartados.
+function hl_end() { hl = null; goHome(); if (!msg.queue.length) sayNow(`${DEX[s.sp].name} ficou feliz de voltar para casa!`); }
 
 SCENES.hall = {
   enter(opt) {
@@ -133,6 +135,7 @@ function hl_drawSky(c, party) {
     R(c, Math.round(x), Math.round(y), 2, (Math.floor(T * 4 + i) % 2) ? 3 : 2, HL_CONF[i % HL_CONF.length]);
   }
 }
+function hl_spark(c, x, y) { R(c, x - 3, y, 7, 1, '#f8e8a0'); R(c, x, y - 3, 1, 7, '#f8e8a0'); R(c, x - 1, y - 1, 3, 3, '#f8d030'); R(c, x, y, 1, 1, '#fff'); }
 function hl_spot(c, x, y) { disc(c, x, y, 34, 6, 'rgba(248,232,160,.18)'); disc(c, x, y, 24, 4, 'rgba(248,232,160,.22)'); }
 function hl_drawMember(c) {
   const m = hl.team[hl.i]; if (!m) return;
@@ -141,7 +144,12 @@ function hl_drawMember(c) {
   const k = RM.matches ? 1 : Math.min(1, hl.t / .7), x = Math.round(120 + (1 - k) * (1 - k) * 200);
   hl_spot(c, x, 112);
   drawPokemon(hl_key(m), x, 112, {});
-  if (k >= 1) { hl_text(c, DEX[m.sp].name + (m.shiny ? ' ✦' : ''), 120, 122, '#f8f8f8'); hl_text(c, `Nv. ${m.level}`, 120, 136, '#a8c8f8'); }
+  if (k >= 1) {
+    // brilhante: nome dourado e um brilho em pixel (a fonte pixel não tem o ✦)
+    const nm = DEX[m.sp].name; hl_text(c, nm, 120, 122, m.shiny ? '#f8d030' : '#f8f8f8');
+    if (m.shiny) hl_spark(c, Math.round(120 + c.measureText(nm).width / 2) + 6, 125);
+    hl_text(c, `Nv. ${m.level}`, 120, 136, '#a8c8f8');
+  }
   hl_text(c, `${hl.i + 1}/${hl.team.length}`, 232, 8, '#8890b0', 8, 'right');
 }
 function hl_drawLineup(c) {
