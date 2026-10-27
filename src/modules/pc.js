@@ -6,7 +6,7 @@ extendDefaults({ prog: { fossils: 0, stoneTradeEvos: 0, trades: 0 } });
 
 const PC_BOXES = 12, PC_SLOTS = 30, PC_SWAP_MS = 30 * 60e3;
 const PC_WALL = ['#78b0e0', '#88c878', '#e0a070', '#c090d8', '#e0d070', '#70c8c0', '#e08898', '#98a8c8', '#b8c870', '#d8a8e0', '#90d0a8', '#e8b858'];
-const pc = { box: 0, cur: 0, row: 0, sheet: null, busy: false, el: null };   // cur: 0-29 na caixa, -1 = o ativo
+const pc = { box: 0, cur: 0, row: 0, sheet: null, busy: false, el: null, html: '' };   // cur: 0-29 na caixa, -1 = o ativo
 const pc_wait = ms => new Promise(r => setTimeout(r, ms));
 const pc_idx = () => pc.box * PC_SLOTS + pc.cur;
 const pc_monAt = () => pc.cur < 0 ? s : G.pc[pc_idx()] || null;
@@ -41,7 +41,7 @@ function pc_render() {
   }
   const info = !m ? '<div class="pc-nm">—</div><div class="pc-dim">VAZIO</div>' :
     `<div class="pc-nm">${N(m)}${m.shiny ? ' ✦' : ''}</div><div>Nv ${m.level}</div><div class="pc-types">${pc_types(DEX[m.sp])}</div>`;
-  pc.el.innerHTML =
+  const html =
     `<div class="pc-side">` +
       `<button type="button" class="pc-card pc-act${pc.cur < 0 ? ' sel' : ''}" data-slot="-1"><span class="pc-lbl">HABITAT</span>${pc_img(s)}<span class="pc-nm">${N(s)}${s.shiny ? ' ✦' : ''}</span><span>Nv ${s.level}</span></button>` +
       `<div class="pc-card pc-info">${info}<div class="pc-dim pc-total">PC ${G.pc.length}/${PC_BOXES * PC_SLOTS}</div></div>` +
@@ -49,10 +49,13 @@ function pc_render() {
       `<div class="pc-head"><button type="button" class="pc-arr" data-d="-1" aria-label="Caixa anterior">◀</button><span class="pc-title">CAIXA ${pc.box + 1} <small class="pc-dim">${n}/${PC_SLOTS}</small></span><button type="button" class="pc-arr" data-d="1" aria-label="Próxima caixa">▶</button></div>` +
       `<div class="pc-grid" style="--wall:${PC_WALL[pc.box]}">${cells}</div>` +
     `</div>` + (pc.sheet != null ? pc_sheetHTML() : '') + `<div class="pc-link" hidden></div>`;
+  // só troca o DOM se algo mudou: o tick redesenha a cada 2 s e não pode roubar o toque/foco nem reiniciar o cursor piscando
+  if (html !== pc.html) { pc.html = html; pc.el.innerHTML = html; }
 }
 // ficha (DADOS): o estado congelado no PC (ou o do ativo)
 function pc_sheetHTML() {
-  const m = pc.sheet === -1 ? s : pc_find(pc.sheet); if (!m) { pc.sheet = null; return ''; }
+  // sumiu (outra aba soltou/ativou): fecha a ficha e devolve os botões do PC
+  const m = pc.sheet === -1 ? s : pc_find(pc.sheet); if (!m) { pc.sheet = null; if (scene === 'pc') setKnobs(SCENES.pc.knobs); return ''; }
   const d = DEX[m.sp], need = needExp(m.level), dt = new Date(m.caughtAt);
   const bar = (lbl, v) => { v = Math.round(v); return `<div class="pc-bar"><span>${lbl}</span><b><i style="width:${v}%;background:${barColor(v)}"></i></b><span>${v}</span></div>`; };
   return `<div class="pc-sheet" role="dialog" aria-label="Dados de ${d.name}">` +
@@ -173,6 +176,8 @@ async function pc_trade(uid) {
   m.sp = to; m.happy = clamp(m.happy + 10); m.pendingEvo = !!levelEvo(m);
   G.prog.trades++; G.prog.stoneTradeEvos++; dexMark(to, true, shiny); fire('evolved', m, from); save();
   Menu.closeAll(); pc.busy = true;
+  // botões apagados enquanto a troca roda (só A/toque passam as mensagens)
+  setKnobs(Object.assign(SCENES.pc.knobs.map(d => ({ ...d, disabled: true })), { center: null }));
   const k = id => 'f' + id + (shiny ? 's' : '');
   try {
     // a frase do FRLG não cabe nas 3 linhas da caixa no celular: vai em duas
@@ -180,7 +185,7 @@ async function pc_trade(uid) {
     await pc_linkAnim(k(from), k(to));
     Sfx.evoDone();
     await talk(`Parabéns! Seu ${DEX[from].name} evoluiu para ${DEX[to].name}!`);
-  } finally { pc.busy = false; if (scene === 'pc') { const l = pc.el && pc.el.querySelector('.pc-link'); if (l) l.hidden = true; pc_render(); } }
+  } finally { pc.busy = false; if (scene === 'pc') { setKnobs(SCENES.pc.knobs); const l = pc.el && pc.el.querySelector('.pc-link'); if (l) l.hidden = true; pc_render(); } }
 }
 // animação do cabo: o POKéMON vai ao outro aparelho, volta e evolui (silhueta piscando)
 async function pc_linkAnim(fromKey, toKey) {
@@ -210,9 +215,11 @@ async function pc_release(uid) {
   syncFromStorage(); if (!G) return;
   const i = G.pc.findIndex(x => x.uid === uid); if (i < 0) return Sfx.deny();
   const ball = DEX[G.pc[i].sp].stage >= 1 ? 'great' : 'poke';
+  const had = G.bag[ball] || 0;
   G.pc.splice(i, 1); bagAdd(ball, 1); save();
   Menu.closeAll(); pc_render();
-  sayNow(`Tchau, ${name}!`); say(`Você recebeu 1 ${ITEMS[ball].name}.`); Sfx.click();
+  // com 99 na BOLSA o bagAdd não soma nada: não dá para dizer que recebeu
+  sayNow(`Tchau, ${name}!`); say(G.bag[ball] > had ? `Você recebeu 1 ${ITEMS[ball].name}.` : `A BOLSA já está cheia de ${ITEMS[ball].name}S.`); Sfx.click();
 }
 
 /* ── DADOS ── */
@@ -238,7 +245,7 @@ SCENES.pc = {
     { label: '◀ CAIXA', icon: '◀', fn: () => pc_box(-1) }, { label: 'ESCOLHER', icon: 'OK', fn: () => pc_choose() },
     { label: 'CAIXA ▶', icon: '▶', fn: () => pc_box(1) }, { label: 'SAIR', icon: 'X', fn: () => pc_exit() }], { center: { fn: () => pc_choose() } }),
   enter() {
-    pc.sheet = null; pc.busy = false; pc_tries = 0;
+    pc.sheet = null; pc.busy = false; pc_tries = 0; pc.html = '';
     pc.el = document.createElement('div'); pc.el.className = 'pc-layer'; pc.el.id = 'pcLayer';
     document.querySelector('.screen-wrap').appendChild(pc.el);
     pc.el.addEventListener('click', pc_click);

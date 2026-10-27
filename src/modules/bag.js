@@ -42,11 +42,14 @@ function bag_candy(m, live) {
 }
 
 // pedra no ativo: o núcleo anima; a pedra só é gasta quando a evolução acontece de fato (recarregar no meio não perde a pedra)
+// Só vale enquanto a animação daquele uid está rodando: se ela for abortada (outra aba trocou o ativo), a pendência morre
 let bag_stonePending = null;   // { k, uid, to }
+const bag_dropStale = () => { const p = bag_stonePending; if (p && !(evo && evo.uid === p.uid)) bag_stonePending = null; };
 on('evolved', (m, from) => {
-  const p = bag_stonePending; if (!p || m.uid !== p.uid || m.sp !== p.to) return;
+  bag_dropStale(); const p = bag_stonePending; if (!p || m !== s || m.uid !== p.uid || m.sp !== p.to) return;
   bag_stonePending = null; bagUse(p.k); G.prog.stoneTradeEvos++;   // o núcleo grava logo depois
 });
+on('tick', bag_dropStale);
 // por que a pedra não pode ser usada agora no ativo (null = pode)
 function bag_activeBusy() {
   if (scene !== 'habitat' || G.outing) return 'Use em casa, no habitat.';
@@ -65,7 +68,7 @@ function bag_preview(spId, shiny) {
   if (shiny) setTimeout(() => { const im = el.isConnected && el.querySelector('img'); if (im) im.src = spriteURL('f' + spId + 's'); }, 300);
 }
 async function bag_useStone(k) {
-  const to = bag_stoneTo(s.sp, k);
+  bag_dropStale(); const to = bag_stoneTo(s.sp, k);
   if (!to) { sayNow(`Não teria efeito em ${N()}.`); return Sfx.deny(); }
   const why = bag_activeBusy(); if (why) { sayNow(why); return Sfx.deny(); }
   if (bag_stoneEvos(s.sp).length > 1) {
@@ -97,10 +100,10 @@ function bag_use(k) {
   sayNow(k === 'cabo' ? 'Use o CABO DE TROCA no PC (TROCAR).' : 'Não dá para usar isso agora.'); Sfx.deny();
 }
 function bag_items() {
-  const list = BAG_ORDER.filter(k => bagHas(k)).map(k => {
-    const it = ITEMS[k], off = it.stone && !bag_stoneTo(s.sp, k);   // pedra que não serve para o ativo: cinza
-    return { label: `${bag_icon(k)}<span${off ? ' class="bag-off"' : ''}>${it.name}</span>`, sub: 'x ' + G.bag[k], fn: () => {
-      if (off) { sayNow(`Não teria efeito em ${N()}.`); return Sfx.deny(); }
+  // pedras: só as que servem para o ativo (as outras ficam guardadas, aparecem no USAR ITEM do PC)
+  const list = BAG_ORDER.filter(k => bagHas(k) && !(ITEMS[k].stone && !bag_stoneTo(s.sp, k))).map(k => {
+    const it = ITEMS[k];
+    return { label: `${bag_icon(k)}<span>${it.name}</span>`, sub: 'x ' + G.bag[k], fn: () => {
       const desc = it.stone ? `Evolui ${N()} em ${DEX[bag_stoneTo(s.sp, k)].name}.` : it.fossil ? `Revive um ${DEX[it.fossil].name}.` : BAG_DESC[k] || '';
       Menu.open({ title: `${it.name}<div class="bag-desc">${desc}</div>`, items: [
         { label: 'USAR', fn: () => bag_use(k) }, { label: 'VOLTAR', fn: () => Menu.close() }] });
