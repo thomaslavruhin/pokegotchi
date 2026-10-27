@@ -87,7 +87,7 @@ async function bag_useStone(k) {
 function bag_fossil(k) {
   if (G.pc.length >= 360) { sayNow('O PC está cheio!'); return Sfx.deny(); }
   if (!bagUse(k)) return Sfx.deny();
-  const m = receiveMon(ITEMS[k].fossil, 5, {}, 'fossil'); G.prog.fossils++; save();
+  const m = receiveMon(ITEMS[k].fossil, 5, {}, 'fossil'); save();   // prog.fossils é contado pelo progresso (gancho caught)
   sayNow('PROF. CARVALHO reviveu o fóssil!'); say(`${N(m)} foi enviado para o PC do PROF. CARVALHO.`);
   Sfx.cry(m.sp); return true;
 }

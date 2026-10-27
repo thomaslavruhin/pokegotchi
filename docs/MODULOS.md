@@ -81,7 +81,7 @@ Enquanto a cena não é o habitat, os cuidados continuam sendo simulados, mas ca
 | `wellCared` | núcleo, por passo simulado com o ativo bem cuidado | `minutos, t` |
 | `levelUp` | núcleo | `mon` |
 | `evolved` | núcleo | `mon, deId` |
-| `caught` | `receiveMon` | `mon, how` (`catch`, `gift`, `fossil`) |
+| `caught` | `receiveMon` | `mon, how` (`catch`, `gift`, `fossil`); o progresso conta `prog.fossils` aqui, quem revive o fóssil não conta |
 | `trained` | núcleo, fim do treino | `[nota de cada golpe: 0 CRÍTICO … 3 FRACO]` |
 | `encounter` | exploração | `enc` |
 | `battleEnd` | batalha | `{ won, caught, fled, fainted, sp, shiny, night }` |

@@ -376,7 +376,10 @@ async function btThrow(k, e, tok) {
   for (let i = 0; i < 6; i++) BT.parts.push({ type: 'star', x: 176, y: 72, vx: (i % 3 - 1) * 28, vy: i < 3 ? -26 : -8, life: 0, max: .9 });
   await talk(`Parabéns! ${nm} foi pego!`);
   await btPayExp(e);
-  if (e.done.novo) await talk(`Os dados de ${nm} foram registrados na POKéDEX.`);
+  if (e.done.novo) {
+    await talk(`Os dados de ${nm} foram registrados na POKéDEX.`);
+    if (typeof showDexEntry === 'function') await showDexEntry(e.sp);   // a ficha nova, como no FRLG
+  }
   await talk(`${nm} foi enviado para o PC do PROF. CARVALHO.`);
   btLater();
   return { caught: true };

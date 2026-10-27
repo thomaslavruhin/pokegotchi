@@ -1518,6 +1518,7 @@ function updateLed() {
 /* ════════════ Cenas ════════════ */
 function markStarter(key) { document.querySelectorAll('.starter').forEach(b => b.classList.toggle('sel', b.dataset.sp === String(key))); }
 function toSelect() {
+  const prev = SCENES[scene]; if (prev && prev.exit) prev.exit('select');   // RESET no meio de uma cena de módulo
   closeChoice(); away = null; Menu.closeAll(); setKnobs(null);
   scene = 'select'; evo = null; particles = []; sweep = null; berryFx = null; cancelTraining();
   $('selectLayer').hidden = false; $('hpbox').style.visibility = 'hidden';
@@ -1627,6 +1628,7 @@ window.addEventListener('keydown', e => {
   if (pendingChoice) {
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); (document.activeElement === $('choiceYes') ? $('choiceNo') : $('choiceYes')).focus(); }
     if (e.key === 'Escape' || e.key === 'Backspace') { e.preventDefault(); answer(false); }
+    if (e.key >= '1' && e.key <= '4' && knobDefs && !e.repeat) { e.preventDefault(); $(KNOB_IDS[+e.key - 1]).click(); }   // cena com SIM/NÃO nos botões
     return;
   }
   const k = e.key.toLowerCase();
@@ -1687,7 +1689,7 @@ async function start() {
   requestAnimationFrame(t => { lastFrame = t; requestAnimationFrame(frame); });
 }
 // ganchos de teste (só com #dev no endereço): o estado e as funções principais no console
-if (location.hash === '#dev') window.PKG = { get G() { return G; }, get s() { return s; }, get scene() { return scene; }, go, save, setGame, receiveMon, swapActive, dexMark, bagAdd, startEvolution, DEX, SCENES, Menu, phaseAt };
+if (location.hash === '#dev') window.PKG = { get G() { return G; }, get s() { return s; }, get scene() { return scene; }, go, save, setGame, receiveMon, swapActive, dexMark, bagAdd, startEvolution, DEX, SCENES, Menu, phaseAt, on, fire, talk, say };
 window.claude?.hot?.snapshot?.(() => ({ saved: true }));
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start();
 })();
