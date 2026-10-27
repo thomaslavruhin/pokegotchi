@@ -1,0 +1,9 @@
+/* Batalha → LUTAR: os nomes dos golpes são longos (LANÇAMENTO DE ROCHA), então quebram em duas linhas */
+.device.bt-moves .act span.lbl { white-space: normal; text-align: center; max-width: 84px; font-size: 6px; line-height: 1.35; min-height: 2.7em; }
+.device.bt-moves .act .knob svg { width: 20px; height: 20px; }
+/* Lista de golpes: o botão do meio é VOLTAR (rótulos da faixa e ícone trocados) */
+.device.bt-moves .band-label { font-size: 0; }
+.device.bt-moves .band-label.l::after { content: 'VOLTAR'; font-size: 7px; }
+.device.bt-moves .band-label.r::after { content: '[ X ]'; font-size: 7px; }
+.device.bt-moves #petIcon > * { display: none; }
+.device.bt-moves #petIcon::after { content: '◀'; font: 16px var(--font-pixel); color: #404048; }

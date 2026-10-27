@@ -1,0 +1,69 @@
+/* PC: tela cheia por cima do canvas (abaixo do .menu-layer). Tudo em cqw: acompanha a largura da tela do jogo,
+   de ~260px no celular a ~360px no desktop */
+.pc-layer { position: absolute; inset: 0; z-index: 3; display: grid; grid-template-columns: 25% minmax(0, 1fr); gap: 1.4cqw; padding: 1.4cqw;
+  background: #28406a repeating-linear-gradient(45deg, rgba(255,255,255,.05) 0 4px, transparent 4px 8px); color: var(--ink);
+  font-family: var(--font-pixel); font-size: clamp(5px, 2.6cqw, 8px); line-height: 1.4; text-shadow: 1px 1px 0 var(--ink-shadow); overflow: hidden; user-select: none; }
+.pc-layer button { font: inherit; color: inherit; text-shadow: inherit; cursor: pointer; }
+.pc-side { display: flex; flex-direction: column; gap: 1.6cqw; min-height: 0; }
+.pc-card { background: var(--paper); border: 2px solid var(--edge); box-shadow: inset 0 0 0 1px var(--edge-hi); border-radius: 4px; padding: 1cqw; display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 0; }
+.pc-act { flex: none; gap: .4cqw; }
+.pc-act img { width: 64%; image-rendering: pixelated; margin: -1.5cqw 0 -1cqw; }
+.pc-act.sel, .pc-act:focus-visible { border-color: #e05040; box-shadow: inset 0 0 0 1px #f8a090, 0 0 0 2px #e05040; outline: none; }
+.pc-lbl { font-size: .8em; color: #fff; background: #48a868; border-radius: 3px; padding: .5cqw 1cqw .3cqw; text-shadow: none; }
+.pc-info { flex: 1; justify-content: center; gap: .8cqw; min-height: 0; overflow: hidden; }
+/* nomes de até 10 letras cabem numa linha mesmo na tela de ~260px */
+.pc-side .pc-nm { font-size: .82em; white-space: nowrap; max-width: 100%; overflow: hidden; }
+.pc-dim { color: #6a6f84; }
+.pc-total { font-size: .8em; margin-top: auto; }
+.pc-types { display: flex; flex-wrap: wrap; gap: .6cqw; justify-content: center; }
+.pc-type { color: #fff; font-size: .78em; padding: .5cqw .9cqw .3cqw; border-radius: 3px; text-shadow: 1px 1px 0 rgba(0,0,0,.3); }
+.pc-main { display: flex; flex-direction: column; gap: 1.2cqw; min-width: 0; min-height: 0; }
+.pc-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 1cqw; background: var(--paper); border: 2px solid var(--edge); box-shadow: inset 0 0 0 1px var(--edge-hi); border-radius: 4px; padding: 0 .4cqw; }
+.pc-arr { background: none; border: 0; padding: 1.4cqw 2.4cqw; color: #e05040 !important; }
+.pc-title { flex: 1; text-align: center; white-space: nowrap; }
+.pc-title small { font-size: .8em; margin-left: 1cqw; }
+.pc-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); gap: .6cqw; padding: .8cqw;
+  background: var(--wall) repeating-linear-gradient(0deg, rgba(255,255,255,.12) 0 2px, transparent 2px 6px); border: 2px solid #1d2335; border-radius: 4px; }
+.pc-cell { position: relative; padding: 0; border: 0; border-radius: 3px; background: rgba(255,255,255,.28); min-width: 0; min-height: 0; }
+.pc-cell img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; pointer-events: none; }
+.pc-cell.sel, .pc-cell:focus-visible { background: rgba(255,255,255,.75); box-shadow: inset 0 0 0 2px #e05040; outline: none; animation: pc-blink .6s steps(2) infinite; }
+@keyframes pc-blink { 50% { box-shadow: inset 0 0 0 2px #f8d030; } }
+.pc-shiny { position: absolute; right: 1px; top: 0; font-style: normal; font-size: .9em; color: #e0a000; text-shadow: 1px 1px 0 #fff; }
+
+/* DADOS */
+.pc-sheet { font-size: 1.08em; position: absolute; inset: 1.6cqw; background: var(--paper); border: 3px solid var(--edge); box-shadow: inset 0 0 0 2px var(--edge-hi), 0 0 0 2px #1d2335; border-radius: 6px;
+  display: grid; grid-template-columns: 34% minmax(0, 1fr); gap: 1.6cqw; padding: 1.6cqw; overflow: hidden; }
+.pc-sh-l { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .6cqw; background: #e8f0f8; border-radius: 4px; padding-bottom: 1cqw; }
+.pc-sh-l img { width: 92%; image-rendering: pixelated; }
+.pc-shtxt { color: #d09000; font-size: .85em; }
+.pc-sh-r { display: flex; flex-direction: column; gap: 1cqw; min-width: 0; }
+.pc-sh-r .pc-types { justify-content: flex-start; }
+.pc-bar { display: grid; grid-template-columns: 9.5em minmax(0, 1fr) 3em; align-items: center; gap: 1cqw; font-size: .9em; }
+.pc-bar > span:last-child { text-align: right; }
+.pc-bar b { height: 1.8cqw; min-height: 4px; background: #505860; border-radius: 3px; padding: 1px; }
+.pc-bar i { display: block; height: 100%; border-radius: 1px; }
+.pc-evo { font-size: .85em; line-height: 1.5; }
+
+/* animação da troca: dois aparelhos ligados pelo cabo */
+.pc-link { position: absolute; inset: 0; background: #101830; display: flex; align-items: center; justify-content: space-between; padding: 0 8cqw; }
+.pc-gba { width: 17cqw; height: 11cqw; background: #6050b0; border-radius: 2cqw; box-shadow: inset 0 0 0 1cqw #4a3c90; position: relative; }
+.pc-gba::after { content: ""; position: absolute; inset: 2.4cqw 4cqw; background: #a8e0a0; border-radius: 2px; }
+.pc-cable { flex: 1; height: 1cqw; background: #303848; margin: 0 1cqw; position: relative; }
+.pc-cable i { position: absolute; top: 50%; left: 0; width: 3cqw; height: 3cqw; translate: -50% -50%; border-radius: 50%; background: #f8d030; box-shadow: 0 0 2cqw #f8d030; opacity: 0; }
+.pc-link.go .pc-cable i { animation: pc-go 1.2s linear forwards; }
+.pc-link.back .pc-cable i { animation: pc-go 1.2s linear reverse forwards; }
+@keyframes pc-go { 0% { left: 0; opacity: 1; } 100% { left: 100%; opacity: 1; } }
+.pc-lmon { position: absolute; left: 50%; top: 4%; width: 34cqw; translate: -50% 0; image-rendering: pixelated; transition: opacity .4s, translate .4s; }
+.pc-link.go .pc-lmon { opacity: 0; translate: 10% 0; }
+.pc-link.back .pc-lmon { animation: pc-in 1.2s steps(6) forwards; }
+@keyframes pc-in { 0% { opacity: 0; } 70% { opacity: 0; } 100% { opacity: 1; } }
+.pc-link.evo .pc-lmon { filter: brightness(0) invert(1); }
+/* tela estreita (celular): coluna do ativo mais fina e menos margem, para as células crescerem */
+@container (max-width: 320px) {
+  .pc-layer { grid-template-columns: 23% minmax(0, 1fr); gap: 1cqw; padding: 1cqw; }
+  .pc-side .pc-nm { font-size: .7em; }
+  .pc-lbl { font-size: .66em; padding: .5cqw .4cqw .3cqw; }
+  .pc-grid { gap: .4cqw; padding: .4cqw; }
+  .pc-arr { padding: .8cqw 2.4cqw; }
+}
+@media (prefers-reduced-motion: reduce) { .pc-cell.sel { animation: none; } }
