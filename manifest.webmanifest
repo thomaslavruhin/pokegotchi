@@ -19,6 +19,8 @@
   "screenshots": [
     { "src": "docs/img/floresta-noite.png", "sizes": "720x480", "type": "image/png", "form_factor": "wide", "label": "Floresta com as luzes apagadas" },
     { "src": "docs/img/praia-treino.png", "sizes": "720x480", "type": "image/png", "form_factor": "wide", "label": "Treino na praia" },
-    { "src": "docs/img/vulcao-noite.png", "sizes": "720x480", "type": "image/png", "form_factor": "wide", "label": "Vulcão à noite" }
+    { "src": "docs/img/vulcao-noite.png", "sizes": "720x480", "type": "image/png", "form_factor": "wide", "label": "Vulcão à noite" },
+    { "src": "docs/img/batalha.png", "sizes": "720x480", "type": "image/png", "form_factor": "wide", "label": "Batalha contra um Pikachu selvagem" },
+    { "src": "docs/img/retrato.png", "sizes": "390x844", "type": "image/png", "form_factor": "narrow", "label": "O aparelho no celular" }
   ]
 }

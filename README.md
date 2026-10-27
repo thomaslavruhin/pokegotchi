@@ -187,6 +187,17 @@ No menu START, **EXPLORAR** leva o Pokémon do habitat para uma das três áreas
 - Para sair e para cada passo ele precisa estar acordado, saudável, com energia ≥ 25, fome ≥ 20 e felicidade ≥ 15. Se cair abaixo disso, ele volta para casa sozinho.
 - O PS da saída depende da energia e vai caindo de batalha em batalha; a POÇÃO recupera. Em casa ele volta cheio.
 
+<table>
+  <tr>
+    <td width="50%"><img src="docs/img/explorar.png" alt="Charmeleon andando na grama alta do Monte Brasa, com a barra de PS da saída"></td>
+    <td width="50%"><img src="docs/img/batalha.png" alt="Batalha contra um Pikachu selvagem na floresta, no layout do GBA"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Grama alta no Monte Brasa…</sub></td>
+    <td align="center"><sub>…e um Pikachu selvagem.</sub></td>
+  </tr>
+</table>
+
 ### Batalha e captura
 
 Batalha por turno com as contas da 3ª geração: atributos, tipos, golpe físico ou especial, crítico e bônus de mesmo tipo. Os golpes vêm do tipo do Pokémon e chegam nos níveis 10, 22 e 38.
@@ -208,6 +219,17 @@ Batalha por turno com as contas da 3ª geração: atributos, tipos, golpe físic
 - **PC do Prof. Carvalho:** 12 caixas de 30. **ATIVAR** troca o Pokémon do habitat (com o habitat limpo e no máximo uma vez a cada 30 min); cada um guarda seus próprios status. Também tem DADOS, USAR ITEM, TROCAR e SOLTAR (que devolve uma bola).
 - **BOLSA:** DOCE RARO (+1 nível), pedras de evolução (só as que funcionam no Pokémon aparecem ativas; o EEVEE escolhe a forma pela pedra) e fósseis, que o professor revive.
 - **POKéDEX:** não vistos ficam escondidos (`-----`), vistos aparecem em silhueta, capturados em cores, com a contagem **CAPTURADOS: N / 151**. A ficha mostra tipos, altura, peso, atributos, área e evoluções.
+<table>
+  <tr>
+    <td width="50%"><img src="docs/img/pc.png" alt="PC do Prof. Carvalho: a caixa 1 com 12 Pokémon e o Charmeleon no habitat"></td>
+    <td width="50%"><img src="docs/img/pokedex.png" alt="Pokédex: vistos em silhueta, não vistos escondidos, capturados em cores"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>O PC do Prof. Carvalho…</sub></td>
+    <td align="center"><sub>…e a Pokédex, com vistos em silhueta.</sub></td>
+  </tr>
+</table>
+
 - **Hall da Fama:** ao capturar o 151º, o time desfila, os 151 passam como créditos e você ganha o **DIPLOMA** e o **AMULETO BRILHANTE** (brilhantes 2× mais comuns). Dá para rever no CARTÃO.
 
 ### Insígnias
