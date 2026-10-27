@@ -19,3 +19,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+Third-party content (not covered by the license above)
+
+The Pokémon sprites in src/sprites/ (also embedded in index.html by the build)
+and the Pokémon names and trademarks belong to Nintendo, Creatures Inc. and
+GAME FREAK inc. This is a non-commercial fan project with no affiliation to
+them. The sprites were obtained from https://github.com/PokeAPI/sprites.

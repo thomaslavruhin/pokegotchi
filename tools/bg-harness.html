@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Bancada de biomas</title>
+<style>
+body { margin: 0; background: #222; color: #ddd; font: 13px/1.4 monospace; }
+canvas { width: 100%; max-width: 960px; image-rendering: pixelated; display: block; }
+#info { padding: 6px 8px; white-space: pre-wrap; }
+.err { color: #ff7070; }
+</style></head>
+<body>
+<canvas id="c" width="240" height="160"></canvas>
+<div id="info">carregando…</div>
+<script src="bgkit.js"></script>
+<script>
+// Bancada para desenhar/testar um bioma isolado. Sirva a raiz do repo por HTTP (ex.: php -S localhost:8000) e abra
+//   /tools/bg-harness.html?b=floresta|vulcao|praia  [&t=segundos congela o tempo] [&night=1] [&guide=1] [&pk=0]
+// guide: magenta = faixa onde o Pokémon anda e linha dos pés (y=134); ciano = área da barra do treino; pontos = borda do diorama.
+window.BIOMES = {};
+const q = new URLSearchParams(location.search), key = q.get('b') || 'floresta', info = document.getElementById('info');
+const errs = [];
+window.addEventListener('error', e => { errs.push(e.message + ' @' + e.lineno); });
+const SPR = { floresta: [1, 2, 3], vulcao: [4, 5, 6], praia: [7, 8, 9] }[key] || [1, 2, 3];
+const s = document.createElement('script'); s.src = '../src/biomes/' + key + '.js?v=' + Date.now();
+s.onload = start; s.onerror = () => { info.innerHTML = '<span class="err">src/biomes/' + key + '.js não carregou</span>'; };
+document.body.appendChild(s);
+
+const footCache = new Map();
+function foot(im) {   // mesma regra do jogo: a última linha opaca do sprite pisa em y=134
+  if (footCache.has(im)) return footCache.get(im);
+  const k = document.createElement('canvas'); k.width = im.width; k.height = im.height; const x = k.getContext('2d'); x.drawImage(im, 0, 0);
+  const d = x.getImageData(0, 0, k.width, k.height).data; let base = k.height, minX = k.width, maxX = 0;
+  outer: for (let y = k.height - 1; y >= 0; y--) for (let i = 0; i < k.width; i++) if (d[(y * k.width + i) * 4 + 3] > 40) { base = y + 1; break outer; }
+  for (let y = Math.max(0, base - 6); y < base; y++) for (let i = 0; i < k.width; i++) if (d[(y * k.width + i) * 4 + 3] > 40) { minX = Math.min(minX, i); maxX = Math.max(maxX, i); }
+  const f = { base, cx: Math.round((minX + maxX) / 2), w: Math.max(8, maxX - minX + 1) }; footCache.set(im, f); return f;
+}
+
+async function start() {
+  const B = BIOMES[key];
+  if (!B) { info.innerHTML = '<span class="err">BIOMES.' + key + ' não foi definido</span>'; return; }
+  const imgs = {};
+  await Promise.all(SPR.map(id => new Promise(r => { const im = new Image(); im.onload = () => { imgs[id] = im; r(); }; im.onerror = r; im.src = '../src/sprites/' + id + '.png'; })));
+  const cv = document.getElementById('c'), ctx = cv.getContext('2d'); ctx.imageSmoothingEnabled = false;
+  const bg = document.createElement('canvas'); bg.width = 240; bg.height = 160;
+  const layer = document.createElement('canvas'); layer.width = 240; layer.height = 160; const lctx = layer.getContext('2d');
+  const t0 = performance.now(); let bgMs = 0;
+  try { B.bg(bg.getContext('2d'), rng(1234)); bgMs = performance.now() - t0; } catch (e) { errs.push('bg(): ' + e.message); }
+  const night = q.get('night') === '1', guide = q.get('guide') === '1', showPk = q.get('pk') !== '0', freeze = q.has('t') ? +q.get('t') : null;
+  const realFill = CanvasRenderingContext2D.prototype.fillRect; let calls = 0;
+  const counting = () => { calls = 0; ctx.fillRect = function (...a) { calls++; return realFill.apply(this, a); }; };
+  function frame(now) {
+    const t = freeze ?? now / 1000;
+    ctx.clearRect(0, 0, 240, 160); ctx.drawImage(bg, 0, 0);
+    counting();
+    try { B.anim && B.anim(ctx, t); } catch (e) { if (errs.length < 5) errs.push('anim(): ' + e.message); }
+    const animCalls = calls; ctx.fillRect = realFill;
+    // mesma ordem do jogo: noite escurece o cenário, glow() acende a luz do bioma, e os Pokémon vêm por cima (escurecidos à parte)
+    let glowCalls = 0;
+    if (night) {
+      ctx.fillStyle = 'rgba(16,20,64,.62)'; ctx.fillRect(0, 0, 240, 160);
+      counting();
+      try { B.glow && B.glow(ctx, t); } catch (e) { if (errs.length < 5) errs.push('glow(): ' + e.message); }
+      glowCalls = calls; ctx.fillRect = realFill;
+    }
+    if (showPk) {
+      lctx.clearRect(0, 0, 240, 160);
+      SPR.forEach((id, i) => {
+        const x = [40, 120, 200][i], im = imgs[id]; if (!im) return; const f = foot(im), hw = Math.max(6, Math.round(f.w / 2));
+        lctx.fillStyle = 'rgba(0,0,0,.28)'; lctx.fillRect(x - 32 + f.cx - hw, FEET - 1, hw * 2 + 1, 2); lctx.fillRect(x - 32 + f.cx - hw + 2, FEET + 1, hw * 2 - 3, 1);
+        lctx.drawImage(im, x - 32, FEET - f.base);
+      });
+      if (night) { lctx.globalCompositeOperation = 'source-atop'; lctx.fillStyle = 'rgba(16,20,64,.62)'; lctx.fillRect(0, 0, 240, 160); lctx.globalCompositeOperation = 'source-over'; }
+      ctx.drawImage(layer, 0, 0);
+    }
+    if (guide) {
+      ctx.fillStyle = 'rgba(255,0,255,.55)'; ctx.fillRect(0, FEET, 240, 1); ctx.fillRect(20, 100, 1, 34); ctx.fillRect(220, 100, 1, 34); ctx.fillRect(20, 100, 200, 1);
+      ctx.fillStyle = 'rgba(0,255,255,.5)'; ctx.fillRect(66, 4, 108, 1); ctx.fillRect(66, 26, 108, 1);
+      for (let x = 0; x < 240; x += 2) ctx.fillRect(x, groundBottom(x), 1, 1);
+    }
+    info.innerHTML = `bioma=${key} t=${t.toFixed(2)} noite=${night} | bg() ${bgMs.toFixed(1)}ms | anim fillRect/frame=${animCalls}` + (night ? ` glow=${glowCalls}` : '') +
+      (errs.length ? '\n<span class="err">' + errs.join('\n') + '</span>' : '\nsem erros');
+    if (freeze == null) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+</script>
+</body></html>
