@@ -27,6 +27,16 @@ O tempo continua correndo com a aba fechada, até 12 horas. Quando você volta, 
 
 **Online:** abra **[thomaslavruhin.github.io/pokegotchi](https://thomaslavruhin.github.io/pokegotchi/)**. Funciona no computador e no celular, e o progresso fica salvo no seu navegador.
 
+### Instalar como app
+
+O Pokégotchi é um PWA. Instalado, ele abre na própria janela, sem barra de endereço, tem ícone de Pokébola e funciona **offline** depois da primeira visita.
+
+- **Chrome ou Edge no computador:** clique no ícone de instalar na barra de endereço, ou no botão **INSTALAR** do próprio jogo.
+- **Chrome no Android:** menu ⋮ → **Instalar app** (ou **Adicionar à tela inicial**), ou o botão **INSTALAR** do jogo.
+- **Safari no iPhone/iPad:** botão Compartilhar → **Adicionar à Tela de Início**.
+
+Quando sai uma versão nova, o app se atualiza sozinho na próxima vez que você abrir com internet. O progresso não se perde.
+
 **No seu computador**, sem instalar nada:
 
 1. Baixe ou clone o repositório.
@@ -50,6 +60,8 @@ php -S localhost:8000
 - **Minigame de treino**: três golpes num boneco, acertando o tempo numa barra. Cansa e dá fome, mas faz evoluir bem mais rápido.
 - **Evolução fiel ao FireRed**: nos níveis originais, com a animação de silhueta piscando, o flash branco e a fanfarra.
 - **Sons 8-bit gerados na hora**: Web Audio API, sem nenhum arquivo de áudio.
+- **Feito para qualquer tela**: o aparelho se ajusta para caber inteiro na janela, do celular pequeno ao monitor Full HD. Com o celular deitado, a Pokébola "deita" junto: tela à esquerda, botões à direita.
+- **Instalável e offline**: vira um app com ícone próprio no computador e no celular.
 - **Salvamento robusto**: o tempo é calculado pelo relógio. Recarregar ou deixar a aba em segundo plano não adianta nem atrasa o jogo, e duas abas abertas não contam o tempo em dobro.
 
 <table>
@@ -160,18 +172,23 @@ Os níveis de evolução são os do FireRed/LeafGreen. A diferença é que aqui 
 ```
 pokegotchi/
 ├── index.html              ← o jogo pronto (gerado; é o arquivo que você abre e o que o GitHub Pages publica)
+├── sw.js                   ← service worker (gerado): instalação e modo offline
+├── manifest.webmanifest    ← nome, ícones e cores do app instalado
+├── icons/                  ← ícones do app (gerados por tools/make-icons.php)
 ├── .nojekyll               ← faz o GitHub Pages servir os arquivos como estão
 ├── README.md
 ├── LICENSE
 ├── src/
 │   ├── game.html           ← HTML + CSS + JS do jogo (aparelho, lógica, sons, desenho)
+│   ├── sw.js               ← modelo do service worker (o build carimba a versão)
 │   ├── biomes/
 │   │   ├── floresta.js     ← cenário de Bulbasaur/Ivysaur/Venusaur
 │   │   ├── vulcao.js       ← cenário de Charmander/Charmeleon/Charizard
 │   │   └── praia.js        ← cenário de Squirtle/Wartortle/Blastoise
 │   └── sprites/            ← sprites FireRed/LeafGreen (1–9) e a Fruta Oran
 ├── tools/
-│   ├── build.php           ← junta src/ em um único index.html
+│   ├── build.php           ← junta src/ em um único index.html e gera o sw.js
+│   ├── make-icons.php      ← desenha os ícones (Pokébola em pixel art) sem depender de GD
 │   ├── bg-harness.html     ← bancada para desenhar e testar um bioma isolado
 │   └── bgkit.js            ← helpers de pixel art usados pela bancada
 └── docs/img/               ← capturas de tela usadas neste README
@@ -191,9 +208,10 @@ O que o script faz:
 
 1. Embute os sprites como *data URI* no lugar do marcador `/*SPRITES_JSON*/{}` de `src/game.html`.
 2. Cola o código dos biomas no lugar de `/*BIOMES_JS*/`.
-3. Envolve tudo num documento HTML completo.
+3. Envolve tudo num documento HTML completo, com o cabeçalho do app (manifest, ícones, registro do service worker).
+4. Gera o `sw.js` a partir de `src/sw.js`, com a versão igual a um hash do `index.html`. Cada publicação nova cria um cache novo e apaga o antigo.
 
-Assim o `index.html` não depende de nenhum arquivo ao lado dele e funciona até em ambientes que bloqueiam imagens externas.
+Assim o `index.html` não depende de nenhum arquivo ao lado dele para rodar e funciona até em ambientes que bloqueiam imagens externas. Os ícones só mudam se você rodar `php tools/make-icons.php`.
 
 ### Bancada de biomas
 

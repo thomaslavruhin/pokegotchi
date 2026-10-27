@@ -47,7 +47,8 @@ body {
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   -webkit-tap-highlight-color: transparent;
 }
-.stage { min-height: 100%; padding-block: 20px 28px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+/* margens respeitam o notch / barra de gestos quando instalado como app (viewport-fit=cover) */
+.stage { min-height: 100%; padding-block: max(20px, env(safe-area-inset-top, 0px)) max(28px, env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; align-items: center; gap: 14px; }
 
 /* ── Device shell ── */
 .device {
@@ -91,7 +92,8 @@ body {
   border: 3px solid var(--edge);
   box-shadow: inset 0 0 0 2px var(--edge-hi), 0 0 0 2px #1d2335;
   border-radius: 6px;
-  min-height: 52px;
+  /* altura fixa de 3 linhas: mensagens longas não mudam o tamanho do aparelho */
+  height: calc(3 * 1.8em + 17px); overflow: hidden;
   padding: 9px 26px 8px 11px;
   color: var(--ink);
   font-size: clamp(8px, 2.3vw, 10px);
@@ -197,6 +199,9 @@ body {
 
 .hints { font-family: var(--font-term); font-size: 18px; color: var(--muted); text-align: center; max-width: 440px; line-height: 1.2; margin: 0; }
 .hints kbd { font-family: var(--font-term); color: #c9cdf0; border: 1px solid #3a3e66; border-bottom-width: 2px; border-radius: 3px; padding: 0 4px; }
+/* atalhos de teclado só aparecem onde há teclado e mouse */
+.hints .keys { display: none; }
+@media (hover: hover) and (pointer: fine) { .hints .keys { display: inline; } }
 
 @media (max-width: 400px) {
   .top { padding: 24px 22px 16px; }
@@ -208,6 +213,25 @@ body {
 }
 @media (max-width: 350px) {
   .actions { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; }
+}
+/* Celular deitado: a Pokébola "deita" — metade vermelha (tela) à esquerda, faixa preta vertical,
+   metade branca (status e botões) à direita. A tela cresce com a altura disponível. */
+@media (orientation: landscape) and (max-height: 560px) {
+  .stage { padding-block: max(8px, env(safe-area-inset-top, 0px)) max(8px, env(safe-area-inset-bottom, 0px)); justify-content: center; }
+  .hints { display: none; }
+  .device { width: auto; display: flex; flex-direction: row; border-radius: 70px / 50%; }
+  .top { flex: none; padding: 14px 16px 14px 46px; justify-content: center; gap: 8px; }
+  /* largura vem da altura da tela, nunca do texto do diálogo */
+  .bezel { width: calc((100vh - 160px) * 1.5 + 24px); width: calc((100dvh - 160px) * 1.5 + 24px); }
+  .screen-wrap { width: 100%; }
+  .band { width: 34px; height: auto; box-shadow: inset 3px 0 0 rgba(255,255,255,.04), inset -3px 0 0 rgba(0,0,0,.5); }
+  .band-label { display: none; }
+  .bottom { flex: none; width: 300px; padding: 12px 44px 12px 24px; justify-content: center; gap: 10px; }
+  .hpbox { gap: 4px; padding: 7px 10px; }
+  .actions { gap: 4px; }
+  .act { gap: 4px; }
+  .act .knob { width: 42px; height: 42px; }
+  .act span.lbl { font-size: 6px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .led.bad, #msgArrow, .act.active .knob { animation: none; }
@@ -265,10 +289,11 @@ body {
         <button type="button" class="pill on" id="btnSound">SOM: ON</button>
         <button type="button" class="pill" id="btnData">DADOS</button>
         <button type="button" class="pill" id="btnReset">RESET</button>
+        <button type="button" class="pill on" id="btnInstall" hidden>INSTALAR</button>
       </div>
     </section>
   </div>
-  <p class="hints">Toque no Pokémon para fazer carinho · <kbd>F</kbd> alimentar · <kbd>T</kbd> treinar · <kbd>C</kbd> limpar · <kbd>L</kbd> luzes · <kbd>P</kbd> carinho · <kbd>M</kbd> som<br>O progresso é salvo neste navegador e continua contando com a aba fechada.</p>
+  <p class="hints">Toque no Pokémon para fazer carinho<span class="keys"> · <kbd>F</kbd> alimentar · <kbd>T</kbd> treinar · <kbd>C</kbd> limpar · <kbd>L</kbd> luzes · <kbd>P</kbd> carinho · <kbd>M</kbd> som</span><br>O progresso é salvo neste aparelho e continua contando com o jogo fechado.</p>
 </main>
 
 <script>
@@ -1036,6 +1061,29 @@ function renderData() {
     `<div>IDADE ${days}d · COMEU ${s.count.fed} · TREINOS ${s.count.trained} · LIMPOU ${s.count.cleaned} · CARINHOS ${s.count.pets}</div>` +
     (storageOk ? '' : '<div style="color:#c03030">Este navegador bloqueou o salvamento.</div>');
 }
+// Encaixa o aparelho na janela: se ficar mais alto (ou, deitado, mais largo) que a tela, encolhe.
+// Usa transform (o toque no canvas continua certo em todo navegador, inclusive Safari antigo) e margens
+// negativas para o espaço que sobra não virar rolagem. Em pé encolhe no máximo até 80%.
+function fitDevice() {
+  const dev = $('device'), stage = dev.parentElement;
+  dev.style.transform = ''; dev.style.margin = '';
+  const cs = getComputedStyle(stage), bs = getComputedStyle(document.body);
+  const availH = window.innerHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+  const availW = document.documentElement.clientWidth - parseFloat(bs.paddingLeft) - parseFloat(bs.paddingRight);
+  const r = dev.getBoundingClientRect();
+  const lying = matchMedia('(orientation: landscape) and (max-height: 560px)').matches;
+  let z = Math.min(1, availH / r.height, availW / r.width);
+  if (z >= .995) return;
+  z = Math.max(lying ? .55 : .8, z);
+  dev.style.transformOrigin = 'top center'; dev.style.transform = `scale(${z.toFixed(3)})`;
+  dev.style.margin = `0 ${(-r.width * (1 - z) / 2).toFixed(1)}px ${(-r.height * (1 - z)).toFixed(1)}px`;
+}
+let fitQueued = false, fitVW = 0, fitVH = 0;
+function queueFit() {
+  if (window.innerWidth === fitVW && window.innerHeight === fitVH) return;   // só quando a janela muda de fato (o zoom mexe na altura da página)
+  fitVW = window.innerWidth; fitVH = window.innerHeight;
+  if (!fitQueued) { fitQueued = true; requestAnimationFrame(() => { fitQueued = false; fitDevice(); }); }
+}
 function updateLed() {
   const led = $('led'); led.className = 'led';
   if (scene === 'habitat' && s) { if (s.sick || s.hunger < 15) led.classList.add('bad'); else if (s.asleep) led.classList.add('sleep'); }
@@ -1102,8 +1150,21 @@ $('btnSound').addEventListener('click', () => {
   Sfx.on = !Sfx.on; $('btnSound').textContent = 'SOM: ' + (Sfx.on ? 'ON' : 'OFF'); $('btnSound').classList.toggle('on', Sfx.on);
   try { localStorage.setItem(SAVE_KEY + '.mute', Sfx.on ? '0' : '1'); } catch {} Sfx.click();
 });
-$('btnData').addEventListener('click', () => { if (!s) return; dataOpen = !dataOpen; $('datas').hidden = !dataOpen; $('btnData').classList.toggle('on', dataOpen); Sfx.click(); updateUI(); });
+$('btnData').addEventListener('click', () => { if (!s) return; dataOpen = !dataOpen; $('datas').hidden = !dataOpen; $('btnData').classList.toggle('on', dataOpen); Sfx.click(); updateUI(); fitDevice(); });
+window.addEventListener('resize', queueFit);
+window.addEventListener('orientationchange', queueFit);
+if (window.ResizeObserver) new ResizeObserver(queueFit).observe(document.documentElement);
 $('btnReset').addEventListener('click', () => { if (!s || evo) return Sfx.deny(); Sfx.click(); ask('Apagar o progresso e escolher outro POKéMON?', 'reset'); });
+// Instalar como app: o Chrome avisa quando o site é instalável; aí o botão INSTALAR aparece
+let installPrompt = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; $('btnInstall').hidden = false; });
+window.addEventListener('appinstalled', () => { installPrompt = null; $('btnInstall').hidden = true; say('Instalado! Agora o jogo abre como um app.'); });
+$('btnInstall').addEventListener('click', async () => {
+  if (!installPrompt) return;
+  Sfx.click(); const p = installPrompt; installPrompt = null;
+  p.prompt(); try { await p.userChoice; } catch {}
+  $('btnInstall').hidden = true;
+});
 ['pointerdown', 'keydown'].forEach(ev => window.addEventListener(ev, () => Sfx.unlock(), { capture: true }));
 window.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
@@ -1143,6 +1204,7 @@ async function start() {
   if (s) enterHabitat(); else toSelect();
   if (!storageOk) say('Atenção: este navegador não permite salvar o progresso.');
   setInterval(logicTick, TICK_MS);
+  fitVW = window.innerWidth; fitVH = window.innerHeight; fitDevice();
   requestAnimationFrame(t => { lastFrame = t; requestAnimationFrame(frame); });
 }
 window.claude?.hot?.snapshot?.(() => ({ saved: true }));
