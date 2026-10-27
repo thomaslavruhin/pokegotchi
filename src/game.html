@@ -248,6 +248,22 @@ body {
   .act .knob { width: 42px; height: 42px; }
   .act span.lbl { font-size: 6px; }
 }
+/* ── Menu FRLG (START, BOLSA, listas dos módulos): caixa branca à direita da tela ── */
+.menu-layer { position: absolute; inset: 0; display: flex; justify-content: flex-end; align-items: flex-start; padding: 3%; z-index: 4; pointer-events: none; }
+.menu-box { pointer-events: auto; background: var(--paper); color: var(--ink); border: 3px solid var(--edge); box-shadow: inset 0 0 0 2px var(--edge-hi), 0 0 0 2px #1d2335;
+  border-radius: 6px; padding: 4px; max-height: 100%; display: flex; flex-direction: column; min-width: 46%; font-size: clamp(6px, 3.4cqw, 9px); text-shadow: 1px 1px 0 var(--ink-shadow); }
+.menu-layer.wide .menu-box { width: 100%; }
+.menu-title { padding: 4px 6px 6px; border-bottom: 2px dashed #c8c8b0; margin-bottom: 2px; }
+.menu-list { overflow-y: auto; display: flex; flex-direction: column; scrollbar-width: thin; }
+.menu-item { font: inherit; color: inherit; background: none; border: 0; text-align: left; display: flex; justify-content: space-between; gap: 10px; padding: 5px 6px 5px 16px; position: relative; cursor: pointer; line-height: 1.5; min-height: 22px; align-items: center; }
+.menu-item::before { content: ""; position: absolute; left: 3px; top: 50%; translate: 0 -50%; border: 4px solid transparent; border-left: 6px solid var(--ink); opacity: 0; }
+.menu-item.sel::before { opacity: 1; }
+.menu-item[aria-disabled="true"] { color: #a0a0a8; }
+.menu-sub { color: #6a6f84; white-space: nowrap; }
+.act .knob b.glyph { font: inherit; font-size: 11px; color: #f0f0ff; text-shadow: 1px 1px 0 #1d1a29; }
+
+/*MODULES_CSS*/
+
 @media (prefers-reduced-motion: reduce) {
   .led.bad, #msgArrow, .act.active .knob { animation: none; }
   .bar i { transition: none; }
@@ -261,6 +277,7 @@ body {
       <div class="bezel">
         <div class="screen-wrap">
           <canvas id="screen" width="240" height="160" aria-label="Habitat do Pokémon"></canvas>
+          <div id="menuLayer" class="menu-layer" hidden></div>
           <div id="selectLayer" class="select-layer" hidden>
             <div class="select-title">PROF. CARVALHO:<br>Escolha seu POKéMON!</div>
             <div class="starters" id="starters"></div>
@@ -303,13 +320,13 @@ body {
       <div class="pills">
         <button type="button" class="pill on" id="btnSound">SOM: ON</button>
         <button type="button" class="pill" id="btnData">DADOS</button>
-        <button type="button" class="pill" id="btnReset">RESET</button>
+        <button type="button" class="pill" id="btnMenu">MENU</button>
         <button type="button" class="pill on" id="btnInstall" hidden>INSTALAR</button>
       </div>
     </section>
   </div>
   <p class="sr-only" id="srMsg" role="status" aria-live="polite"></p>
-  <p class="hints">Toque no Pokémon para fazer carinho<span class="keys"> · <kbd>F</kbd> alimentar · <kbd>T</kbd> treinar · <kbd>C</kbd> limpar · <kbd>L</kbd> luzes · <kbd>P</kbd> carinho · <kbd>M</kbd> som</span><br>O progresso é salvo neste aparelho e continua contando com o jogo fechado.</p>
+  <p class="hints">Toque no Pokémon para fazer carinho<span class="keys"> · <kbd>F</kbd> alimentar · <kbd>T</kbd> treinar · <kbd>C</kbd> limpar · <kbd>L</kbd> luzes · <kbd>P</kbd> carinho · <kbd>Enter</kbd> menu · <kbd>M</kbd> som</span><br>O progresso é salvo neste aparelho e continua contando com o jogo fechado.</p>
 </main>
 
 <script>
@@ -317,28 +334,49 @@ body {
 'use strict';
 
 /* ════════════ Dados ════════════ */
-const SPRITES = /*SPRITES_JSON*/{};
+const SPRITES = /*SPRITES_JSON*/{};   // f1..f151 (frente), b1..b151 (costas), berry
+/* Dados gerados (src/data): TYPES, TYPE_CHART, MOVES, MOVES2, DEX[1..151], SHINY_PAL */
+/*DATA_JS*/
 const W = 240, H = 160, FEET = 134;
 const TICK_MS = 2000;                 // tick lógico
-const SAVE_KEY = 'pokehabitat.save.v1';
+const SAVE_KEY = 'pokehabitat.save.v2', SAVE_KEY_V1 = 'pokehabitat.save.v1', MUTE_KEY = 'pokehabitat.save.v1.mute';
 const MAX_OFFLINE = 12 * 3600e3;      // simula no máx. 12h fora
 const STAGE_MUL = [{ h: 1, e: 1, b: 1 }, { h: 1.15, e: .9, b: .9 }, { h: 1.3, e: .8, b: .85 }];
-const TYPE_COLOR = { 'GRAMA': '#68b848', 'VENENO': '#a040a0', 'FOGO': '#f08030', 'VOADOR': '#9880e0', 'ÁGUA': '#6890f0' };
-const LINES = {
-  bulbasaur: { biome: 'floresta', evo: [16, 32], stages: [
-    { id: 1, name: 'BULBASAUR', types: ['GRAMA', 'VENENO'], base: [45, 49, 49, 65, 65, 45] },
-    { id: 2, name: 'IVYSAUR', types: ['GRAMA', 'VENENO'], base: [60, 62, 63, 80, 80, 60] },
-    { id: 3, name: 'VENUSAUR', types: ['GRAMA', 'VENENO'], base: [80, 82, 83, 100, 100, 80] }] },
-  charmander: { biome: 'vulcao', evo: [16, 36], stages: [
-    { id: 4, name: 'CHARMANDER', types: ['FOGO'], base: [39, 52, 43, 60, 50, 65] },
-    { id: 5, name: 'CHARMELEON', types: ['FOGO'], base: [58, 64, 58, 80, 65, 80] },
-    { id: 6, name: 'CHARIZARD', types: ['FOGO', 'VOADOR'], base: [78, 84, 78, 109, 85, 100] }] },
-  squirtle: { biome: 'praia', evo: [16, 36], stages: [
-    { id: 7, name: 'SQUIRTLE', types: ['ÁGUA'], base: [44, 48, 65, 50, 64, 43] },
-    { id: 8, name: 'WARTORTLE', types: ['ÁGUA'], base: [59, 63, 80, 65, 80, 58] },
-    { id: 9, name: 'BLASTOISE', types: ['ÁGUA'], base: [79, 83, 100, 85, 105, 78] }] },
-};
+const TYPE_COLOR = { 'NORMAL': '#a8a878', 'FOGO': '#f08030', 'ÁGUA': '#6890f0', 'GRAMA': '#68b848', 'ELÉTRICO': '#e0b818', 'GELO': '#78c8c8',
+  'LUTADOR': '#c03028', 'VENENO': '#a040a0', 'TERRA': '#c8a048', 'VOADOR': '#9880e0', 'PSÍQUICO': '#f85888', 'INSETO': '#98a820',
+  'PEDRA': '#b8a038', 'FANTASMA': '#705898', 'DRAGÃO': '#7038f8', 'SOMBRIO': '#705848', 'AÇO': '#a0a0c0' };
+const STARTERS = [1, 4, 7], LEGENDS = [144, 145, 146, 150, 151];
+// habitat de cada espécie: pelo 1º tipo (só há 3 biomas)
+const BIOME_BY_TYPE = { 'NORMAL': 'floresta', 'GRAMA': 'floresta', 'INSETO': 'floresta', 'VOADOR': 'floresta', 'VENENO': 'floresta', 'PSÍQUICO': 'floresta',
+  'FOGO': 'vulcao', 'PEDRA': 'vulcao', 'TERRA': 'vulcao', 'LUTADOR': 'vulcao', 'ELÉTRICO': 'vulcao', 'AÇO': 'vulcao', 'FANTASMA': 'vulcao', 'SOMBRIO': 'vulcao',
+  'ÁGUA': 'praia', 'GELO': 'praia', 'DRAGÃO': 'praia' };
+const biomeOf = id => [25, 26, 145].includes(id) ? 'floresta' : BIOME_BY_TYPE[DEX[id].types[0]];
+// porte (índice em STAGE_MUL): estágio da família; espécies sem evolução pelo total de status-base
+function sizeClass(id) {
+  const d = DEX[id];
+  if (LEGENDS.includes(id) && id !== 151) return 2;
+  if (id === 132 || id === 151) return 0;
+  if (d.from || d.evo.length) return Math.min(2, d.stage);
+  const bst = d.base.reduce((a, b) => a + b, 0); return bst < 400 ? 0 : bst < 500 ? 1 : 2;
+}
+// evolução por nível disponível para um Pokémon (a 1ª cujo nível já foi atingido)
+const levelEvo = m => DEX[m.sp].evo.find(e => e.lv && m.level >= e.lv && !(m.evoRefused >= m.level));
 const needExp = L => 6 + 3 * L;
+// itens da BOLSA (chave curta no save). Os nomes das pedras são os mesmos de DEX[].evo[].item
+const ITEMS = {
+  poke: { name: 'POKé BOLA', ball: 1 }, great: { name: 'GRANDE BOLA', ball: 1.5 }, ultra: { name: 'ULTRA BOLA', ball: 2 }, master: { name: 'BOLA MESTRA', ball: 255 },
+  pocao: { name: 'POÇÃO' }, doce: { name: 'DOCE RARO' }, cabo: { name: 'CABO DE TROCA' },
+  lua: { name: 'PEDRA DA LUA', stone: true }, fogo: { name: 'PEDRA DE FOGO', stone: true }, agua: { name: 'PEDRA DA ÁGUA', stone: true },
+  trovao: { name: 'PEDRA DO TROVÃO', stone: true }, folha: { name: 'PEDRA DA FOLHA', stone: true },
+  helix: { name: 'FÓSSIL HÉLIX', fossil: 138 }, domo: { name: 'FÓSSIL DOMO', fossil: 140 }, ambar: { name: 'ÂMBAR ANTIGO', fossil: 142 },
+};
+const BALLS = ['poke', 'great', 'ultra', 'master'];
+// fase do dia pelo relógio local: AMANHECER 5:00-6:59, DIA 7:00-17:59, ENTARDECER 18:00-19:29, NOITE 19:30-4:59
+function phaseAt(t = Date.now()) {
+  const d = new Date(t), m = d.getHours() * 60 + d.getMinutes();
+  return m >= 300 && m < 420 ? 'AMANHECER' : m >= 420 && m < 1080 ? 'DIA' : m >= 1080 && m < 1170 ? 'ENTARDECER' : 'NOITE';
+}
+const localDate = (t = Date.now()) => { const d = new Date(t); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 
 /* ════════════ Pixel art (bitmaps) ════════════ */
 const PAL = { K: '#202028', W: '#f8f8f8', w: '#c8d0e0', R: '#e83838', r: '#a01818', P: '#9050c0', Y: '#f8d030', O: '#f08030',
@@ -396,16 +434,46 @@ const BIOMES = {};
 /*BIOMES_JS*/
 
 /* ════════════ Imagens ════════════ */
-const IMG = {}, TINT = {};
+// chaves: 'f25' (frente), 'b25' (costas), 'f25s'/'b25s' (brilhante), 'berry'
+const IMG = {}, TINT = {}, SHINY_URL = {};
 function loadImages() {
   return Promise.all(Object.entries(SPRITES).map(([k, src]) => new Promise(res => {
     const im = new Image(); im.onload = () => { IMG[k] = im; res(); }; im.onerror = () => res(); im.src = src;
   })));
 }
+const monKey = (m, back) => (back ? 'b' : 'f') + m.sp + (m.shiny ? 's' : '');
+// imagem pronta para desenhar; o brilhante é montado na 1ª vez (até lá, o normal)
+function img(key) {
+  if (IMG[key]) return IMG[key];
+  if (key.endsWith('s')) { makeShiny(key); return IMG[key.slice(0, -1)]; }
+  return null;
+}
+// URL para <img> no HTML (Pokédex, PC...)
+function spriteURL(key) { if (key.endsWith('s')) { makeShiny(key); return SHINY_URL[key] || SPRITES[key.slice(0, -1)]; } return SPRITES[key] || ''; }
+// Brilhante = sprite normal com o chunk PLTE trocado pela paleta de SHINY_PAL (o resto do PNG é idêntico)
+const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = (b, from, to) => { let c = ~0; for (let i = from; i < to; i++) c = CRC_T[(c ^ b[i]) & 255] ^ (c >>> 8); return ~c >>> 0; };
+function makeShiny(key) {
+  if (key in SHINY_URL) return; SHINY_URL[key] = null;
+  const base = key.slice(0, -1), id = +base.slice(1), pal = SHINY_PAL[id] && SHINY_PAL[id][base[0] === 'b' ? 1 : 0];
+  if (!SPRITES[base] || !pal) return;
+  const b = Uint8Array.from(atob(SPRITES[base].split(',')[1]), c => c.charCodeAt(0)), dv = new DataView(b.buffer);
+  for (let p = 8; p < b.length;) {
+    const len = dv.getUint32(p), type = String.fromCharCode(b[p + 4], b[p + 5], b[p + 6], b[p + 7]);
+    if (type === 'PLTE') {
+      for (let i = 0; i < len; i++) b[p + 8 + i] = parseInt(pal.substr(i * 2, 2), 16);
+      dv.setUint32(p + 8 + len, crc32(b, p + 4, p + 8 + len)); break;
+    }
+    p += 12 + len;
+  }
+  const url = URL.createObjectURL(new Blob([b], { type: 'image/png' })), im = new Image();
+  im.onload = () => { IMG[key] = im; SHINY_URL[key] = url; }; im.src = url;
+}
 // "pé" de cada sprite: última linha opaca + largura da base. Cada sprite tem margem transparente diferente,
 // então alinhar por uma linha fixa deixava alguns Pokémon flutuando.
 const FOOT = {};
 function footOf(key) {
+  if (key.endsWith('s')) key = key.slice(0, -1);   // o brilhante tem a mesma silhueta
   if (FOOT[key]) return FOOT[key];
   const im = IMG[key]; if (!im) return { base: 56, cx: 32, w: 28 };
   const k = document.createElement('canvas'); k.width = im.width; k.height = im.height;
@@ -419,7 +487,7 @@ function footOf(key) {
 }
 function tinted(key, color) {
   const id = key + color; if (TINT[id]) return TINT[id];
-  const im = IMG[key]; if (!im) return null;
+  const im = img(key); if (!im) return null;
   const cv = document.createElement('canvas'); cv.width = im.width; cv.height = im.height;
   const x = cv.getContext('2d'); x.drawImage(im, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = color; x.fillRect(0, 0, cv.width, cv.height);
   return (TINT[id] = cv);
@@ -473,10 +541,13 @@ const Sfx = {
   evoDone() { this.seq([[659, .1], [784, .1], [1046, .1], [1318, .26], [1175, .1], [1318, .45]], { vol: .07 }); this.seq([[330, .3], [392, .3], [523, .7]], { type: 'triangle', vol: .1 }); },
 };
 
-/* ════════════ Estado ════════════ */
-let s = null;                 // estado persistido
+/* ════════════ Estado ════════════
+   G = o jogo inteiro (o que vai para o save): POKéMON ativo, PC, POKéDEX, BOLSA, progresso.
+   s = G.active, o POKéMON que vive no habitat (todo o código de cuidados lê e escreve em s). */
+let G = null;                 // estado persistido (save v2)
+let s = null;                 // = G.active
 let storageOk = true;
-let scene = 'boot';           // boot | select | habitat
+let scene = 'boot';           // boot | select | habitat | (cenas dos módulos: SCENES)
 const pk = { x: 120, dir: -1, mode: 'idle', target: null, t: 0, idleT: 2, eatT: 0, crunches: 0, hop: 0 };
 let berryFx = null;           // {y, vy, landed}
 let sweep = null, sweepPoops = [];
@@ -486,80 +557,211 @@ let particles = [];
 let lastPetAt = 0, lastAlertAt = 0, zTimer = 0;
 let pendingChoice = null;     // {kind, line?}
 let summary = null;
-let away = null;              // resumo acumulado enquanto a aba está escondida ou fechada
+let away = null;              // resumo acumulado enquanto a aba está escondida/fechada ou o POKéMON está fora de casa
 const RM = matchMedia('(prefers-reduced-motion: reduce)');
 
 const clamp = (v, a = 0, b = 100) => Math.min(b, Math.max(a, v));
 const num = (v, d) => (typeof v === 'number' && isFinite(v)) ? v : d;
-const line = () => LINES[s.line];
-const stage = () => line().stages[s.stage];
-const N = () => stage().name;
+const randInt = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const sp = (m = s) => DEX[m.sp];
+const N = (m = s) => DEX[m.sp].name;
+// multiplicadores de cuidado pelo porte; SNORLAX come muito mais
+const MUL = (m = s) => { const b = STAGE_MUL[sizeClass(m.sp)]; return m.sp === 143 ? { ...b, h: b.h * 1.6 } : b; };
 
-function newState(lineKey) {
-  const now = Date.now();
-  return { v: 1, line: lineKey, stage: 0, level: 1, exp: 0, hunger: 80, energy: 90, happy: 70, hygiene: 100,
-    poops: [], berry: null, asleep: false, sleptAt: 0, sick: false, hungryUntil: 0, poopTimer: 240,
-    lastTick: now, lastAttention: now, born: now, pendingEvo: false, expAcc: 0, savedAt: now,
-    count: { fed: 0, cleaned: 0, pets: 0, trained: 0 } };
+/* Ganchos: os módulos se inscrevem em eventos do núcleo.
+   'tick' (cada logicTick), 'home' (voltou ao habitat), 'wellCared' (min, t) (cuidado em dia, simulado),
+   'levelUp' (mon), 'evolved' (mon, fromId), 'caught' (mon, how), 'boot', 'newGame' */
+const HOOKS = {};
+const on = (evt, fn) => (HOOKS[evt] = HOOKS[evt] || []).push(fn);
+const fire = (evt, ...a) => { for (const fn of HOOKS[evt] || []) { try { fn(...a); } catch (e) { console.error(evt, e); } } };
+
+/* POKéDEX: strings de 151 caracteres '0'/'1' (índice id-1) */
+const dexNew = () => '0'.repeat(151);
+const dexHas = (kind, id) => !!G && G.dex[kind][id - 1] === '1';
+function dexSet(kind, id) { if (!G || dexHas(kind, id)) return false; const d = G.dex[kind]; G.dex[kind] = d.slice(0, id - 1) + '1' + d.slice(id); return true; }
+const dexCount = kind => G ? G.dex[kind].split('1').length - 1 : 0;
+// marca visto (e capturado); devolve true se a espécie é nova na POKéDEX como capturada
+function dexMark(id, caught, shiny) {
+  dexSet('seen', id); if (shiny && caught) dexSet('shiny', id);
+  if (!caught) return false;
+  const nova = dexSet('caught', id); if (nova) G.prog.sinceNew = 0; return nova;
 }
-function sanitize(o) {
-  if (!o || typeof o !== 'object' || !LINES[o.line]) return null;
-  const now = Date.now(), d = newState(o.line);
-  const st = Math.min(2, Math.max(0, Math.floor(num(o.stage, 0))));
-  const out = { ...d,
-    stage: st, level: Math.min(100, Math.max(1, Math.floor(num(o.level, 1)))), exp: Math.max(0, num(o.exp, 0)),
-    hunger: clamp(num(o.hunger, 80)), energy: clamp(num(o.energy, 90)), happy: clamp(num(o.happy, 70)), hygiene: clamp(num(o.hygiene, 100)),
-    asleep: !!o.asleep, sleptAt: clamp(num(o.sleptAt, 0), 0, now), sick: !!o.sick, hungryUntil: clamp(num(o.hungryUntil, 0), 0, now + 4 * 60e3), poopTimer: clamp(num(o.poopTimer, 240), 0, 3600),
-    lastTick: num(o.lastTick, now), lastAttention: clamp(num(o.lastAttention, now), 0, now), born: clamp(num(o.born, now), 0, now),
-    pendingEvo: !!o.pendingEvo, expAcc: clamp(num(o.expAcc, 0), 0, 1), savedAt: num(o.savedAt, 0),
-    count: { fed: num(o.count?.fed, 0), cleaned: num(o.count?.cleaned, 0), pets: num(o.count?.pets, 0), trained: num(o.count?.trained, 0) } };
-  out.poops = Array.isArray(o.poops) ? o.poops.slice(0, 4).filter(p => p && isFinite(p.x) && isFinite(p.y)).map(p => ({ x: clamp(p.x, 20, 220), y: clamp(p.y, FEET - 3, FEET + 4) })) : [];
-  out.berry = (o.berry && isFinite(o.berry.x)) ? { x: clamp(o.berry.x, 30, 210) } : null;
-  out.exp = out.level >= 100 ? 0 : Math.min(out.exp, needExp(out.level) - 1);
-  // evolução pendente coerente com o nível
-  const ev = LINES[out.line].evo[out.stage]; out.pendingEvo = !!(ev && out.level >= ev);
+
+/* BOLSA (teto de 99 por item) */
+const bagHas = (k, n = 1) => (G.bag[k] || 0) >= n;
+function bagAdd(k, n = 1) { G.bag[k] = clamp((G.bag[k] || 0) + n, 0, 99); }
+function bagUse(k) { if (!bagHas(k)) return false; G.bag[k]--; return true; }
+const ballCount = () => BALLS.reduce((a, k) => a + (G.bag[k] || 0), 0);
+
+function newMon(spId, level = 1, extra) {
+  const now = Date.now();
+  return { uid: 0, sp: spId, shiny: false, level, exp: 0, hunger: 80, energy: 90, happy: 70, hygiene: 100,
+    poops: [], berry: null, asleep: false, sleptAt: 0, sick: false, hungryUntil: 0, poopTimer: 240,
+    lastAttention: now, born: now, pendingEvo: false, evoRefused: 0, expAcc: 0, caughtAt: now, ball: 'poke',
+    count: { fed: 0, cleaned: 0, pets: 0, trained: 0 }, ...extra };
+}
+// Valores padrão do save v2. Módulos acrescentam os seus campos (em prog/daily/bag) com extendDefaults,
+// antes do boot; o sanitize só aceita campos que existem aqui.
+const DEFAULTS = {
+  bag: { poke: 10, great: 0, ultra: 0, master: 0, pocao: 1, doce: 0, cabo: 0, lua: 0, fogo: 0, agua: 0, trovao: 0, folha: 0, helix: 0, domo: 0, ambar: 0 },
+  prog: { badges: 0, sinceNew: 0, captures: 0, wins: 0, swapAt: 0, firstStarter: 0 },
+  daily: { date: '', maxDate: '' },
+};
+function extendDefaults(part) { for (const k in part) DEFAULTS[k] = { ...(DEFAULTS[k] || {}), ...part[k] }; }
+const clone = o => JSON.parse(JSON.stringify(o));
+function newGame(spId) {
+  const now = Date.now(), a = newMon(spId); a.uid = 1;
+  const g = { v: 2, rev: 0, savedAt: now, lastTick: now, nextUid: 2, active: a, pc: [],
+    dex: { seen: dexNew(), caught: dexNew(), shiny: dexNew() },
+    bag: clone(DEFAULTS.bag), prog: clone(DEFAULTS.prog), daily: clone(DEFAULTS.daily), outing: null, enc: null, hof: null };
+  g.prog.firstStarter = spId;
+  return g;
+}
+// copia do salvo só o que tem o mesmo tipo do padrão (objetos: recursivo; arrays e objetos livres de módulos: como estão)
+function mergeLike(def, o) {
+  const out = clone(def); if (!o || typeof o !== 'object') return out;
+  for (const k in def) {
+    const d = def[k], v = o[k];
+    if (typeof d === 'number') out[k] = num(v, d);
+    else if (typeof d === 'boolean') out[k] = typeof v === 'boolean' ? v : d;
+    else if (typeof d === 'string') out[k] = typeof v === 'string' ? v.slice(0, 200) : d;
+    else if (Array.isArray(d)) out[k] = Array.isArray(v) ? v.slice(0, 1000) : d;
+    else if (d && typeof d === 'object') out[k] = (v && typeof v === 'object' && !Array.isArray(v)) ? (Object.keys(d).length ? mergeLike(d, v) : clone(v)) : d;
+  }
   return out;
 }
-function load() {
-  let raw;
-  try { raw = localStorage.getItem(SAVE_KEY); } catch { storageOk = false; return null; }   // navegador bloqueia o storage
-  try { return raw ? sanitize(JSON.parse(raw)) : null; } catch { return null; }            // save ilegível: recomeça, sem culpar o navegador
+// um POKéMON (ativo ou do PC), campo a campo
+function sanitizeMon(o, active) {
+  if (!o || typeof o !== 'object') return null;
+  const spId = Math.floor(num(o.sp, 0)); if (!(spId >= 1 && spId <= 151)) return null;
+  const now = Date.now(), d = newMon(spId);
+  const out = { ...d, uid: Math.max(1, Math.floor(num(o.uid, 1))), shiny: !!o.shiny,
+    level: Math.min(100, Math.max(1, Math.floor(num(o.level, 1)))), exp: Math.max(0, num(o.exp, 0)),
+    hunger: clamp(num(o.hunger, 80)), energy: clamp(num(o.energy, 90)), happy: clamp(num(o.happy, 70)), hygiene: clamp(num(o.hygiene, 100)),
+    asleep: !!o.asleep, sleptAt: clamp(num(o.sleptAt, 0), 0, now), sick: !!o.sick, hungryUntil: clamp(num(o.hungryUntil, 0), 0, now + 4 * 60e3), poopTimer: clamp(num(o.poopTimer, 240), 0, 3600),
+    lastAttention: clamp(num(o.lastAttention, now), 0, now), born: clamp(num(o.born, now), 0, now), caughtAt: clamp(num(o.caughtAt, now), 0, now),
+    evoRefused: clamp(Math.floor(num(o.evoRefused, 0)), 0, 100), expAcc: clamp(num(o.expAcc, 0), 0, 1),
+    ball: BALLS.includes(o.ball) ? o.ball : 'poke',
+    count: { fed: num(o.count?.fed, 0), cleaned: num(o.count?.cleaned, 0), pets: num(o.count?.pets, 0), trained: num(o.count?.trained, 0) } };
+  if (active) {
+    out.poops = Array.isArray(o.poops) ? o.poops.slice(0, 4).filter(p => p && isFinite(p.x) && isFinite(p.y)).map(p => ({ x: clamp(p.x, 20, 220), y: clamp(p.y, FEET - 3, FEET + 4) })) : [];
+    out.berry = (o.berry && isFinite(o.berry.x)) ? { x: clamp(o.berry.x, 30, 210) } : null;
+  }
+  out.exp = out.level >= 100 ? 0 : Math.min(out.exp, needExp(out.level) - 1);
+  out.pendingEvo = !!levelEvo(out);   // evolução pendente coerente com o nível
+  return out;
 }
+const dexStr = v => typeof v === 'string' && /^[01]{151}$/.test(v) ? v : dexNew();
+function sanitize(o) {
+  if (!o || typeof o !== 'object' || o.v !== 2) return null;
+  const active = sanitizeMon(o.active, true); if (!active) return null;
+  const now = Date.now(), g = newGame(active.sp);
+  g.rev = Math.max(0, Math.floor(num(o.rev, 0))); g.savedAt = num(o.savedAt, 0); g.lastTick = num(o.lastTick, now);
+  g.active = active;
+  const seen = new Set([active.uid]);
+  g.pc = (Array.isArray(o.pc) ? o.pc.slice(0, 360) : []).map(m => sanitizeMon(m, false)).filter(m => m && !seen.has(m.uid) && seen.add(m.uid));
+  g.nextUid = Math.max(Math.floor(num(o.nextUid, 2)), ...seen) + 1;
+  g.dex = { seen: dexStr(o.dex?.seen), caught: dexStr(o.dex?.caught), shiny: dexStr(o.dex?.shiny) };
+  g.bag = mergeLike(DEFAULTS.bag, o.bag); for (const k in g.bag) g.bag[k] = clamp(Math.floor(g.bag[k]), 0, 99);
+  g.prog = mergeLike(DEFAULTS.prog, o.prog); g.prog.badges = clamp(Math.floor(g.prog.badges), 0, 8);
+  g.daily = mergeLike(DEFAULTS.daily, o.daily);
+  // encontro e passeio em andamento: o módulo da aventura revalida ao usar
+  g.outing = o.outing && typeof o.outing === 'object' ? o.outing : null;
+  g.enc = o.enc && typeof o.enc === 'object' && o.enc.sp >= 1 && o.enc.sp <= 151 ? o.enc : null;
+  g.hof = o.hof && typeof o.hof === 'object' ? o.hof : null;
+  return g;
+}
+// save v1 (um inicial só) -> v2. O v1 fica intacto como cópia de segurança.
+function migrateV1(o) {
+  const LINE = { bulbasaur: 1, charmander: 4, squirtle: 7 };
+  if (!o || typeof o !== 'object' || !LINE[o.line]) return null;
+  const st = Math.min(2, Math.max(0, Math.floor(num(o.stage, 0)))), spId = LINE[o.line] + st;
+  const g = newGame(LINE[o.line]);
+  g.active = sanitizeMon({ ...o, sp: spId, uid: 1, caughtAt: o.born }, true);
+  if (!g.active) return null;
+  g.lastTick = num(o.lastTick, Date.now()); g.savedAt = num(o.savedAt, 0);
+  const G0 = G; G = g; for (let i = 0; i <= st; i++) dexMark(LINE[o.line] + i, true); G = G0;
+  return g;
+}
+function readSave() {
+  let raw, v1;
+  try { raw = localStorage.getItem(SAVE_KEY); if (raw === null) v1 = localStorage.getItem(SAVE_KEY_V1); }
+  catch { storageOk = false; return null; }   // navegador bloqueia o storage
+  try {
+    if (raw) return sanitize(JSON.parse(raw));
+    if (v1) return migrateV1(JSON.parse(v1));
+  } catch (e) { console.warn('save ilegível', e); }   // recomeça, sem culpar o navegador
+  return null;
+}
+function load() { return readSave(); }
+function setGame(g) { G = g; s = g ? g.active : null; }
 function save() {
-  if (!s) return; s.savedAt = Date.now();
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify(s)); storageOk = true; } catch { storageOk = false; }
+  if (!G) return; G.savedAt = Date.now(); G.rev++; G.active = s;
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(G)); storageOk = true; } catch { storageOk = false; }
 }
-function wipe() { try { localStorage.removeItem(SAVE_KEY); } catch {} }
+function wipe() { try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem(SAVE_KEY_V1); } catch {} }
 // Lê o save antes de simular: uma aba que perdeu os eventos 'storage' (voltou do cache do Voltar, ficou congelada)
 // adota o estado mais novo em vez de gravar o seu, velho, por cima dele.
 function syncFromStorage() {
-  if (!s) return;
+  if (!G) return;
   let raw; try { raw = localStorage.getItem(SAVE_KEY); } catch { return; }
-  if (raw === null) { s = null; toSelect(); return; }                    // outra aba zerou
-  try { const o = sanitize(JSON.parse(raw)); if (o && o.savedAt > s.savedAt) s = o; } catch {}
+  if (raw === null) { setGame(null); toSelect(); return; }                // outra aba zerou
+  try { const o = sanitize(JSON.parse(raw)); if (o && (o.savedAt > G.savedAt || (o.savedAt === G.savedAt && o.rev > G.rev))) adopt(o); } catch {}
+}
+// adota o estado de outra aba; se ela trocou o POKéMON ativo, o habitat recomeça do zero
+function adopt(o) {
+  const swapped = !s || o.active.uid !== s.uid;
+  setGame(o);
+  if (swapped && scene === 'habitat') { training = null; sweep = null; berryFx = null; evo = null; setBiomeCache(); setTrainBtn(); }
+}
+
+/* PC: guardar, ativar e soltar */
+function addToPC(m) { m.uid = G.nextUid++; G.pc.push(m); return m; }
+// novo POKéMON (captura, presente, fóssil): vai para o PC; marca a POKéDEX
+function receiveMon(spId, level, extra = {}, how = 'catch') {
+  const m = newMon(spId, level, { hunger: 60, energy: 60, happy: 50, hygiene: 80, ...extra });
+  addToPC(m); dexMark(spId, true, m.shiny); fire('caught', m, how); return m;
+}
+// estado congelado de quem vai para o PC (nada é simulado lá)
+function freezeMon(m) { m.poops = []; m.berry = null; m.hungryUntil = 0; m.asleep = false; return m; }
+function swapActive(uid) {
+  const i = G.pc.findIndex(m => m.uid === uid); if (i < 0) return false;
+  const now = Date.now(), incoming = G.pc[i];
+  G.pc[i] = freezeMon(s);
+  incoming.lastAttention = now; incoming.poopTimer = 240; incoming.happy = clamp(incoming.happy + 5);
+  incoming.poops = []; incoming.berry = null; incoming.asleep = false; incoming.pendingEvo = !!levelEvo(incoming);
+  G.active = incoming; s = incoming; G.prog.swapAt = now;
+  training = null; sweep = null; berryFx = null; pk.mode = 'idle'; pk.target = null; appear = 1;
+  setBiomeCache(); save(); updateUI();
+  return true;
 }
 
 /* ════════════ Simulação (baseada em timestamps → imune a reload/aba em segundo plano) ════════════ */
 function simulate(toTime, live) {
-  let t = s.lastTick;
+  let t = G.lastTick;
   if (!(t > 0) || t > toTime) t = toTime;           // relógio voltou: não pune
   if (toTime - t > MAX_OFFLINE) t = toTime - MAX_OFFLINE;
   while (t < toTime) { const dt = Math.min(10000, toTime - t); stepSim(dt / 1000, t, live); t += dt; }
-  s.lastTick = toTime;
+  G.lastTick = toTime;
 }
+// à noite o sono chega antes
+const sleepyAt = (t = Date.now()) => phaseAt(t) === 'NOITE' ? 25 : 15;
 function stepSim(dt, t, live) {
-  const m = dt / 60, mul = STAGE_MUL[s.stage], prevH = s.hunger, prevE = s.energy;
-  if (s.asleep) { s.hunger -= .6 * m * mul.h; s.energy += 5 * m; }
-  else { s.hunger -= 2 * m * mul.h * (t < s.hungryUntil ? 2 : 1); s.energy -= 1.2 * m * mul.e; }
+  const m = dt / 60, mul = MUL(), prevH = s.hunger, prevE = s.energy;
+  const ph = phaseAt(t), night = ph === 'NOITE', out = !!G.outing, sleepy = sleepyAt(t);
+  // noite: cansa mais acordado (x1,3), descansa mais dormindo (x1,2)
+  if (s.asleep) { s.hunger -= .6 * m * mul.h; s.energy += 5 * m * (night ? 1.2 : 1); }
+  else { s.hunger -= 2 * m * mul.h * (t < s.hungryUntil ? 2 : 1); s.energy -= 1.2 * m * mul.e * (night ? 1.3 : 1); }
   s.hygiene -= (.4 + 1.2 * s.poops.length) * m;
   let dh = -.4 * m;
   if (s.hunger <= 0) dh -= 6 * m;
   if (s.hygiene < 30) dh -= 1.5 * m;
-  if (!s.asleep && t - s.lastAttention > 10 * 60e3) dh -= 1 * m;
-  if (!s.asleep && s.energy < 15) dh -= 1 * m;
+  if (!s.asleep && !out && t - s.lastAttention > 10 * 60e3) dh -= 1 * m;   // fora de casa ele está com você
+  if (!s.asleep && s.energy < sleepy) dh -= 1 * m;
+  if (!s.asleep && night && new Date(t).getHours() === 23) dh -= .3 * m;   // acordado depois das 23h
   if (s.sick) { dh -= 1 * m; s.energy -= .5 * m; }
   s.happy += dh;
-  if (!s.asleep) {
+  if (!s.asleep && !out) {
     s.poopTimer -= dt;
     if (s.poopTimer <= 0) { if (s.poops.length < 4) { addPoop(); emit('poop'); } s.poopTimer = 240 + Math.random() * 360; }
   }
@@ -567,29 +769,35 @@ function stepSim(dt, t, live) {
   if (!s.sick && (s.hygiene < 15 || (s.hunger <= 0 && s.happy < 25))) { s.sick = true; emit('sick'); }
   else if (s.sick && s.hygiene >= 50 && s.hunger >= 30) { s.sick = false; emit('cured'); }
   if (prevH >= 15 && s.hunger < 15) emit('hungry');
-  if (!s.asleep && prevE >= 15 && s.energy < 15) emit('sleepy');
+  if (!s.asleep && prevE >= sleepy && s.energy < sleepy) emit('sleepy');
   if (!s.asleep && s.energy <= 0) { s.asleep = true; s.sleptAt = t; emit('collapse'); }
+  // à noite, em casa e sem nada acontecendo, ele cochila sozinho com pouca energia (sem penalidade)
+  else if (!s.asleep && night && !out && !training && s.energy < 20 && scene === 'habitat') { s.asleep = true; s.sleptAt = t; emit('doze'); }
   // acorda sozinho com energia cheia, mas só depois de um cochilo mínimo (senão dormir com 100% acordava no tick seguinte)
   if (s.asleep && s.energy >= 100 && t + dt * 1000 - s.sleptAt >= 3 * 60e3) { wake(t + dt * 1000); emit('wake'); }
   if (!s.asleep && !s.sick && s.hunger >= 50 && s.energy >= 50 && s.happy >= 50 && s.hygiene >= 50) {
     s.expAcc += 2 * m; if (s.expAcc >= 1) { const n = Math.floor(s.expAcc); s.expAcc -= n; addExp(n, live); }
+    fire('wellCared', m, t);
   }
 }
-function wake(t) { s.asleep = false; s.hungryUntil = t + 4 * 60e3; }
+// acordar ao AMANHECER deixa feliz
+function wake(t) { s.asleep = false; s.hungryUntil = t + 4 * 60e3; if (phaseAt(t) === 'AMANHECER') s.happy = clamp(s.happy + 5); }
 function addPoop() {
   // fica na faixa por onde ele anda (o primeiro plano tem lago/pedras do cenário)
   let x, tries = 0; do { x = 26 + Math.random() * 188; } while (Math.abs(x - pk.x) < 22 && ++tries < 10);
   s.poops.push({ x: Math.round(x), y: Math.round(FEET - 3 + Math.random() * 7) });
 }
-function addExp(n, live) {
-  s.exp += n;
-  while (s.level < 100 && s.exp >= needExp(s.level)) {
-    s.exp -= needExp(s.level); s.level++;
-    if (live) { say(`${N()} subiu para o Nv. ${s.level}!`); Sfx.levelUp(); burst(pk.x, FEET - 40, 'spark', 8); }
-    else if (summary) summary.levels++;
-    const ev = line().evo[s.stage]; if (ev && s.level >= ev) s.pendingEvo = true;
+// m: o POKéMON (padrão: o ativo). Fora do habitat (batalha) quem chama mostra as mensagens.
+function addExp(n, live, m = s) {
+  m.exp += n;
+  while (m.level < 100 && m.exp >= needExp(m.level)) {
+    m.exp -= needExp(m.level); m.level++;
+    if (live) { say(`${N(m)} subiu para o Nv. ${m.level}!`); Sfx.levelUp(); if (m === s && scene === 'habitat') burst(pk.x, FEET - 40, 'spark', 8); }
+    else if (summary && m === s) summary.levels++;
+    if (levelEvo(m)) m.pendingEvo = true;
+    fire('levelUp', m);
   }
-  if (s.level >= 100) s.exp = 0;
+  if (m.level >= 100) m.exp = 0;
 }
 function emit(kind) {
   if (summary) { summary[kind] = (summary[kind] || 0) + 1; return; }
@@ -601,75 +809,205 @@ function emit(kind) {
     case 'hungry': say(`${n} está faminto!`); Sfx.alert(); lastAlertAt = Date.now(); break;
     case 'sleepy': say(`${n} está com sono... Apague as luzes.`); break;
     case 'collapse': say(`${n} caiu no sono de exaustão!`); Sfx.sleep(); break;
+    case 'doze': say(`${n} adormeceu sozinho.`); Sfx.sleep(); pk.mode = 'sleep'; pk.target = null; break;
     case 'wake': say(`${n} acordou com fome!`); Sfx.wake(); break;
   }
 }
+// cenas fora do habitat (aventura, menus de tela cheia) simulam caladas: os avisos de cuidado esperam a volta para casa
+const atHome = () => scene === 'habitat';
 function logicTick() {
-  if (!s || scene !== 'habitat') return;
-  syncFromStorage(); if (!s) return;
-  const now = Date.now(), gap = now - s.lastTick;
-  // Escondida (o Chrome roda o timer ~1x/min) ou de volta depois de 1 min: simula calado e junta tudo num resumo
-  // só, mostrado quando a aba estiver visível.
-  if (document.hidden || gap > 60e3) {
-    if (!away) away = { since: s.lastTick, levels: 0 };
+  if (!G || scene === 'select' || scene === 'boot') return;
+  syncFromStorage(); if (!G) return;
+  const now = Date.now(), gap = now - G.lastTick;
+  // Escondida (o Chrome roda o timer ~1x/min), fora de casa, ou de volta depois de 1 min: simula calado e junta tudo
+  // num resumo só, mostrado quando a aba estiver visível e o POKéMON em casa.
+  if (document.hidden || gap > 60e3 || !atHome()) {
+    if (!away) away = { since: G.lastTick, levels: 0 };
     summary = away; simulate(now, false); summary = null;
   } else simulate(now, true);
-  if (away && !document.hidden) { const sm = away; away = null; reportAway(sm, now); }
+  if (away && !document.hidden && atHome()) { const sm = away; away = null; reportAway(sm, now); }
   if (training && (s.asleep || s.sick)) cancelTraining('O treino foi interrompido.');
-  if ((s.hunger < 15 || s.sick) && now - lastAlertAt > 25e3 && !document.hidden) { lastAlertAt = now; Sfx.alert(); }
+  if (atHome() && (s.hunger < 15 || s.sick) && now - lastAlertAt > 25e3 && !document.hidden) { lastAlertAt = now; Sfx.alert(); }
+  fire('tick', now);
   save(); updateUI();
 }
 
 function reportAway(sm, now) {
-  const gap = now - sm.since; if (!(gap > 60e3)) return;
-  const mins = Math.round(Math.min(gap, MAX_OFFLINE) / 60e3), h = Math.floor(mins / 60);
-  let txt = `Você ficou fora ${h ? h + 'h ' : ''}${mins % 60}min.`;
-  if (sm.poop) txt += ` ${N()} fez ${sm.poop} sujeira${sm.poop > 1 ? 's' : ''}.`;
-  say(txt);
+  const gap = now - sm.since;
+  if (gap > 60e3) {
+    const mins = Math.round(Math.min(gap, MAX_OFFLINE) / 60e3), h = Math.floor(mins / 60);
+    let txt = `Você ficou fora ${h ? h + 'h ' : ''}${mins % 60}min.`;
+    if (sm.poop) txt += ` ${N()} fez ${sm.poop} sujeira${sm.poop > 1 ? 's' : ''}.`;
+    say(txt);
+  } else if (sm.poop) say(`${N()} fez sujeira no habitat!`);
   if (sm.levels) say(`Cuidando de si mesmo, subiu ${sm.levels} nível${sm.levels > 1 ? 'is' : ''}!`);
-  if (sm.wake && !s.asleep) say(`${N()} acordou com fome!`);
+  if ((sm.wake && !s.asleep) || ((sm.collapse || sm.doze) && s.asleep)) say(s.asleep ? `${N()} está dormindo... Zzz` : `${N()} acordou com fome!`);
   if (s.sick) say(`${N()} está doente!`);
   else if (s.hunger < 15) say(`${N()} está faminto!`);
 }
 
-/* ════════════ Mensagens (caixa de diálogo FRLG) ════════════ */
-const msg = { queue: [], cur: null, shown: 0, hold: 0 };
+/* ════════════ Mensagens (caixa de diálogo FRLG) ════════════
+   say(texto): entra na fila. talk(texto): idem, e devolve uma Promise que resolve quando a mensagem sai da tela
+   (toque na caixa, A/Enter, ou ~1,4 s depois de escrita) — é o que as batalhas usam para narrar em ordem. */
+const msg = { queue: [], cur: null, shown: 0, hold: 0, done: null };
 const elMsg = document.getElementById('msgText'), elArrow = document.getElementById('msgArrow'), elSr = document.getElementById('srMsg');
-function say(text) { if (msg.queue.length >= 4) msg.queue.shift(); msg.queue.push(text); }
+function say(text) { if (msg.queue.length >= 4 && !msg.queue[0].done) msg.queue.shift(); msg.queue.push({ text }); }
+function talk(text) { return new Promise(done => msg.queue.push({ text, done })); }
 // o leitor de tela recebe a frase inteira uma vez (a caixa visível é reescrita letra a letra)
-function setCur(text) { msg.cur = text; msg.shown = 0; msg.hold = 0; elSr.textContent = text; }
-function sayNow(text) { msg.queue = []; setCur(text); }
+function setCur(e) { if (msg.done) { const d = msg.done; msg.done = null; d(); } msg.cur = e.text; msg.done = e.done || null; msg.shown = 0; msg.hold = 0; elSr.textContent = e.text; }
+function sayNow(text) { const q = msg.queue; msg.queue = []; for (const e of q) if (e.done) e.done(); setCur({ text }); }
 function updateMsg(dt) {
+  if (msg.cur && msg.shown >= msg.cur.length) {
+    msg.hold += dt;
+    if (msg.done && msg.hold > 1.4) { const d = msg.done; msg.done = null; d(); }
+  }
   // com SIM/NÃO aberto a pergunta fica na tela; os avisos esperam a resposta
-  if (!pendingChoice && (!msg.cur || (msg.shown >= msg.cur.length && msg.hold > 2.2)) && msg.queue.length) setCur(msg.queue.shift());
+  if (!pendingChoice && msg.queue.length && (!msg.cur || (msg.shown >= msg.cur.length && msg.hold > (msg.queue[0].done ? 1.4 : 2.2)))) setCur(msg.queue.shift());
   if (!msg.cur) return;
   if (msg.shown < msg.cur.length) { msg.shown = Math.min(msg.cur.length, msg.shown + dt * 48); elMsg.textContent = msg.cur.slice(0, Math.floor(msg.shown)); }
-  else { msg.hold += dt; if (elMsg.textContent !== msg.cur) elMsg.textContent = msg.cur; }
-  elArrow.hidden = !(msg.shown >= msg.cur.length && msg.queue.length);
+  else if (elMsg.textContent !== msg.cur) elMsg.textContent = msg.cur;
+  elArrow.hidden = !(msg.shown >= msg.cur.length && (msg.queue.length || msg.done));
 }
-const msgIdle = () => !msg.queue.length && (!msg.cur || (msg.shown >= msg.cur.length && msg.hold > .8));
-document.getElementById('textbox').addEventListener('click', e => {
-  if (e.target.closest('.choice') || !msg.cur) return;
-  if (msg.shown < msg.cur.length) msg.shown = msg.cur.length; else if (msg.queue.length) msg.hold = 99;
-});
+const msgIdle = () => !msg.queue.length && !msg.done && (!msg.cur || (msg.shown >= msg.cur.length && msg.hold > .8));
+// toque/A: completa o texto; se já está completo, passa para a próxima
+function msgAdvance() {
+  if (!msg.cur) return false;
+  if (msg.shown < msg.cur.length) { msg.shown = msg.cur.length; return true; }
+  if (msg.queue.length || msg.done) { msg.hold = 99; return true; }
+  return false;
+}
+document.getElementById('textbox').addEventListener('click', e => { if (!e.target.closest('.choice')) msgAdvance(); });
 
-/* Caixa SIM/NÃO */
+/* Caixa SIM/NÃO. kind: 'starter' | 'reset' | função(sim) chamada com a resposta. Ver também confirmYN(). */
 const elChoice = document.getElementById('choice');
 function ask(text, kind, extra) {
   sayNow(text); pendingChoice = { kind, ...extra, back: document.activeElement }; elChoice.hidden = false;
-  // no RESET o foco começa no NÃO: Enter sem querer não apaga nada
-  document.getElementById(kind === 'reset' ? 'choiceNo' : 'choiceYes').focus({ preventScroll: true });
+  // no RESET (e em perguntas perigosas) o foco começa no NÃO: Enter sem querer não apaga nada
+  document.getElementById(kind === 'reset' || (extra && extra.safeNo) ? 'choiceNo' : 'choiceYes').focus({ preventScroll: true });
 }
+// await confirmYN('Soltar PIDGEY?', { safeNo: true }) -> true/false
+const confirmYN = (text, extra) => new Promise(res => ask(text, yes => res(yes), extra));
 function closeChoice() { pendingChoice = null; elChoice.hidden = true; }
 function answer(yes) {
   const pc = pendingChoice; closeChoice(); Sfx.click();
   if (!pc) return;
-  if (pc.kind === 'starter') { if (yes) startGame(pc.line); else { sayNow('Então escolha com calma.'); markStarter(null); } }
-  if (pc.kind === 'reset') { if (yes) { wipe(); s = null; toSelect(); } else sayNow('Ufa! Seu POKéMON continua aqui.'); }
+  if (typeof pc.kind === 'function') pc.kind(yes);
+  if (pc.kind === 'starter') { if (yes) startGame(pc.sp); else { sayNow('Então escolha com calma.'); markStarter(null); } }
+  if (pc.kind === 'reset') { if (yes) { wipe(); setGame(null); toSelect(); } else sayNow('Ufa! Seu POKéMON continua aqui.'); }
   // o foco volta para onde estava (se o botão ainda estiver na tela)
-  const b = pc.back; if (b && b.isConnected && b.offsetParent !== null && b !== document.body) b.focus({ preventScroll: true });
+  const b = pc.back; if (b && b.isConnected && b.offsetParent !== null && b !== document.body && !elChoice.contains(b)) b.focus({ preventScroll: true });
 }
 elChoice.addEventListener('click', e => { const b = e.target.closest('button'); if (b) answer(b.dataset.v === 'yes'); });
+
+/* ════════════ Cenas, botões e menus (a base dos módulos da aventura) ════════════
+   SCENES[nome] = { enter(arg), exit(próxima), update(dt), draw(ctx), knobs, key(e, k) → true se tratou }
+   - O habitat e a escolha do inicial são do núcleo; as outras cenas vêm de src/modules.
+   - knobs: os 4 botões redondos mudam de papel em cada cena: [{ label, icon, fn, down, up, disabled }] x4 e .center.
+     icon: nome de BM ('heart'), um glifo curto ('▲', 'OK'), SVG pronto, ou chave de sprite ('f25').
+   - Menu: listas no estilo do menu START do FRLG, em HTML por cima da tela, com pilha (submenus). */
+const SCENES = {};
+function go(name, arg) {
+  const prev = SCENES[scene];
+  Menu.closeAll();
+  if (prev && prev.exit) prev.exit(name);
+  if (scene === 'habitat' && name !== 'habitat') { cancelTraining(); dataOpen && $('btnData').click(); }
+  scene = name;
+  if (name === 'habitat') { setKnobs(null); setBiomeCache(); pk.mode = s && s.asleep ? 'sleep' : 'idle'; pk.target = null; logicTick(); fire('home'); }
+  else { const sc = SCENES[name]; setKnobs(sc && sc.knobs || null); if (sc && sc.enter) sc.enter(arg); }
+  updateUI(); updateLed();
+}
+const goHome = () => go('habitat');
+
+const KNOB_IDS = ['btnFeed', 'btnTrain', 'btnClean', 'btnLight'];
+const KNOB_HOME = KNOB_IDS.map(id => document.getElementById(id).innerHTML);
+let knobDefs = null;
+function knobIcon(icon) {
+  if (!icon) return '';
+  if (icon[0] === '<') return icon;
+  if (BM[icon]) return bmSvg(BM[icon]);
+  if (/^[fb]\d+s?$|^berry$/.test(icon)) return `<img src="${spriteURL(icon)}" alt="">`;
+  return `<b class="glyph">${icon}</b>`;
+}
+// defs = null volta aos botões do habitat
+function setKnobs(defs) {
+  knobDefs = defs;
+  KNOB_IDS.forEach((id, i) => {
+    const b = document.getElementById(id), d = defs && defs[i];
+    b.classList.remove('active');
+    if (!defs) { b.innerHTML = KNOB_HOME[i]; b.removeAttribute('aria-disabled'); return; }
+    b.innerHTML = `<span class="knob">${d ? knobIcon(d.icon) : ''}</span><span class="lbl">${d ? d.label : ''}</span>`;
+    b.setAttribute('aria-disabled', String(!d || !!d.disabled));
+  });
+  if (!defs) { paintHabitatKnobs(); setTrainBtn(); }
+}
+function knobPress(i) { const d = knobDefs && knobDefs[i]; if (!d || d.disabled || !d.fn) return Sfx.deny(); d.fn(); }
+
+/* Menu FRLG: Menu.open({ items: [{ label, sub, fn, disabled }], onBack, sel, wide, title }) empilha; o item recebe fn(item).
+   Teclado: ▲▼ move, A (Z/Espaço/Enter) escolhe, B (X/Esc/Backspace) volta. Botões redondos: ▲ ▼ OK VOLTAR. */
+const elMenu = document.getElementById('menuLayer');
+const Menu = {
+  stack: [],
+  get top() { return this.stack[this.stack.length - 1]; },
+  open(opt) {
+    this.stack.push({ ...opt, sel: Math.max(0, opt.sel || 0), prevKnobs: knobDefs });
+    setKnobs([{ label: '▲', icon: '▲', fn: () => this.move(-1) }, { label: '▼', icon: '▼', fn: () => this.move(1) },
+      { label: 'OK', icon: 'OK', fn: () => this.ok() }, { label: 'VOLTAR', icon: '◀', fn: () => this.back() }]);
+    this.render(); Sfx.click();
+  },
+  close() {
+    const m = this.stack.pop(); if (!m) return;
+    if (!this.stack.length) setKnobs(m.prevKnobs);
+    this.render();
+  },
+  closeAll() { while (this.stack.length) this.close(); },
+  move(d) {
+    const m = this.top; if (!m) return; const n = m.items.length; if (!n) return;
+    m.sel = (m.sel + d + n) % n; Sfx.click(); this.render();
+  },
+  ok() { const m = this.top; if (!m) return; const it = m.items[m.sel]; if (!it || it.disabled) return Sfx.deny(); Sfx.click(); it.fn && it.fn(it); },
+  back() { const m = this.top; if (!m) return; Sfx.click(); if (m.onBack) m.onBack(); else this.close(); },
+  key(e, k) {
+    if (k === 'arrowup' || k === 'w') this.move(-1);
+    else if (k === 'arrowdown' || k === 's') this.move(1);
+    else if (k === 'enter' || k === ' ' || k === 'z') this.ok();
+    else if (k === 'escape' || k === 'x' || k === 'backspace') this.back();
+    else return false;
+    e.preventDefault(); return true;
+  },
+  render() {
+    const m = this.top;
+    elMenu.hidden = !m; if (!m) { elMenu.innerHTML = ''; return; }
+    elMenu.className = 'menu-layer' + (m.wide ? ' wide' : '');
+    elMenu.innerHTML = `<div class="menu-box">${m.title ? `<div class="menu-title">${m.title}</div>` : ''}<div class="menu-list" role="menu">` +
+      m.items.map((it, i) => `<button type="button" role="menuitem" class="menu-item${i === m.sel ? ' sel' : ''}"${it.disabled ? ' aria-disabled="true"' : ''} data-i="${i}">` +
+        `<span>${it.label}</span>${it.sub != null ? `<span class="menu-sub">${it.sub}</span>` : ''}</button>`).join('') + '</div></div>';
+    const sel = elMenu.querySelector('.menu-item.sel'); if (sel) sel.scrollIntoView({ block: 'nearest' });
+  },
+};
+elMenu.addEventListener('click', e => { const b = e.target.closest('.menu-item'); if (!b || !Menu.top) return; Menu.top.sel = +b.dataset.i; Menu.render(); Menu.ok(); });
+
+/* Menu START (pílula MENU, Enter no habitat). Módulos acrescentam itens com addStartItem({ label, order, fn, when }). */
+const START_ITEMS = [], OPTION_ITEMS = [], TRAIN_MODES = [], HAB_KEYS = {};
+function addStartItem(it) { START_ITEMS.push(it); START_ITEMS.sort((a, b) => a.order - b.order); }
+function addOption(it) { OPTION_ITEMS.push(it); OPTION_ITEMS.sort((a, b) => a.order - b.order); }
+function openStart() {
+  if (!G || scene !== 'habitat' || evo || pendingChoice || Menu.top) return Sfx.deny();
+  if (training) { say('Termine o treino primeiro!'); return Sfx.deny(); }
+  Menu.open({ items: [
+    ...START_ITEMS.filter(i => !i.when || i.when()).map(i => ({ label: i.label, fn: i.fn })),
+    { label: 'POKéMON', fn: () => { Menu.closeAll(); if (!dataOpen) $('btnData').click(); } },
+    { label: 'OPÇÕES', fn: openOptions },
+    { label: 'SAIR', fn: () => Menu.close() }] });
+}
+function openOptions() {
+  Menu.open({ title: 'OPÇÕES', items: [
+    { label: 'SOM', sub: Sfx.on ? 'ON' : 'OFF', fn: it => { $('btnSound').click(); it.sub = Sfx.on ? 'ON' : 'OFF'; Menu.render(); } },
+    ...OPTION_ITEMS.map(i => ({ label: i.label, fn: i.fn })),
+    { label: 'RESET', fn: () => { Menu.closeAll(); askReset(); } },
+    { label: 'VOLTAR', fn: () => Menu.close() }] });
+}
+function askReset() { if (!G || evo) return Sfx.deny(); Sfx.click(); ask('Apagar o progresso e escolher outro POKéMON?', 'reset'); }
+TRAIN_MODES.push({ label: 'TREINO', fn: () => train() });
 
 /* ════════════ Partículas ════════════ */
 function burst(x, y, type, n) {
@@ -679,7 +1017,7 @@ function burst(x, y, type, n) {
 
 /* ════════════ Ações ════════════ */
 function blocked() {
-  if (!s || scene !== 'habitat' || evo || pendingChoice) return true;
+  if (!s || scene !== 'habitat' || evo || pendingChoice || Menu.top) return true;
   if (training) { say('Termine o treino primeiro!'); return true; }
   return false;
 }
@@ -695,7 +1033,7 @@ function feed() {
 }
 function finishEat() {
   if (!s.berry) { berryFx = null; return; }   // outra aba já comeu esta fruta (estado adotado no meio da mastigação)
-  const mul = STAGE_MUL[s.stage];
+  const mul = MUL();
   s.hunger = clamp(s.hunger + 30 * mul.b); s.happy = clamp(s.happy + 4); s.lastAttention = Date.now(); s.count.fed++;
   s.berry = null; berryFx = null; s.poopTimer = Math.min(s.poopTimer, 60 + Math.random() * 120);
   say(`${N()} comeu a FRUTA ORAN! Delícia!`);
@@ -764,7 +1102,7 @@ function cancelTraining(why) {
   if (done && s) { payTraining(done / TRAIN_HITS); save(); updateUI(); }
 }
 function payTraining(f) {
-  const mul = STAGE_MUL[s.stage];
+  const mul = MUL();
   s.energy = clamp(s.energy - 18 * f); s.hunger = clamp(s.hunger - 12 * mul.h * f); s.hygiene = clamp(s.hygiene - 6 * f);
 }
 function nextRound() {
@@ -823,10 +1161,18 @@ function finishTraining() {
 }
 
 /* ════════════ Evolução ════════════ */
-function startEvolution() {
-  const L = line(); evo = { t: 0, target: s.stage + 1, from: L.stages[s.stage], to: L.stages[s.stage + 1], last: 0, showNew: false, done: false };
+// toId: a espécie nova. Por nível pode ser cancelada com B (X/Esc): tenta de novo no próximo nível.
+// Pedra e troca (opts.forced) não têm volta. Só no habitat; quem chama garante que ele está acordado e parado.
+function startEvolution(toId, opts = {}) {
+  if (toId == null) { const e = levelEvo(s); if (!e) { s.pendingEvo = false; return; } toId = e.to; }
+  evo = { t: 0, from: DEX[s.sp], to: DEX[toId], uid: s.uid, cancellable: !opts.forced, last: 0, showNew: false, done: false };
   pk.mode = 'idle'; pk.target = null;
-  sayNow(`Hã? ${evo.from.name} está evoluindo!`); Sfx.cry(evo.from.id);
+  sayNow(opts.intro || `Hã? ${evo.from.name} está evoluindo!`); Sfx.cry(evo.from.id);
+}
+function cancelEvolution() {
+  if (!evo || evo.done || !evo.cancellable || evo.t < 1) return false;
+  s.evoRefused = s.level; s.pendingEvo = false; evo = null; flash = 0;
+  sayNow(`Hã? ${N()} parou de evoluir!`); Sfx.deny(); save(); return true;
 }
 function updateEvo(dt) {
   evo.t += dt; const T = evo.t;
@@ -838,8 +1184,10 @@ function updateEvo(dt) {
   if (T >= 6.4 && !evo.done) {
     evo.done = true; evo.showNew = true; flash = RM.matches ? 0 : 1;
     // idempotente: se outra aba já aplicou esta evolução (estado adotado), não evolui de novo
-    if (s.stage < evo.target) { s.stage = evo.target; s.happy = clamp(s.happy + 10); }
-    const nxt = line().evo[s.stage]; s.pendingEvo = !!(nxt && s.level >= nxt);
+    if (s.uid === evo.uid && s.sp === evo.from.id) {
+      s.sp = evo.to.id; s.happy = clamp(s.happy + 10); dexMark(evo.to.id, true, s.shiny); fire('evolved', s, evo.from.id);
+    }
+    s.pendingEvo = !!levelEvo(s);
     save(); updateUI(); Sfx.evoDone();
     sayNow(`Parabéns! Seu ${evo.from.name} evoluiu para ${evo.to.name}!`);
     burst(120, 80, 'spark', 14);
@@ -862,7 +1210,7 @@ function makeBg(kind) {
   return cv;
 }
 function bg(kind) { return bgCache[kind] || (bgCache[kind] = makeBg(kind)); }
-function setBiomeCache() { if (s) bg(line().biome); }
+function setBiomeCache() { if (s) bg(biomeOf(s.sp)); }
 
 /* ════════════ Loop de animação ════════════ */
 const cv = document.getElementById('screen'), screenCtx = cv.getContext('2d');
@@ -878,6 +1226,7 @@ function frame(now) {
   updateMsg(dt);
   if (scene === 'select') drawSelect();
   else if (scene === 'habitat' && s) { update(dt); draw(); }
+  else if (SCENES[scene] && s) { const sc = SCENES[scene]; if (sc.update) sc.update(dt); ctx = screenCtx; if (sc.draw) sc.draw(screenCtx); }
   uiT += dt; if (uiT > .5) { uiT = 0; updateLed(); }
   requestAnimationFrame(frame);
 }
@@ -908,7 +1257,7 @@ function update(dt) {
   if (pk.mode === 'sleep') pk.mode = 'idle';
 
   if (training) { if (!pendingChoice) updateTraining(dt); return; }
-  if (s.pendingEvo && pk.mode !== 'eat' && !sweep && msgIdle() && !pendingChoice) { startEvolution(); return; }
+  if (s.pendingEvo && pk.mode !== 'eat' && !sweep && msgIdle() && !pendingChoice && !Menu.top) { startEvolution(); return; }
 
   const sleepy = s.energy < 15, speed = sleepy ? 18 : 42;
   if (pk.mode === 'eat') {
@@ -938,8 +1287,9 @@ function update(dt) {
   }
 }
 
+// key: chave do sprite ('f25', 'f25s', 'b25'...). Os módulos também usam (batalha, PC)
 function drawPokemon(id, x, feetY, opts = {}) {
-  const im = opts.sil ? tinted(id, opts.sil) : IMG[id];
+  const im = opts.sil ? tinted(id, opts.sil) : img(id);
   if (!im) { disc(ctx, x, feetY - 14, 12, 12, '#e83838'); return; }
   const sx = Math.round(x) - 32, sy = Math.round(feetY) - footOf(id).base;
   ctx.save(); ctx.globalAlpha = opts.alpha ?? 1;
@@ -956,18 +1306,10 @@ function drawShadow(id, x, dir, air) {
 
 function draw() {
   ctx = screenCtx;   // garante o alvo certo mesmo se um frame anterior parou no meio da camada dos atores
-  const L = line(), st = stage();
+  const bk = biomeOf(s.sp), key = monKey(s);
   if (evo) return drawEvo();
-  ctx.drawImage(bg(L.biome), 0, 0);
-  // elementos animados do bioma (nuvens, água, fumaça...)
-  const biome = BIOMES[L.biome];
-  if (biome && biome.anim) biome.anim(ctx, clock);
+  drawBiome(ctx, bk, s.asleep);
   const night = s.asleep;
-  // noite: escurece o cenário e acende a luz própria do bioma (céu, vaga-lumes, lava) — atrás dos atores
-  if (night) {
-    ctx.fillStyle = 'rgba(16,20,64,.62)'; ctx.fillRect(0, 0, W, H);
-    if (biome && biome.glow) biome.glow(ctx, clock);
-  }
   ctx = actorsCtx; ctx.clearRect(0, 0, W, H);
   // sujeiras
   for (const p of [...s.poops, ...sweepPoops]) {
@@ -994,15 +1336,16 @@ function draw() {
   if (pk.mode === 'walk') lift = Math.floor(pk.t * 8) % 2;
   else if (pk.mode === 'eat') lift = Math.floor(pk.t * 10) % 2;
   if (pk.hop > 0) { pk.hop -= 1 / 60; lift += Math.max(0, Math.round(Math.sin((.3 - pk.hop) / .3 * Math.PI) * 6)); }
-  drawShadow(st.id, px, pk.dir, lift);
-  drawPokemon(st.id, px, FEET - lift, { dir: pk.dir });
-  if (s.sick && Math.floor(clock * 2) % 2) drawPokemon(st.id, px, FEET - lift, { dir: pk.dir, sil: '#9050c0', alpha: .35 });
-  if (appear > 0) drawPokemon(st.id, px, FEET - lift, { dir: pk.dir, sil: '#ffffff', alpha: appear });
+  drawShadow(key, px, pk.dir, lift);
+  drawPokemon(key, px, FEET - lift, { dir: pk.dir });
+  if (s.sick && Math.floor(clock * 2) % 2) drawPokemon(key, px, FEET - lift, { dir: pk.dir, sil: '#9050c0', alpha: .35 });
+  if (appear > 0) drawPokemon(key, px, FEET - lift, { dir: pk.dir, sil: '#ffffff', alpha: appear });
   // varrida
   if (sweep) { for (let y = FEET - 14; y < groundBottom(Math.max(0, Math.min(W - 1, Math.round(sweep.x)))); y += 3) R(ctx, Math.round(sweep.x + Math.sin(y + clock * 20) * 2), y, 3, 2, y % 2 ? '#f8f8f8' : '#a8e0f8'); }
   // à noite os atores recebem a mesma sombra azul, só onde há pixel deles (source-atop)
-  if (night) {
-    ctx.globalCompositeOperation = 'source-atop'; ctx.fillStyle = 'rgba(16,20,64,.62)'; ctx.fillRect(0, 0, W, H);
+  const tint = night ? 'rgba(16,20,64,.62)' : PHASE_TINT[phaseAt()];
+  if (tint) {
+    ctx.globalCompositeOperation = 'source-atop'; ctx.fillStyle = night ? tint : PHASE_ACTOR[phaseAt()]; ctx.fillRect(0, 0, W, H);
     ctx.globalCompositeOperation = 'source-over';
   }
   ctx = screenCtx; ctx.drawImage(actors, 0, 0);
@@ -1031,6 +1374,24 @@ function draw() {
   if (flash > 0) { ctx.fillStyle = `rgba(255,255,255,${flash})`; ctx.fillRect(0, 0, W, H); }
 }
 
+/* Cenário do bioma com a hora do dia (relógio local). lightsOff: a noite "cheia" de luzes apagadas.
+   Também usado pela exploração (mesma arte das áreas). */
+const PHASE_TINT = { AMANHECER: 'rgba(255,150,120,.15)', ENTARDECER: 'rgba(190,80,150,.2)', NOITE: 'rgba(16,20,64,.45)' };
+const PHASE_ACTOR = { AMANHECER: 'rgba(255,150,120,.08)', ENTARDECER: 'rgba(190,80,150,.1)', NOITE: 'rgba(16,20,64,.3)' };
+function drawBiome(c, bk, lightsOff) {
+  c.drawImage(bg(bk), 0, 0);
+  // elementos animados do bioma (nuvens, água, fumaça...)
+  const biome = BIOMES[bk];
+  if (biome && biome.anim) biome.anim(c, clock);
+  const ph = phaseAt();
+  // noite: escurece o cenário e acende a luz própria do bioma (céu, vaga-lumes, lava) — atrás dos atores
+  if (lightsOff) { c.fillStyle = 'rgba(16,20,64,.62)'; c.fillRect(0, 0, W, H); }
+  else if (PHASE_TINT[ph]) { c.fillStyle = PHASE_TINT[ph]; c.fillRect(0, 0, W, H); }
+  if ((lightsOff || ph === 'NOITE') && biome && biome.glow) {
+    if (!lightsOff) c.globalAlpha = .5;
+    biome.glow(c, clock); c.globalAlpha = 1;
+  }
+}
 function pixelText(txt, x, y, col) {
   ctx.font = '8px "Press Start 2P", monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
   const tx = Math.round(x), ty = Math.round(y);
@@ -1065,10 +1426,10 @@ function drawEvo() {
   const off = (clock * 40) % 16;
   for (let y = -16; y < H; y += 16) R(ctx, 0, Math.round(y + off), W, 3, '#14285a');
   for (let i = 0; i < 18; i++) { const a = i / 18 * Math.PI * 2 + clock * .8, r = 70 - ((clock * 30 + i * 9) % 70); R(ctx, Math.round(120 + Math.cos(a) * r), Math.round(84 + Math.sin(a) * r * .6), 2, 2, '#a8c8f8'); }
-  const T = evo.t, cur = evo.showNew ? evo.to : evo.from;
-  if (T < 1.4) drawPokemon(evo.from.id, 120, 116, {});
-  else if (!evo.done) drawPokemon(cur.id, 120, 116, { sil: '#f8f8f8' });
-  else drawPokemon(evo.to.id, 120, 116, {});
+  const T = evo.t, cur = evo.showNew ? evo.to : evo.from, k = d => 'f' + d.id + (s.shiny ? 's' : '');
+  if (T < 1.4) drawPokemon(k(evo.from), 120, 116, {});
+  else if (!evo.done) drawPokemon(k(cur), 120, 116, { sil: '#f8f8f8' });
+  else drawPokemon(k(evo.to), 120, 116, {});
   for (const p of particles) if (p.type === 'spark' && Math.floor(p.life * 12) % 2) drawBm(ctx, BM.star, p.x - 2, p.y - 2);
   if (flash > 0) { ctx.fillStyle = `rgba(255,255,255,${flash})`; ctx.fillRect(0, 0, W, H); }
 }
@@ -1085,32 +1446,38 @@ let dataOpen = false;
 function barColor(v) { return v > 50 ? 'var(--hp-g)' : v > 20 ? 'var(--hp-y)' : 'var(--hp-r)'; }
 function updateUI() {
   const dev = $('device');
-  if (!s || scene !== 'habitat') { dev.classList.remove('night'); return; }
-  const st = stage();
-  $('pkName').textContent = st.name; $('pkLv').textContent = 'Nv' + s.level;
+  if (!s || scene === 'select' || scene === 'boot') { dev.classList.remove('night'); return; }
+  $('pkName').textContent = N() + (s.shiny ? ' ✦' : ''); $('pkLv').textContent = 'Nv' + s.level;
   for (const [k, f] of BARS) { const v = Math.round(s[f]); $('bar' + k).style.width = v + '%'; $('bar' + k).style.backgroundColor = barColor(v); $('val' + k).textContent = v; }
   const need = needExp(s.level); $('barExp').style.width = (s.level >= 100 ? 100 : Math.min(100, s.exp / need * 100)) + '%'; $('valExp').textContent = s.level >= 100 ? 'MAX' : Math.floor(s.exp) + '';
   const c = [];
-  if (s.asleep) c.push(['slp', 'DORMINDO']); else if (s.energy < 15) c.push(['zz', 'COM SONO']);
+  if (s.asleep) c.push(['slp', 'DORMINDO']); else if (s.energy < sleepyAt()) c.push(['zz', 'COM SONO']);
   if (s.sick) c.push(['sick', 'DOENTE']);
   if (s.hunger < 20) c.push(['hun', 'FAMINTO']);
   if (Date.now() < s.hungryUntil && !s.asleep) c.push(['x2', 'FOME x2']);
   if (s.poops.length >= 2 || s.hygiene < 30) c.push(['dirt', 'SUJO']);
   if (!c.length) c.push(['ok', 'SAUDÁVEL']);
   $('conds').innerHTML = c.map(([k, t]) => `<span class="cond ${k}">${t}</span>`).join('');
-  dev.classList.toggle('night', s.asleep);
-  $('icoLight').innerHTML = bmSvg(s.asleep ? BM.sun : BM.moon); $('lblLight').textContent = s.asleep ? 'ACENDER' : 'APAGAR';
-  $('btnFeed').setAttribute('aria-disabled', String(s.asleep || !!s.berry));
-  $('btnTrain').setAttribute('aria-disabled', String(!training && !!trainBlockReason()));
+  dev.classList.toggle('night', s.asleep && scene === 'habitat');
+  if (!knobDefs) {   // os botões só são os do habitat quando nenhuma cena/menu tomou conta deles
+    $('icoLight').innerHTML = bmSvg(s.asleep ? BM.sun : BM.moon); $('lblLight').textContent = s.asleep ? 'ACENDER' : 'APAGAR';
+    $('btnFeed').setAttribute('aria-disabled', String(s.asleep || !!s.berry));
+    $('btnTrain').setAttribute('aria-disabled', String(!training && !!trainBlockReason()));
+  }
   if (dataOpen) renderData();
 }
+// como a espécie evolui, para fichas (DADOS, POKéDEX, PC)
+function evoText(d) {
+  if (!d.evo.length) return 'FORMA FINAL';
+  return d.evo.map(e => `${e.lv ? `EVOLUI NO Nv${e.lv}` : e.item ? `EVOLUI COM ${e.item}` : 'EVOLUI POR TROCA'} → ${DEX[e.to].name}`).join(' · ');
+}
 function renderData() {
-  const L = line(), st = stage(), nxt = L.stages[s.stage + 1], days = Math.floor((Date.now() - s.born) / 864e5);
+  const st = sp(), days = Math.floor((Date.now() - s.born) / 864e5);
   const labels = ['PS', 'ATAQUE', 'DEFESA', 'AT.ESP', 'DF.ESP', 'VELOC.'];
   $('datas').innerHTML =
-    `<div>No.${String(st.id).padStart(3, '0')} ${st.name}</div>` +
+    `<div>No.${String(st.id).padStart(3, '0')} ${st.name}${s.shiny ? ' ✦ BRILHANTE' : ''}</div>` +
     `<div class="types">${st.types.map(t => `<span class="type" style="background:${TYPE_COLOR[t]}">${t}</span>`).join('')}</div>` +
-    `<div>${nxt ? `EVOLUI NO Nv${L.evo[s.stage]} → ${nxt.name}` : 'FORMA FINAL'}</div>` +
+    `<div>${evoText(st)}</div>` +
     `<div style="display:grid;gap:3px">${st.base.map((b, i) => `<div class="base"><span>${labels[i]}</span><span class="b"><i style="width:${Math.min(100, b / 130 * 100)}%"></i></span><span class="n">${b}</span></div>`).join('')}</div>` +
     `<div>IDADE ${days}d · COMEU ${s.count.fed} · TREINOS ${s.count.trained} · LIMPOU ${s.count.cleaned} · CARINHOS ${s.count.pets}</div>` +
     (storageOk ? '' : '<div style="color:#c03030">Este navegador bloqueou o salvamento.</div>');
@@ -1148,75 +1515,99 @@ function updateLed() {
 }
 
 /* ════════════ Cenas ════════════ */
-function markStarter(key) { document.querySelectorAll('.starter').forEach(b => b.classList.toggle('sel', b.dataset.line === key)); }
+function markStarter(key) { document.querySelectorAll('.starter').forEach(b => b.classList.toggle('sel', b.dataset.sp === String(key))); }
 function toSelect() {
-  closeChoice(); away = null;
+  closeChoice(); away = null; Menu.closeAll(); setKnobs(null);
   scene = 'select'; evo = null; particles = []; sweep = null; berryFx = null; cancelTraining();
   $('selectLayer').hidden = false; $('hpbox').style.visibility = 'hidden';
   markStarter(null); sayNow('Bem-vindo ao mundo POKéMON! Toque em um POKéMON para escolher.'); updateUI(); updateLed();
 }
-function startGame(lineKey) {
-  s = newState(lineKey); save();
+function startGame(spId) {
+  setGame(newGame(spId)); dexMark(spId, true); fire('newGame', G); save();
   scene = 'habitat'; $('selectLayer').hidden = true; $('hpbox').style.visibility = '';
   pk.x = 120; pk.dir = -1; pk.mode = 'idle'; pk.idleT = 2; appear = 1; flash = RM.matches ? 0 : .8;
-  setBiomeCache(); Sfx.cry(stage().id);
+  setBiomeCache(); Sfx.cry(spId);
   sayNow(`Vai, ${N()}! Seu novo lar é esta POKé BOLA.`); say('Cuide da fome, sono, felicidade e higiene!');
-  updateUI();
+  fire('home'); updateUI();
 }
 function enterHabitat() {
   if (pendingChoice) { closeChoice(); markStarter(null); msg.cur = null; }   // pergunta do inicial esquecida aberta em outra aba
   scene = 'habitat'; $('selectLayer').hidden = true; $('hpbox').style.visibility = '';
   setBiomeCache(); logicTick();
   if (msgIdle() && !msg.cur) sayNow(s.asleep ? `${N()} está dormindo... Zzz` : `${N()} está feliz em te ver!`);
+  fire('home');
 }
 function buildStarters() {
-  $('starters').innerHTML = Object.entries(LINES).map(([k, L]) => {
-    const st = L.stages[0];
-    return `<button type="button" class="starter" data-line="${k}"><img src="${SPRITES[st.id] || ''}" alt=""><span class="nm">${st.name}</span><span class="type" style="background:${TYPE_COLOR[st.types[0]]}">${st.types[0]}</span></button>`;
+  $('starters').innerHTML = STARTERS.map(id => {
+    const d = DEX[id];
+    return `<button type="button" class="starter" data-sp="${id}"><img src="${SPRITES['f' + id] || ''}" alt=""><span class="nm">${d.name}</span><span class="type" style="background:${TYPE_COLOR[d.types[0]]}">${d.types[0]}</span></button>`;
   }).join('');
   $('starters').addEventListener('click', e => {
     const b = e.target.closest('.starter'); if (!b) return; Sfx.unlock();
-    const L = LINES[b.dataset.line], st = L.stages[0];
-    markStarter(b.dataset.line); Sfx.cry(st.id);
-    ask(`Então você quer ${st.name}, o POKéMON do tipo ${st.types[0]}?`, 'starter', { line: b.dataset.line });
+    const d = DEX[+b.dataset.sp];
+    markStarter(d.id); Sfx.cry(d.id);
+    ask(`Então você quer ${d.name}, o POKéMON do tipo ${d.types[0]}?`, 'starter', { sp: d.id });
   });
 }
 
 /* ════════════ Entradas ════════════ */
-function hitPokemon(e) {
-  const r = cv.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * W, y = (e.clientY - r.top) / r.height * H;
-  return { x, y, on: Math.abs(x - pk.x) < 24 && y > FEET - 54 && y < FEET + 4 };
-}
+// coordenadas do toque em pixels da tela do jogo (240x160)
+function screenXY(e) { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H }; }
+function hitPokemon(e) { const { x, y } = screenXY(e); return { x, y, on: Math.abs(x - pk.x) < 24 && y > FEET - 54 && y < FEET + 4 }; }
 cv.addEventListener('pointerdown', e => {
+  if (pendingChoice || Menu.top) return;
+  const sc = scene !== 'habitat' && SCENES[scene];
+  if (sc) { if (sc.pointer) { const p = screenXY(e); sc.pointer(p.x, p.y, e); } else msgAdvance(); return; }
   if (scene !== 'habitat' || !s) return;
   if (training) { e.preventDefault(); return trainInput(); }   // durante o treino, tocar na tela = golpe
+  if (evo) { msgAdvance(); return; }
   const h = hitPokemon(e);
   if (h.on) return pet();
   const i = s.poops.findIndex(p => Math.abs(p.x - h.x) < 7 && Math.abs(p.y - 4 - h.y) < 8);
   if (i >= 0 && !blocked()) { s.poops.splice(i, 1); s.hygiene = clamp(s.hygiene + 12); Sfx.click(); burst(h.x, h.y, 'bubble', 5); addExp(2, true); save(); updateUI(); }
 });
-cv.addEventListener('pointermove', e => { cv.style.cursor = (scene === 'habitat' && hitPokemon(e).on) ? 'pointer' : 'default'; });
-$('btnFeed').addEventListener('click', feed);
+cv.addEventListener('pointerup', e => { const sc = scene !== 'habitat' && SCENES[scene]; if (sc && sc.pointerUp) { const p = screenXY(e); sc.pointerUp(p.x, p.y, e); } });
+cv.addEventListener('pointermove', e => {
+  const sc = scene !== 'habitat' && SCENES[scene];
+  if (sc && sc.pointerMove) { const p = screenXY(e); sc.pointerMove(p.x, p.y, e); }
+  cv.style.cursor = (scene === 'habitat' && hitPokemon(e).on) ? 'pointer' : 'default';
+});
+// botões redondos: no habitat, as ações de sempre; em outras cenas e menus, o que knobDefs mandar
+KNOB_IDS.forEach((id, i) => {
+  $(id).addEventListener('pointerdown', e => { const d = knobDefs && knobDefs[i]; if (d && d.down && !d.disabled) { e.preventDefault(); d.down(); } });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => $(id).addEventListener(ev, () => { const d = knobDefs && knobDefs[i]; if (d && d.up) d.up(); }));
+});
+// TREINAR com mais de um minigame: escolhe qual
+function trainKnob() {
+  if (TRAIN_MODES.length < 2 || training) return train();
+  if (blocked()) return Sfx.deny();
+  const why = trainBlockReason(); if (why) { say(why); return Sfx.deny(); }
+  Menu.open({ items: [...TRAIN_MODES.map(m => ({ label: m.label, fn: () => { Menu.closeAll(); m.fn(); } })), { label: 'VOLTAR', fn: () => Menu.close() }] });
+}
+$('btnFeed').addEventListener('click', () => knobDefs ? knobPress(0) : feed());
 // no treino o golpe vale no aperto (pointerdown), não ao soltar — senão a nota sai atrasada
 let pressInTraining = false;   // um aperto longo no último golpe não pode, ao soltar, iniciar outro treino
-const strikeOnPress = e => { pressInTraining = !!training; if (training) { e.preventDefault(); trainInput(); } };
+const strikeOnPress = e => { if (knobDefs) return; pressInTraining = !!training; if (training) { e.preventDefault(); trainInput(); } };
 $('btnTrain').addEventListener('pointerdown', strikeOnPress);
-$('btnTrain').addEventListener('click', () => { const skip = pressInTraining || training; pressInTraining = false; if (!skip) train(); });
-$('btnClean').addEventListener('click', clean);
-$('btnLight').addEventListener('click', lights);
+$('btnTrain').addEventListener('click', () => { if (knobDefs) return knobPress(1); const skip = pressInTraining || training; pressInTraining = false; if (!skip) trainKnob(); });
+$('btnClean').addEventListener('click', () => knobDefs ? knobPress(2) : clean());
+$('btnLight').addEventListener('click', () => knobDefs ? knobPress(3) : lights());
 $('btnPet').addEventListener('pointerdown', strikeOnPress);
-$('btnPet').addEventListener('click', () => { const skip = pressInTraining || training; pressInTraining = false; if (skip) return; if (scene === 'habitat') pet(); else Sfx.click(); });
+$('btnPet').addEventListener('click', () => {
+  if (knobDefs) { const c = knobDefs.center; if (c && c.fn) c.fn(); else if (Menu.top) Menu.ok(); else msgAdvance(); return; }
+  const skip = pressInTraining || training; pressInTraining = false; if (skip) return; if (scene === 'habitat') pet(); else Sfx.click();
+});
 $('btnSound').addEventListener('click', () => {
   Sfx.on = !Sfx.on; $('btnSound').textContent = 'SOM: ' + (Sfx.on ? 'ON' : 'OFF'); $('btnSound').classList.toggle('on', Sfx.on);
-  try { localStorage.setItem(SAVE_KEY + '.mute', Sfx.on ? '0' : '1'); } catch {} Sfx.click();
+  try { localStorage.setItem(MUTE_KEY, Sfx.on ? '0' : '1'); } catch {} Sfx.click();
 });
 $('btnData').addEventListener('click', () => { if (!s) return; dataOpen = !dataOpen; $('datas').hidden = !dataOpen; $('btnData').classList.toggle('on', dataOpen); Sfx.click(); updateUI(); fitDevice(); });
+$('btnMenu').addEventListener('click', () => { if (Menu.top && scene === 'habitat') { Menu.closeAll(); Sfx.click(); } else openStart(); });
 window.addEventListener('resize', queueFit);
 window.addEventListener('orientationchange', queueFit);
 // o conteúdo do aparelho mudou de altura (selos de condição quebrando linha, aviso no DADOS): reencaixa.
 // O transform e a margem do fitDevice não mudam o tamanho observado, então não há laço.
 if (window.ResizeObserver) new ResizeObserver(() => { if (!fitQueued) { fitQueued = true; requestAnimationFrame(() => { fitQueued = false; fitDevice(); }); } }).observe($('device'));
-$('btnReset').addEventListener('click', () => { if (!s || evo) return Sfx.deny(); Sfx.click(); ask('Apagar o progresso e escolher outro POKéMON?', 'reset'); });
 // Instalar como app: o Chrome avisa quando o site é instalável; aí o botão INSTALAR aparece
 let installPrompt = null;
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; $('btnInstall').hidden = false; });
@@ -1228,18 +1619,27 @@ $('btnInstall').addEventListener('click', async () => {
   $('btnInstall').hidden = true;
 });
 ['pointerdown', 'keydown'].forEach(ev => window.addEventListener(ev, () => Sfx.unlock(), { capture: true }));
+// Teclado: SIM/NÃO > menu aberto > cena atual > habitat. A = Z/Espaço/Enter, B = X/Esc/Backspace, 1-4 = botões redondos.
 window.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.target.closest && e.target.closest('input, textarea')) return;
   if (pendingChoice) {
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); (document.activeElement === $('choiceYes') ? $('choiceNo') : $('choiceYes')).focus(); }
-    if (e.key === 'Escape') answer(false);
+    if (e.key === 'Escape' || e.key === 'Backspace') { e.preventDefault(); answer(false); }
     return;
   }
   const k = e.key.toLowerCase();
+  if (Menu.top) { if (!e.repeat || k.startsWith('arrow')) Menu.key(e, k); return; }
+  if (k >= '1' && k <= '4' && knobDefs) { e.preventDefault(); if (!e.repeat) $(KNOB_IDS[+k - 1]).click(); return; }
+  if (scene !== 'habitat') { const sc = SCENES[scene]; if (sc && sc.key && sc.key(e, k)) return; if (!e.repeat && (k === 'enter' || k === ' ' || k === 'z')) { e.preventDefault(); msgAdvance(); } return; }
   // teclas de golpe antes do guard de botão focado: Espaço num botão focado ativaria o botão em vez de golpear
   if (training && (k === ' ' || k === 'p' || k === 't' || k === 'enter')) { e.preventDefault(); if (!e.repeat) trainInput(); return; }
+  if (evo && (k === 'x' || k === 'escape' || k === 'backspace')) { e.preventDefault(); cancelEvolution(); return; }
   if (e.target.closest && e.target.closest('button') && (e.key === 'Enter' || e.key === ' ')) return;
   if (e.repeat) return;
+  if (k === 'enter') { e.preventDefault(); if (!msgAdvance()) openStart(); return; }
+  if (k >= '1' && k <= '4') { $(KNOB_IDS[+k - 1]).click(); return; }
+  if (HAB_KEYS[k] && G && !blocked()) { e.preventDefault(); HAB_KEYS[k](); return; }
   if (k === 'f') feed(); else if (k === 'c') clean(); else if (k === 'l') lights(); else if (k === 't') train();
   else if (k === 'p' || k === ' ') { e.preventDefault(); if (training) trainInput(); else pet(); } else if (k === 'm') $('btnSound').click();
 });
@@ -1253,24 +1653,40 @@ window.addEventListener('pagehide', save);
 // outra aba salvou/zerou: adota o estado mais novo (a simulação parte de lastTick, então nada conta em dobro)
 window.addEventListener('storage', e => {
   if (e.key !== SAVE_KEY) return;
-  if (e.newValue === null) { if (s) { s = null; toSelect(); } return; }
-  try { const o = sanitize(JSON.parse(e.newValue)); if (o && (!s || o.savedAt > s.savedAt)) { const wasHabitat = scene === 'habitat'; s = o; if (!wasHabitat) enterHabitat(); updateUI(); } } catch {}
+  if (e.newValue === null) { if (G) { setGame(null); toSelect(); } return; }
+  try {
+    const o = sanitize(JSON.parse(e.newValue));
+    if (o && (!G || o.savedAt > G.savedAt || (o.savedAt === G.savedAt && o.rev > G.rev))) {
+      const wasSelect = scene === 'select' || scene === 'boot'; adopt(o); if (wasSelect) enterHabitat(); updateUI();
+    }
+  } catch {}
 });
 
+/* ════════════ Módulos da aventura (src/modules) ════════════ */
+/*MODULES_JS*/
+
 /* ════════════ Boot ════════════ */
-async function start() {
-  $('petIcon').innerHTML = bmSvg(BM.heart); $('icoClean').innerHTML = bmSvg(BM.broom); $('icoTrain').innerHTML = bmSvg(BM.dumbbell); $('icoLight').innerHTML = bmSvg(BM.moon);
+function paintHabitatKnobs() {
+  $('petIcon').innerHTML = bmSvg(BM.heart); $('icoClean').innerHTML = bmSvg(BM.broom); $('icoTrain').innerHTML = bmSvg(BM.dumbbell);
+  $('icoLight').innerHTML = bmSvg(s && s.asleep ? BM.sun : BM.moon);
   $('icoFeed').innerHTML = SPRITES.berry ? `<img src="${SPRITES.berry}" alt="">` : bmSvg(BM.heart);
-  try { if (localStorage.getItem(SAVE_KEY + '.mute') === '1') { Sfx.on = false; $('btnSound').textContent = 'SOM: OFF'; $('btnSound').classList.remove('on'); } } catch {}
+}
+async function start() {
+  paintHabitatKnobs();
+  try { if (localStorage.getItem(MUTE_KEY) === '1') { Sfx.on = false; $('btnSound').textContent = 'SOM: OFF'; $('btnSound').classList.remove('on'); } } catch {}
   buildStarters();
   await Promise.all([loadImages(), document.fonts ? document.fonts.load('8px "Press Start 2P"').catch(() => {}) : null]);
-  s = load();
-  if (s) enterHabitat(); else toSelect();
+  setGame(load());
+  if (G) save();   // grava já no formato v2 (um save v1 migrado ainda não existe na chave nova)
+  fire('boot');
+  if (G) enterHabitat(); else toSelect();
   if (!storageOk) say('Atenção: este navegador não permite salvar o progresso.');
   setInterval(logicTick, TICK_MS);
   fitVW = window.innerWidth; fitVH = window.innerHeight; fitDevice();
   requestAnimationFrame(t => { lastFrame = t; requestAnimationFrame(frame); });
 }
+// ganchos de teste (só com #dev no endereço): o estado e as funções principais no console
+if (location.hash === '#dev') window.PKG = { get G() { return G; }, get s() { return s; }, get scene() { return scene; }, go, save, setGame, receiveMon, swapActive, dexMark, bagAdd, startEvolution, DEX, SCENES, Menu, phaseAt };
 window.claude?.hot?.snapshot?.(() => ({ saved: true }));
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start();
 })();

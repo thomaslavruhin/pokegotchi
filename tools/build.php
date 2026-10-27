@@ -4,21 +4,33 @@
  *
  *   php tools/build.php
  *
- * - src/game.html ............ HTML/CSS/JS do jogo, com dois marcadores:
+ * - src/game.html ............ HTML/CSS/JS do jogo (o núcleo: habitat, cuidados, cenas), com os marcadores:
  *     /*SPRITES_JSON*\/{}  -> sprites em data URI (o jogo funciona offline e dentro de sandboxes que bloqueiam imagens externas)
+ *     /*DATA_JS*\/         -> dados gerados (src/data/*.js: POKéDEX, paletas brilhantes)
  *     /*BIOMES_JS*\/       -> o código dos biomas (src/biomes/*.js)
- * - src/sprites/{1..9,berry}.png
- * - src/biomes/{floresta,vulcao,praia}.js
- * - src/fonts/{press-start-2p,vt323}.woff2 -> @font-face em data URI no lugar de /*FONTS_CSS*\/
+ *     /*MODULES_JS*\/      -> as telas da aventura (src/modules/*.js, em ordem alfabética)
+ *     /*MODULES_CSS*\/     -> o CSS delas (src/modules/*.css)
+ *     /*FONTS_CSS*\/       -> @font-face em data URI (src/fonts/{press-start-2p,vt323}.woff2)
+ * - src/sprites/front/1..151.png e back/1..151.png (FRLG), src/sprites/berry.png
  */
 $root = dirname(__DIR__);
 $game = file_get_contents("$root/src/game.html");
 
+// chaves: f1..f151 (frente), b1..b151 (costas), berry
 $sprites = [];
-foreach (array_merge(range(1, 9), ['berry']) as $k) {
-    $png = "$root/src/sprites/$k.png";
-    if (!is_file($png)) fail("sprite ausente: src/sprites/$k.png");
-    $sprites[(string) $k] = 'data:image/png;base64,' . base64_encode(file_get_contents($png));
+$files = ['berry' => 'berry.png'];
+foreach (['f' => 'front', 'b' => 'back'] as $p => $dir) foreach (range(1, 151) as $id) $files["$p$id"] = "$dir/$id.png";
+foreach ($files as $k => $f) {
+    $png = "$root/src/sprites/$f";
+    if (!is_file($png)) fail("sprite ausente: src/sprites/$f");
+    $sprites[$k] = 'data:image/png;base64,' . base64_encode(file_get_contents($png));
+}
+
+// dados e módulos: todos os arquivos da pasta, em ordem alfabética (glob já ordena)
+function concat(string $pattern): string {
+    $out = '';
+    foreach (glob($pattern) as $f) $out .= "\n/* ── " . basename($f) . " ── */\n" . trim(file_get_contents($f)) . "\n";
+    return $out;
 }
 
 $biomes = '';
@@ -35,7 +47,12 @@ foreach (['Press Start 2P' => 'press-start-2p', 'VT323' => 'vt323'] as $family =
     $fonts[] = "@font-face { font-family: \"$family\"; font-display: swap; src: url(data:font/woff2;base64," . base64_encode(file_get_contents($woff2)) . ") format(\"woff2\"); }";
 }
 
-foreach (['/*SPRITES_JSON*/{}' => json_encode($sprites, JSON_UNESCAPED_SLASHES), '/*BIOMES_JS*/' => $biomes, '/*FONTS_CSS*/' => implode("\n", $fonts)] as $mark => $value) {
+$marks = [
+    '/*SPRITES_JSON*/{}' => json_encode($sprites, JSON_UNESCAPED_SLASHES), '/*DATA_JS*/' => concat("$root/src/data/*.js"),
+    '/*BIOMES_JS*/' => $biomes, '/*MODULES_JS*/' => concat("$root/src/modules/*.js"), '/*MODULES_CSS*/' => concat("$root/src/modules/*.css"),
+    '/*FONTS_CSS*/' => implode("\n", $fonts),
+];
+foreach ($marks as $mark => $value) {
     if (substr_count($game, $mark) !== 1) fail("marcador $mark precisa aparecer exatamente 1 vez em src/game.html");
     $game = str_replace($mark, $value, $game);
 }
