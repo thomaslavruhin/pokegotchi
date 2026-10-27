@@ -1,0 +1,10 @@
+/* BOLSA: ícone 8-bit antes do nome; pedra que não serve para o ativo fica cinza */
+.bag-ico { display: inline-block; width: 1.3em; margin-right: .5em; vertical-align: -.15em; }
+.bag-ico svg { width: 100%; height: auto; display: block; }
+.bag-off { color: #a0a0a8; }
+.bag-desc { font-size: .85em; color: #6a6f84; margin-top: 4px; line-height: 1.5; }
+/* prévia da forma nova (EEVEE) durante a pergunta SIM/NÃO */
+.bag-preview { position: absolute; left: 3%; top: 6%; z-index: 4; background: var(--paper); color: var(--ink); border: 3px solid var(--edge); border-radius: 6px;
+  box-shadow: inset 0 0 0 2px var(--edge-hi), 0 0 0 2px #1d2335; width: 34%; display: flex; flex-direction: column; align-items: center; padding: 2px 2px 6px;
+  font-family: var(--font-pixel); font-size: clamp(5px, 2.8cqw, 8px); text-shadow: 1px 1px 0 var(--ink-shadow); pointer-events: none; }
+.bag-preview img { width: 90%; image-rendering: pixelated; }
