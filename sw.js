@@ -1,7 +1,7 @@
 /* Service worker do Pokégotchi: deixa o jogo instalável e jogável offline.
    O build (tools/build.php) troca o marcador da versão por um hash do index.html, manifest e ícones,
    então cada publicação nova gera um cache novo e apaga o antigo. */
-const VERSION = 'fc90876482';
+const VERSION = '6d4056fa7f';
 const CORE = `pokegotchi-core-${VERSION}`;
 const RUNTIME = 'pokegotchi-runtime-v1';   // fontes do Google e Tailwind (de outros domínios)
 const CORE_FILES = [
