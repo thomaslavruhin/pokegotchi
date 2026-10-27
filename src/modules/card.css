@@ -1,0 +1,25 @@
+/* ── CARTÃO DE TREINADOR (card.js): o cartão azul do FRLG, rolando por dentro ── */
+.cd { position: absolute; inset: 0; z-index: 3; padding: 3%; background: #3a5a90; font-family: var(--font-pixel); font-size: clamp(6px, 3.4cqw, 9px); line-height: 1.3; color: var(--ink); user-select: none; }
+.cd-card { height: 100%; display: flex; flex-direction: column; border-radius: 8px; border: 2px solid #203868; box-shadow: inset 0 0 0 2px #d8ecff;
+  background: linear-gradient(160deg, #b8dcf8 0%, #90c0ec 100%); overflow: hidden; }
+.cd-title { flex: none; background: #2850a0; color: #fff; text-shadow: 1px 1px 0 #102858; padding: .55em .8em .45em; letter-spacing: .05em; }
+.cd-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding: .6em .7em .8em; display: flex; flex-direction: column; gap: .55em; text-shadow: 1px 1px 0 #e0f0ff; }
+.cd-top { display: grid; grid-template-columns: 24% 1fr; gap: .6em; align-items: center; }
+.cd-pic { aspect-ratio: 1; border-radius: 6px; background: radial-gradient(circle at 50% 65%, #f0f8ff 0 46%, #c0dcf4 47%); box-shadow: inset 0 0 0 2px #6890c8; overflow: hidden; display: grid; place-items: center; }
+.cd-pic img { width: 100%; max-width: none; image-rendering: pixelated; }
+.cd-rows { display: flex; flex-direction: column; gap: .3em; }
+.cd-row { display: flex; justify-content: space-between; gap: .5em; white-space: nowrap; font-size: clamp(5px, 3cqw, 9px); border-bottom: 1px dashed #6890c8; padding-bottom: .15em; }
+.cd-sec { display: flex; justify-content: space-between; background: #2850a0; color: #fff; text-shadow: 1px 1px 0 #102858; border-radius: 3px; padding: .4em .6em .3em; }
+.cd-badges { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .4em; }
+.cd-badge { font: inherit; font-size: clamp(4px, 2.2cqw, 6px); display: flex; flex-direction: column; align-items: center; gap: .3em; padding: .4em .1em .3em; border-radius: 4px; color: #6a7088;
+  background: rgba(255,255,255,.35); box-shadow: inset 0 0 0 1px rgba(40,80,160,.25); cursor: pointer; min-height: 36px; }
+.cd-badge svg { width: 62%; max-width: 3.4em; height: auto; image-rendering: pixelated; }
+.cd-badge.on { color: var(--ink); background: rgba(255,255,255,.7); }
+.cd-medals { display: flex; flex-direction: column; gap: .3em; }
+.cd-medal { display: flex; align-items: flex-start; gap: .5em; }
+.cd-medal i { flex: none; width: 1em; height: 1em; margin-top: .05em; border-radius: 50%; background: #a8b4c8; box-shadow: inset 0 0 0 1px #7880a0; }
+.cd-medal.on i { background: radial-gradient(circle at 35% 35%, #fff4b0, #f0c030 55%, #b08010); box-shadow: inset 0 0 0 1px #806010; }
+.cd-medal small { display: block; font-size: clamp(5px, 2.5cqw, 7px); color: #4a5878; line-height: 1.5; margin-top: .15em; }
+.cd-hof { display: grid; grid-template-columns: 1fr 1fr; gap: .5em; }
+.cd-hof button { font: inherit; background: var(--paper); color: var(--ink); border: 2px solid #c89820; box-shadow: inset 0 0 0 1px #f8e0a0; border-radius: 5px; padding: .6em .3em; min-height: 32px; cursor: pointer; text-shadow: 1px 1px 0 var(--ink-shadow); }
+.cd-hof button:active { transform: translateY(1px); }

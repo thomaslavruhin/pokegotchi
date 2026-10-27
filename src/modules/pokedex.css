@@ -1,0 +1,42 @@
+/* ── POKéDEX (pokedex.js): tela cheia por cima do canvas, moldura vermelha do aparelho do FRLG ── */
+.dx { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; gap: 1.6%; padding: 2.2% 3% 3%;
+  background: linear-gradient(180deg, #ec4436, #b8261f); color: var(--ink); font-family: var(--font-pixel); font-size: clamp(6px, 3.4cqw, 9px); line-height: 1.3; user-select: none; }
+.dx-head { flex: none; display: flex; justify-content: space-between; align-items: center; min-height: 1.5em; gap: 4px; color: #fff; text-shadow: 1px 1px 0 #7a1410; font-size: clamp(5px, 2.8cqw, 8px); }
+.dx-title { font-size: clamp(6px, 3.2cqw, 8px); letter-spacing: .06em; }
+.dx-count { flex: none; display: flex; justify-content: space-between; gap: 6px; white-space: nowrap; background: #18161f; color: #f8f8f8; border-radius: 3px; padding: .45em .7em .35em; font-size: clamp(5px, 2.5cqw, 8px); }
+.dx.paged .dx-count { display: none; }
+.dx-list, .dx-page { flex: 1; min-height: 0; background: var(--paper); border: 2px solid #7a1410; box-shadow: inset 0 0 0 2px #f4c8c0; border-radius: 4px;
+  overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; text-shadow: 1px 1px 0 var(--ink-shadow); }
+.dx-row { display: grid; grid-template-columns: 2.6em 5.4em 1fr auto; align-items: center; gap: .35em; height: 2.5em; padding: 0 .6em 0 1.3em;
+  position: relative; cursor: pointer; border-bottom: 1px dashed #e2e2d4; }
+.dx-row::before { content: ""; position: absolute; left: .35em; top: 50%; translate: 0 -50%; border: .3em solid transparent; border-left: .45em solid var(--ink); opacity: 0; }
+.dx-row.sel { background: #fbeaa8; }
+.dx-row.sel::before { opacity: 1; }
+.dx-row.unseen { color: #a4a4ae; }
+.dx-nm { overflow: hidden; white-space: nowrap; text-overflow: clip; }
+.dx-ico { width: 2.6em; height: 2.4em; overflow: hidden; display: grid; place-items: center; }
+.dx-ico img { width: 3.4em; max-width: none; height: auto; image-rendering: pixelated; }
+.dx-sil { filter: brightness(0); opacity: .38; }
+.dx-mk { display: flex; align-items: center; gap: .3em; }
+.dx svg { width: 1em; height: 1em; flex: none; }
+.dx-shy { color: #e09a00; font-weight: normal; text-shadow: 1px 1px 0 #f8e0a0; }
+
+.dx-page { display: flex; flex-direction: column; gap: .45em; padding: .5em .7em .5em; }
+.dx-shc { display: flex; align-items: center; gap: .5em; }
+.dx-shbtn { font: inherit; font-size: 1.2em; line-height: 1; color: #f8d0c8; border: 2px solid #f8a090; border-radius: 4px; padding: .1em .4em; min-width: 2.2em; min-height: 1.6em; cursor: pointer; }
+.dx-shbtn.on { color: #e09a00; border-color: #f8d030; background: #fff4c8; }
+.dx-pbody { display: grid; grid-template-columns: 30% 1fr; gap: .7em; align-items: start; }
+.dx-pic { aspect-ratio: 1; display: grid; place-items: center; overflow: hidden; border-radius: 4px; cursor: pointer;
+  background: radial-gradient(circle at 50% 62%, #e8f0f8 0 45%, #c8d8e8 46% 100%); box-shadow: inset 0 0 0 2px #a8b8c8; }
+.dx-pic.shiny { background: radial-gradient(circle at 50% 62%, #fff8d8 0 45%, #f0d890 46% 100%); box-shadow: inset 0 0 0 2px #d8b048; }
+.dx-pic img { width: 100%; max-width: none; image-rendering: pixelated; }
+.dx-info { display: flex; flex-direction: column; gap: .4em; min-width: 0; }
+.dx-info .types { display: flex; flex-wrap: wrap; gap: .3em; }
+.dx .type { font-size: clamp(5px, 2.5cqw, 7px); padding: .35em .5em .25em; }
+.dx-lbl { color: #6a6f84; }
+.dx-stats { display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: column; grid-template-rows: repeat(3, auto); gap: .3em 1em; font-size: clamp(5px, 2.5cqw, 7px); }
+.dx-st { display: grid; grid-template-columns: 3.4em 1fr 2.4em; gap: .4em; align-items: center; }
+.dx-st .b { height: .6em; background: #d8d8c0; border-radius: 2px; }
+.dx-st .b i { display: block; height: 100%; background: #e08850; border-radius: 2px; }
+.dx-st .n { text-align: right; font-variant-numeric: tabular-nums; }
+.dx-evo { font-size: clamp(5px, 2.5cqw, 7px); color: #4a4a58; line-height: 1.6; border-top: 2px dashed #c8c8b0; padding-top: .35em; }
