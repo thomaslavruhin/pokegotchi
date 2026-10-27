@@ -34,7 +34,7 @@ Como ficam no mesmo escopo, os módulos usam as funções e variáveis do núcle
 | `await confirmYN(t, { safeNo })` | pergunta SIM/NÃO; `safeNo` põe o foco no NÃO |
 | `go(nome, arg)`, `goHome()` | troca de cena (chama `exit` da atual e `enter(arg)` da nova) |
 | `Menu.open({ title, items:[{label, sub, fn, disabled}], onBack, sel, wide })`, `Menu.close()`, `Menu.closeAll()`, `Menu.render()` | lista no estilo FRLG por cima da tela, com pilha |
-| `setKnobs(defs)` | troca os 4 botões redondos: `[{ label, icon, fn, down, up, disabled }] x4` e `defs.center`; `null` volta aos do habitat |
+| `setKnobs(defs)` | troca os 4 botões redondos: `[{ label, icon, fn, down, up, disabled, inChoice }] x4` e `defs.center`; `null` volta aos do habitat. Com um SIM/NÃO aberto só funcionam os marcados com `inChoice` |
 | `addStartItem({ label, order, fn, when })` | item no menu START (EXPLORAR 10, POKéDEX 20, POKéMON 30, BOLSA 40, PC 50, CARTÃO 60) |
 | `addOption({ label, order, fn })` | item em OPÇÕES |
 | `TRAIN_MODES.push({ label, fn })` | mais um minigame no botão TREINAR (vira uma escolha) |

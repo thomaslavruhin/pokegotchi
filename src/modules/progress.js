@@ -161,7 +161,7 @@ function pg_check() {
 function pg_hall() {
   setTimeout(() => {
     if (G && s && atHome() && !G.hof && !s.asleep && !evo && !pendingChoice && !Menu.top && !training && !sweep && !document.hidden
-      && !op_panel && !msg.queue.length && msgIdle() && dexCount('caught') === 151)
+      && !op_panel && !msg.queue.length && msgIdle() && !G.prog.notes.length && !G.outing && !G.enc && dexCount('caught') === 151)
       typeof startHall === 'function' && startHall();
   }, 0);
 }

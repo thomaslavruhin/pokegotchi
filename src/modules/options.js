@@ -133,7 +133,7 @@ function op_import() {
     `<div class="op-row">` + (canPaste ? `<button type="button" class="op-btn" data-a="paste">COLAR</button>` : '') +
     `<button type="button" class="op-btn" data-a="go">IMPORTAR</button><button type="button" class="op-btn" data-a="close">CANCELAR</button></div>`,
     [{ label: 'IMPORTAR', icon: 'OK', fn: () => op_doImport(ta.value) }, canPaste ? { label: 'COLAR', icon: '+', fn: () => op_paste(ta) } : null,
-      null, { label: 'CANCELAR', icon: '◀', fn: () => pendingChoice ? answer(false) : op_close() }]);
+      null, { label: 'CANCELAR', icon: '◀', fn: () => pendingChoice ? answer(false) : op_close(), inChoice: true }]);
   const ta = el.querySelector('textarea');
   el.addEventListener('click', e => {
     const b = e.target.closest('.op-btn'); if (!b) return;
@@ -164,7 +164,7 @@ async function op_doImport(code) {
     const ta = op_panel.el.querySelector('textarea'), pv = document.createElement('div');
     pv.className = 'op-prev';
     // linhas curtas à esquerda: a caixa SIM/NÃO cobre o canto inferior direito da tela
-    pv.innerHTML = (old ? '<em>Menos progresso que o seu!</em>' : '') + `<b>${DEX[a.sp].name} Nv. ${a.level}</b>` +
+    pv.innerHTML = `<b>${DEX[a.sp].name} Nv. ${a.level}</b>` +
       `<span>Capturados ${caught}/151</span><span>${g.prog.badges} insígnia${g.prog.badges === 1 ? '' : 's'}</span>` +
       `<span>Salvo em ${g.savedAt ? op_when(g.savedAt) : '--/-- --:--'}</span><img src="${spriteURL(monKey(a))}" alt="">`;
     const row = op_panel.el.querySelector('.op-row');

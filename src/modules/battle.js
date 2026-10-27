@@ -117,7 +117,7 @@ SCENES.batalha = {
     e.turn = Math.max(0, Math.floor(num(e.turn, 0))); e.sleepTurns = clamp(Math.floor(num(e.sleepTurns, 0)), 0, 3); e.asleep = !!e.asleep && e.sleepTurns > 0;
     if (!EX_AREAS[e.area]) e.area = 'floresta';
     if (!G.outing || typeof G.outing !== 'object') G.outing = exNewOuting(e.area);
-    const o = G.outing;
+    const o = G.outing; EX.mine = o.startedAt;   // o passeio desta batalha passa a ser desta aba
     o.maxHp = btStats(s.sp, s.level).hp; o.hp = clamp(Math.round(num(o.hp, o.maxHp)), 0, o.maxHp);
     Object.assign(BT, { e, o, fin: false });
     // resultado já decidido (recarregou no meio da narração), nocaute ou desmaio gravados: só conclui

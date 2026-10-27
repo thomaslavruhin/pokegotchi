@@ -906,7 +906,8 @@ elChoice.addEventListener('click', e => { const b = e.target.closest('button'); 
 /* ════════════ Cenas, botões e menus (a base dos módulos da aventura) ════════════
    SCENES[nome] = { enter(arg), exit(próxima), update(dt), draw(ctx), knobs, key(e, k) → true se tratou }
    - O habitat e a escolha do inicial são do núcleo; as outras cenas vêm de src/modules.
-   - knobs: os 4 botões redondos mudam de papel em cada cena: [{ label, icon, fn, down, up, disabled }] x4 e .center.
+   - knobs: os 4 botões redondos mudam de papel em cada cena: [{ label, icon, fn, down, up, disabled, inChoice }] x4 e .center.
+     Com uma pergunta SIM/NÃO aberta, só os marcados com inChoice funcionam.
      icon: nome de BM ('heart'), um glifo curto ('▲', 'OK'), SVG pronto, ou chave de sprite ('f25').
    - Menu: listas no estilo do menu START do FRLG, em HTML por cima da tela, com pilha (submenus). */
 const SCENES = {};
@@ -944,7 +945,8 @@ function setKnobs(defs) {
   });
   if (!defs) { paintHabitatKnobs(); setTrainBtn(); }
 }
-function knobPress(i) { const d = knobDefs && knobDefs[i]; if (!d || d.disabled || !d.fn) return Sfx.deny(); d.fn(); }
+// com uma pergunta SIM/NÃO aberta só valem os botões marcados com inChoice (a cena de baixo não anda)
+function knobPress(i) { const d = knobDefs && knobDefs[i]; if (!d || d.disabled || !d.fn || (pendingChoice && !d.inChoice)) return Sfx.deny(); d.fn(); }
 
 /* Menu FRLG: Menu.open({ items: [{ label, sub, fn, disabled }], onBack, sel, wide, title }) empilha; o item recebe fn(item).
    Teclado: ▲▼ move, A (Z/Espaço/Enter) escolhe, B (X/Esc/Backspace) volta. Botões redondos: ▲ ▼ OK VOLTAR. */
@@ -1579,7 +1581,7 @@ cv.addEventListener('pointermove', e => {
 });
 // botões redondos: no habitat, as ações de sempre; em outras cenas e menus, o que knobDefs mandar
 KNOB_IDS.forEach((id, i) => {
-  $(id).addEventListener('pointerdown', e => { const d = knobDefs && knobDefs[i]; if (d && d.down && !d.disabled) { e.preventDefault(); d.down(); } });
+  $(id).addEventListener('pointerdown', e => { const d = knobDefs && knobDefs[i]; if (d && d.down && !d.disabled && (!pendingChoice || d.inChoice)) { e.preventDefault(); d.down(); } });
   ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => $(id).addEventListener(ev, () => { const d = knobDefs && knobDefs[i]; if (d && d.up) d.up(); }));
 });
 // TREINAR com mais de um minigame: escolhe qual
@@ -1599,7 +1601,7 @@ $('btnClean').addEventListener('click', () => knobDefs ? knobPress(2) : clean())
 $('btnLight').addEventListener('click', () => knobDefs ? knobPress(3) : lights());
 $('btnPet').addEventListener('pointerdown', strikeOnPress);
 $('btnPet').addEventListener('click', () => {
-  if (knobDefs) { const c = knobDefs.center; if (c && c.fn) c.fn(); else if (Menu.top) Menu.ok(); else msgAdvance(); return; }
+  if (knobDefs) { const c = knobDefs.center; if (pendingChoice && !(c && c.inChoice)) return Sfx.deny(); if (c && c.fn) c.fn(); else if (Menu.top) Menu.ok(); else msgAdvance(); return; }
   const skip = pressInTraining || training; pressInTraining = false; if (skip) return; if (scene === 'habitat') pet(); else Sfx.click();
 });
 $('btnSound').addEventListener('click', () => {
@@ -1629,6 +1631,7 @@ window.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.target.closest && e.target.closest('input, textarea')) return;
   if (pendingChoice) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.repeat) { e.preventDefault(); return; }   // segurou a tecla no item do menu: não responde às cegas
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); (document.activeElement === $('choiceYes') ? $('choiceNo') : $('choiceYes')).focus(); }
     if (e.key === 'Escape' || e.key === 'Backspace' || e.key === 'x' || e.key === 'X') { e.preventDefault(); answer(false); }
     if ((e.key === 'z' || e.key === 'Z') && !e.repeat) {

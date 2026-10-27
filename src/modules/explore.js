@@ -121,14 +121,21 @@ function exOpen() {
 function exStart(area) {
   if (G.enc) { if (exTakeEnc('user') === 'busy') Sfx.deny(); return; }
   const why = exBlock(); if (why) { sayNow(why); return Sfx.deny(); }
-  G.prog.lastArea = area; G.outing = exNewOuting(area); save();
+  G.prog.lastArea = area; G.outing = exNewOuting(area); EX.mine = G.outing.startedAt; save();
   go('explorar', { area });
 }
 addStartItem({ label: 'EXPLORAR', order: 10, fn: exOpen });
 HAB_KEYS.e = exOpen;
 
 /* Cena */
-const EX = { tok: 0, phase: 'idle', walkT: 0, transT: 0, item: null, parts: [] };
+const EX = { tok: 0, phase: 'idle', walkT: 0, transT: 0, item: null, parts: [], mine: 0 };   // mine: startedAt do passeio desta aba
+// outra aba pode encerrar ou trocar o passeio (passeio órfão limpo em casa): esta percebe e volta, sem recriar por cima
+const exMine = () => !!(G && G.outing && G.outing.startedAt === EX.mine);
+function exLost() {
+  if (scene !== 'explorar') return;
+  EX.tok++; if (pendingChoice && EX.phase === 'ask') closeChoice();
+  EX.phase = 'idle'; goHome(); say('O passeio terminou em outra aba.');
+}
 const EX_ICO = {
   grass: ['.H...H...', '.H.H.H.H.', 'HG.H.GHH.', 'HGHGHGHGH', 'GGGGGGGGG', 'GGHGGGHGG'],
   map: ['KKKKKKKKK', 'KGGCCGGGK', 'KGCCGGYGK', 'KGGGGGGGK', 'KGGRGGCCK', 'KGGGGCCCK', 'KKKKKKKKK'],
@@ -138,10 +145,10 @@ const exIco = k => bmSvg(EX_ICO[k], BT_PAL);
 function exKnobs() {
   const ph = EX.phase, ask = ph === 'ask', off = !(ph === 'idle' || ask);
   const k = [
-    ask ? { label: 'SIM', icon: 'SIM', fn: () => pendingChoice && answer(true) } : { label: 'ANDAR', icon: exIco('grass'), fn: exStep, disabled: off },
-    { label: 'BOLSA', icon: btIco(BT_BM.bag), fn: () => exFromAsk() && exBag(), disabled: off },
-    { label: 'ÁREA', icon: exIco('map'), fn: () => exFromAsk() && exArea(), disabled: off },
-    ask ? { label: 'NÃO', icon: 'NÃO', fn: () => pendingChoice && answer(false) } : { label: 'CASA', icon: exIco('house'), fn: () => EX.phase === 'idle' && exHome(), disabled: off },
+    ask ? { label: 'SIM', icon: 'SIM', fn: () => pendingChoice && answer(true), inChoice: true } : { label: 'ANDAR', icon: exIco('grass'), fn: exStep, disabled: off },
+    { label: 'BOLSA', icon: btIco(BT_BM.bag), fn: () => exFromAsk() && exBag(), disabled: off, inChoice: ask },   // fecham o "Continuar?" e abrem o menu
+    { label: 'ÁREA', icon: exIco('map'), fn: () => exFromAsk() && exArea(), disabled: off, inChoice: ask },
+    ask ? { label: 'NÃO', icon: 'NÃO', fn: () => pendingChoice && answer(false), inChoice: true } : { label: 'CASA', icon: exIco('house'), fn: () => EX.phase === 'idle' && exHome(), disabled: off },
   ];
   k.center = { fn: () => { if (pendingChoice) return; if (!msgAdvance() && EX.phase === 'idle') exStep(); } };
   return k;
@@ -157,7 +164,7 @@ SCENES.explorar = {
   enter(arg) {
     ADV.tw = []; EX.tok++; EX.item = null; EX.parts = []; EX.walkT = 0;
     if (!G.outing) G.outing = exNewOuting(G.prog.lastArea);
-    EX.phase = 'idle';
+    EX.mine = G.outing.startedAt; EX.phase = 'idle';
     if (arg && arg.after) { exSetPhase('wait'); exAfter(); }
     else sayNow(`${EX_AREAS[G.outing.area]}! Toque em ANDAR para entrar na grama alta.`);
   },
@@ -183,7 +190,7 @@ SCENES.explorar = {
   },
 };
 function exHome() {
-  if (G) { G.outing = null; save(); say(`${N()} voltou para casa.`); }
+  if (G) { if (exMine()) G.outing = null; save(); say(`${N()} voltou para casa.`); }
   goHome();
 }
 async function exStep() {
@@ -191,7 +198,7 @@ async function exStep() {
   syncFromStorage(); if (!G || scene !== 'explorar') return;
   // nunca sorteia por cima de um encontro guardado (outra aba ou recarregamento)
   if (G.enc) { const r = exTakeEnc('user'); if (r === 'busy') Sfx.deny(); else if (r !== 'battle') goHome(); return; }
-  if (!G.outing) G.outing = exNewOuting(G.prog.lastArea);
+  if (!exMine()) return exLost();
   const tok = EX.tok, why = exBlock();
   if (why) { Sfx.deny(); exSetPhase('wait'); await talk(why); return tok === EX.tok && exHome(); }
   // custo do passo, gravado já (recarregar não devolve)
@@ -280,10 +287,17 @@ on('home', () => {
   if (G.enc) { clearTimeout(exResumeT); exResumeT = setTimeout(exResume, 500); return; }
   if (G.outing && !exOutElsewhere(G.outing)) { G.outing = null; save(); }
 });
+// desde quando esta aba roda sem pausa: com a máquina dormindo todas param juntas, e a outra precisa de um tick para renovar
+let exAwake = 0, exLastTick = 0;
 on('tick', now => {
-  if (!G || !G.outing) return;
-  if (scene === 'explorar' || scene === 'batalha') { G.outing.owner = BT_TAB; G.outing.at = now; }
-  else if (scene === 'habitat' && !G.enc && !exOutElsewhere(G.outing)) G.outing = null;   // o núcleo grava logo depois do tick
+  if (now - exLastTick > 10e3) exAwake = now;
+  exLastTick = now;
+  const o = G && G.outing; if (!o) { if (G && scene === 'explorar') setTimeout(exLost); return; }
+  // na batalha (que tem dona única) o passeio vai junto com ela
+  if (scene === 'batalha') { EX.mine = o.startedAt; o.owner = BT_TAB; o.at = now; return; }
+  if (scene === 'explorar') { if (exMine()) { o.owner = BT_TAB; o.at = now; } else setTimeout(exLost); return; }
+  // em casa: passeio órfão (aba fechada ou morta) acaba; o núcleo grava logo depois do tick
+  if (scene === 'habitat' && !G.enc && !exOutElsewhere(o) && now - exAwake > 10e3) G.outing = null;
 });
 // recarregar ou fechar: solta o passeio na hora
 window.addEventListener('pagehide', () => { if (G && G.outing && G.outing.owner === BT_TAB) { G.outing.owner = null; save(); } });
