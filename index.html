@@ -115,7 +115,8 @@ body {
   box-shadow: inset 0 2px 0 rgba(255,255,255,.08), 0 3px 0 rgba(0,0,0,.35);
   display: flex; flex-direction: column; gap: 8px;
 }
-.screen-wrap { position: relative; width: 100%; aspect-ratio: 3 / 2; max-width: 100%; background: #000; box-shadow: 0 0 0 2px #15151f; }
+/* container: as fontes da escolha do inicial acompanham a largura da tela (cqw), não a da janela */
+.screen-wrap { position: relative; width: 100%; aspect-ratio: 3 / 2; max-width: 100%; background: #000; box-shadow: 0 0 0 2px #15151f; container-type: inline-size; }
 #screen { display: block; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; touch-action: manipulation; }
 
 /* ── FRLG dialog box ── */
@@ -142,16 +143,17 @@ body {
 .choice {
   position: absolute; right: 6px; bottom: calc(100% + 6px);
   background: var(--paper); border: 3px solid var(--edge); box-shadow: inset 0 0 0 2px var(--edge-hi), 0 0 0 2px #1d2335;
-  border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; gap: 2px; z-index: 5;
+  border-radius: 6px; padding: 4px 6px; display: flex; flex-direction: column; gap: 6px; z-index: 5;
 }
-.choice button { font: inherit; color: var(--ink); background: none; border: 0; text-align: left; padding: 4px 6px 4px 16px; position: relative; cursor: pointer; text-shadow: 1px 1px 0 var(--ink-shadow); }
+/* alvos de toque grandes: SIM no RESET apaga tudo, não pode ser tocado sem querer */
+.choice button { font: inherit; color: var(--ink); background: none; border: 0; text-align: left; min-height: 34px; padding: 6px 14px 6px 18px; position: relative; cursor: pointer; text-shadow: 1px 1px 0 var(--ink-shadow); }
 .choice button::before { content: ""; position: absolute; left: 2px; top: 50%; translate: 0 -50%; border: 4px solid transparent; border-left: 6px solid var(--ink); opacity: 0; }
 .choice button:hover::before, .choice button:focus-visible::before, .choice button.sel::before { opacity: 1; }
 .choice button:focus-visible { outline: none; }
 
 /* ── Starter selection layer (over the canvas) ── */
-.select-layer { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 5% 4% 4%; }
-.select-title { align-self: center; background: var(--paper); color: var(--ink); border: 2px solid var(--edge); box-shadow: inset 0 0 0 1px var(--edge-hi); border-radius: 4px; font-size: clamp(6px, 1.9vw, 9px); padding: 6px 8px; text-shadow: 1px 1px 0 var(--ink-shadow); text-align: center; line-height: 1.6; }
+.select-layer { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 5% 4% 4%; overflow: hidden; }
+.select-title { align-self: center; background: var(--paper); color: var(--ink); border: 2px solid var(--edge); box-shadow: inset 0 0 0 1px var(--edge-hi); border-radius: 4px; font-size: clamp(6px, 3.2cqw, 9px); padding: 6px 8px; text-shadow: 1px 1px 0 var(--ink-shadow); text-align: center; line-height: 1.6; }
 .starters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4%; }
 .starter {
   font: inherit; cursor: pointer; background: rgba(248,248,248,.92); color: var(--ink);
@@ -160,7 +162,7 @@ body {
   transition: transform .12s steps(2);
 }
 .starter img { width: 78%; image-rendering: pixelated; }
-.starter .nm { font-size: clamp(5px, 1.6vw, 8px); text-shadow: 1px 1px 0 var(--ink-shadow); }
+.starter .nm { font-size: clamp(5px, 2.6cqw, 8px); text-shadow: 1px 1px 0 var(--ink-shadow); }
 .starter:hover, .starter:focus-visible, .starter.sel { transform: translateY(-3px); border-color: #e05040; outline: none; }
 
 /* ── Middle band + core button ── */
@@ -231,6 +233,7 @@ body {
 .pill:focus-visible { outline: 2px solid var(--edge); outline-offset: 3px; }
 .pill.on { color: var(--ink); }
 
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .hints { font-family: var(--font-term); font-size: 18px; color: var(--muted); text-align: center; max-width: 440px; line-height: 1.2; margin: 0; }
 .hints kbd { font-family: var(--font-term); color: #c9cdf0; border: 1px solid #3a3e66; border-bottom-width: 2px; border-radius: 3px; padding: 0 4px; }
 /* atalhos de teclado só aparecem onde há teclado e mouse */
@@ -255,8 +258,9 @@ body {
   .hints { display: none; }
   .device { width: auto; display: flex; flex-direction: row; border-radius: 70px / 50%; }
   .top { flex: none; padding: 14px 16px 14px 46px; justify-content: center; gap: 8px; }
-  /* largura vem da altura da tela, nunca do texto do diálogo */
-  .bezel { width: calc((100vh - 160px) * 1.5 + 24px); width: calc((100dvh - 160px) * 1.5 + 24px); }
+  /* largura vem da altura da tela, nunca do texto do diálogo; o piso de 300px garante ~20 letras por linha
+     (em telas muito baixas o aparelho fica mais alto que a janela e o fitDevice encolhe o todo) */
+  .bezel { width: max(300px, calc((100vh - 160px) * 1.5 + 24px)); width: max(300px, calc((100dvh - 160px) * 1.5 + 24px)); }
   .screen-wrap { width: 100%; }
   .band { width: 34px; height: auto; box-shadow: inset 3px 0 0 rgba(255,255,255,.04), inset -3px 0 0 rgba(0,0,0,.5); }
   .band-label { display: none; }
@@ -285,7 +289,7 @@ body {
             <div class="starters" id="starters"></div>
           </div>
         </div>
-        <div class="textbox" id="textbox" role="status" aria-live="polite">
+        <div class="textbox" id="textbox">
           <p id="msgText"></p><span id="msgArrow" hidden>▼</span>
           <div id="choice" class="choice" hidden>
             <button type="button" id="choiceYes" data-v="yes">SIM</button>
@@ -327,6 +331,7 @@ body {
       </div>
     </section>
   </div>
+  <p class="sr-only" id="srMsg" role="status" aria-live="polite"></p>
   <p class="hints">Toque no Pokémon para fazer carinho<span class="keys"> · <kbd>F</kbd> alimentar · <kbd>T</kbd> treinar · <kbd>C</kbd> limpar · <kbd>L</kbd> luzes · <kbd>P</kbd> carinho · <kbd>M</kbd> som</span><br>O progresso é salvo neste aparelho e continua contando com o jogo fechado.</p>
 </main>
 
@@ -2889,6 +2894,8 @@ let particles = [];
 let lastPetAt = 0, lastAlertAt = 0, zTimer = 0;
 let pendingChoice = null;     // {kind, line?}
 let summary = null;
+let away = null;              // resumo acumulado enquanto a aba está escondida ou fechada
+const RM = matchMedia('(prefers-reduced-motion: reduce)');
 
 const clamp = (v, a = 0, b = 100) => Math.min(b, Math.max(a, v));
 const num = (v, d) => (typeof v === 'number' && isFinite(v)) ? v : d;
@@ -2910,12 +2917,13 @@ function sanitize(o) {
   const out = { ...d,
     stage: st, level: Math.min(100, Math.max(1, Math.floor(num(o.level, 1)))), exp: Math.max(0, num(o.exp, 0)),
     hunger: clamp(num(o.hunger, 80)), energy: clamp(num(o.energy, 90)), happy: clamp(num(o.happy, 70)), hygiene: clamp(num(o.hygiene, 100)),
-    asleep: !!o.asleep, sleptAt: num(o.sleptAt, 0), sick: !!o.sick, hungryUntil: num(o.hungryUntil, 0), poopTimer: clamp(num(o.poopTimer, 240), 0, 3600),
-    lastTick: num(o.lastTick, now), lastAttention: num(o.lastAttention, now), born: num(o.born, now),
+    asleep: !!o.asleep, sleptAt: clamp(num(o.sleptAt, 0), 0, now), sick: !!o.sick, hungryUntil: clamp(num(o.hungryUntil, 0), 0, now + 4 * 60e3), poopTimer: clamp(num(o.poopTimer, 240), 0, 3600),
+    lastTick: num(o.lastTick, now), lastAttention: clamp(num(o.lastAttention, now), 0, now), born: clamp(num(o.born, now), 0, now),
     pendingEvo: !!o.pendingEvo, expAcc: clamp(num(o.expAcc, 0), 0, 1), savedAt: num(o.savedAt, 0),
     count: { fed: num(o.count?.fed, 0), cleaned: num(o.count?.cleaned, 0), pets: num(o.count?.pets, 0), trained: num(o.count?.trained, 0) } };
   out.poops = Array.isArray(o.poops) ? o.poops.slice(0, 4).filter(p => p && isFinite(p.x) && isFinite(p.y)).map(p => ({ x: clamp(p.x, 20, 220), y: clamp(p.y, FEET - 3, FEET + 4) })) : [];
   out.berry = (o.berry && isFinite(o.berry.x)) ? { x: clamp(o.berry.x, 30, 210) } : null;
+  out.exp = out.level >= 100 ? 0 : Math.min(out.exp, needExp(out.level) - 1);
   // evolução pendente coerente com o nível
   const ev = LINES[out.line].evo[out.stage]; out.pendingEvo = !!(ev && out.level >= ev);
   return out;
@@ -2930,6 +2938,14 @@ function save() {
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(s)); storageOk = true; } catch { storageOk = false; }
 }
 function wipe() { try { localStorage.removeItem(SAVE_KEY); } catch {} }
+// Lê o save antes de simular: uma aba que perdeu os eventos 'storage' (voltou do cache do Voltar, ficou congelada)
+// adota o estado mais novo em vez de gravar o seu, velho, por cima dele.
+function syncFromStorage() {
+  if (!s) return;
+  let raw; try { raw = localStorage.getItem(SAVE_KEY); } catch { return; }
+  if (raw === null) { s = null; toSelect(); return; }                    // outra aba zerou
+  try { const o = sanitize(JSON.parse(raw)); if (o && o.savedAt > s.savedAt) s = o; } catch {}
+}
 
 /* ════════════ Simulação (baseada em timestamps → imune a reload/aba em segundo plano) ════════════ */
 function simulate(toTime, live) {
@@ -2998,30 +3014,42 @@ function emit(kind) {
 }
 function logicTick() {
   if (!s || scene !== 'habitat') return;
+  syncFromStorage(); if (!s) return;
   const now = Date.now(), gap = now - s.lastTick;
-  if (gap > 60e3) {
-    summary = { levels: 0 }; simulate(now, false); const sm = summary; summary = null;
-    const mins = Math.round(Math.min(gap, MAX_OFFLINE) / 60e3), h = Math.floor(mins / 60);
-    let txt = `Você ficou fora ${h ? h + 'h ' : ''}${mins % 60}min.`;
-    if (sm.poop) txt += ` ${N()} fez ${sm.poop} sujeira${sm.poop > 1 ? 's' : ''}.`;
-    say(txt);
-    if (sm.levels) say(`Cuidando de si mesmo, subiu ${sm.levels} nível${sm.levels > 1 ? 'is' : ''}!`);
-    if (sm.wake && !s.asleep) say(`${N()} acordou com fome!`);
-    if (s.sick) say(`${N()} está doente!`);
-    else if (s.hunger < 15) say(`${N()} está faminto!`);
+  // Escondida (o Chrome roda o timer ~1x/min) ou de volta depois de 1 min: simula calado e junta tudo num resumo
+  // só, mostrado quando a aba estiver visível.
+  if (document.hidden || gap > 60e3) {
+    if (!away) away = { since: s.lastTick, levels: 0 };
+    summary = away; simulate(now, false); summary = null;
   } else simulate(now, true);
+  if (away && !document.hidden) { const sm = away; away = null; reportAway(sm, now); }
   if (training && (s.asleep || s.sick)) cancelTraining('O treino foi interrompido.');
   if ((s.hunger < 15 || s.sick) && now - lastAlertAt > 25e3 && !document.hidden) { lastAlertAt = now; Sfx.alert(); }
   save(); updateUI();
 }
 
+function reportAway(sm, now) {
+  const gap = now - sm.since; if (!(gap > 60e3)) return;
+  const mins = Math.round(Math.min(gap, MAX_OFFLINE) / 60e3), h = Math.floor(mins / 60);
+  let txt = `Você ficou fora ${h ? h + 'h ' : ''}${mins % 60}min.`;
+  if (sm.poop) txt += ` ${N()} fez ${sm.poop} sujeira${sm.poop > 1 ? 's' : ''}.`;
+  say(txt);
+  if (sm.levels) say(`Cuidando de si mesmo, subiu ${sm.levels} nível${sm.levels > 1 ? 'is' : ''}!`);
+  if (sm.wake && !s.asleep) say(`${N()} acordou com fome!`);
+  if (s.sick) say(`${N()} está doente!`);
+  else if (s.hunger < 15) say(`${N()} está faminto!`);
+}
+
 /* ════════════ Mensagens (caixa de diálogo FRLG) ════════════ */
 const msg = { queue: [], cur: null, shown: 0, hold: 0 };
-const elMsg = document.getElementById('msgText'), elArrow = document.getElementById('msgArrow');
+const elMsg = document.getElementById('msgText'), elArrow = document.getElementById('msgArrow'), elSr = document.getElementById('srMsg');
 function say(text) { if (msg.queue.length >= 4) msg.queue.shift(); msg.queue.push(text); }
-function sayNow(text) { msg.queue = []; msg.cur = text; msg.shown = 0; msg.hold = 0; }
+// o leitor de tela recebe a frase inteira uma vez (a caixa visível é reescrita letra a letra)
+function setCur(text) { msg.cur = text; msg.shown = 0; msg.hold = 0; elSr.textContent = text; }
+function sayNow(text) { msg.queue = []; setCur(text); }
 function updateMsg(dt) {
-  if ((!msg.cur || (msg.shown >= msg.cur.length && msg.hold > 2.2)) && msg.queue.length) { msg.cur = msg.queue.shift(); msg.shown = 0; msg.hold = 0; }
+  // com SIM/NÃO aberto a pergunta fica na tela; os avisos esperam a resposta
+  if (!pendingChoice && (!msg.cur || (msg.shown >= msg.cur.length && msg.hold > 2.2)) && msg.queue.length) setCur(msg.queue.shift());
   if (!msg.cur) return;
   if (msg.shown < msg.cur.length) { msg.shown = Math.min(msg.cur.length, msg.shown + dt * 48); elMsg.textContent = msg.cur.slice(0, Math.floor(msg.shown)); }
   else { msg.hold += dt; if (elMsg.textContent !== msg.cur) elMsg.textContent = msg.cur; }
@@ -3035,12 +3063,19 @@ document.getElementById('textbox').addEventListener('click', e => {
 
 /* Caixa SIM/NÃO */
 const elChoice = document.getElementById('choice');
-function ask(text, kind, extra) { sayNow(text); pendingChoice = { kind, ...extra }; elChoice.hidden = false; document.getElementById('choiceYes').focus({ preventScroll: true }); }
+function ask(text, kind, extra) {
+  sayNow(text); pendingChoice = { kind, ...extra, back: document.activeElement }; elChoice.hidden = false;
+  // no RESET o foco começa no NÃO: Enter sem querer não apaga nada
+  document.getElementById(kind === 'reset' ? 'choiceNo' : 'choiceYes').focus({ preventScroll: true });
+}
+function closeChoice() { pendingChoice = null; elChoice.hidden = true; }
 function answer(yes) {
-  const pc = pendingChoice; pendingChoice = null; elChoice.hidden = true; Sfx.click();
+  const pc = pendingChoice; closeChoice(); Sfx.click();
   if (!pc) return;
   if (pc.kind === 'starter') { if (yes) startGame(pc.line); else { sayNow('Então escolha com calma.'); markStarter(null); } }
   if (pc.kind === 'reset') { if (yes) { wipe(); s = null; toSelect(); } else sayNow('Ufa! Seu POKéMON continua aqui.'); }
+  // o foco volta para onde estava (se o botão ainda estiver na tela)
+  const b = pc.back; if (b && b.isConnected && b.offsetParent !== null && b !== document.body) b.focus({ preventScroll: true });
 }
 elChoice.addEventListener('click', e => { const b = e.target.closest('button'); if (b) answer(b.dataset.v === 'yes'); });
 
@@ -3130,8 +3165,15 @@ function train() {
   say(`Hora do treino! Toque em GOLPE quando a seta estiver no vermelho.`);
   setTrainBtn();
 }
+// interrompido no meio (aba escondida, sono, doença): paga a parte do custo dos golpes já dados, sem EXP
 function cancelTraining(why) {
-  if (!training) return; training = null; setTrainBtn(); if (why) say(why);
+  if (!training) return;
+  const done = training.phase === 'done' ? 0 : training.results.length; training = null; setTrainBtn(); if (why) say(why);
+  if (done && s) { payTraining(done / TRAIN_HITS); save(); updateUI(); }
+}
+function payTraining(f) {
+  const mul = STAGE_MUL[s.stage];
+  s.energy = clamp(s.energy - 18 * f); s.hunger = clamp(s.hunger - 12 * mul.h * f); s.hygiene = clamp(s.hygiene - 6 * f);
 }
 function nextRound() {
   const tr = training; tr.round++; tr.phase = 'aim'; tr.aimT = 0;
@@ -3162,7 +3204,7 @@ function updateTraining(dt) {
       const q = QUAL[tr.q]; tr.hitPending = false; tr.shake = 1;
       Sfx.hit(tr.q); burst(tr.dummyX, FEET - 34, 'spark', tr.q === 0 ? 8 : 3);
       particles.push({ type: 'text', txt: q.txt, col: q.col, x: tr.dummyX, y: FEET - 50, vx: 0, vy: -16, life: 0, max: 1 });
-      if (tr.q === 0) flash = Math.max(flash, .3);
+      if (tr.q === 0 && !RM.matches) flash = Math.max(flash, .3);
     }
     if (tr.lunge <= 0) { if (tr.round >= TRAIN_HITS) finishTraining(); else nextRound(); }
   } else if (tr.phase === 'done') {
@@ -3173,11 +3215,11 @@ function updateTraining(dt) {
   }
 }
 function finishTraining() {
-  const tr = training, mul = STAGE_MUL[s.stage];
+  const tr = training;
   const avg = tr.results.reduce((a, b) => a + b, 0) / tr.results.length;
   const perfect = tr.results.every(m => m === QUAL[0].mul);
   const gain = Math.round((20 + s.level * 1.5) * avg * (perfect ? 1.2 : 1));
-  s.energy = clamp(s.energy - 18); s.hunger = clamp(s.hunger - 12 * mul.h); s.hygiene = clamp(s.hygiene - 6);
+  payTraining(1);
   s.happy = clamp(s.happy + (avg >= 1 ? 4 : 1)); s.lastAttention = Date.now(); s.count.trained++;
   tr.phase = 'done'; tr.endT = 1.1; tr.gain = gain; setTrainBtn();
   burst(pk.x, FEET - 40, 'sweat', 4); Sfx.trainDone(avg >= 1);
@@ -3197,11 +3239,12 @@ function startEvolution() {
 function updateEvo(dt) {
   evo.t += dt; const T = evo.t;
   if (T > 1.4 && T < 6.4) {
-    const p = (T - 1.4) / 5, period = .55 * (1 - p) + .05;
+    // com "reduzir movimento" a troca de silhueta fica lenta e constante (sem pisca-pisca acelerando)
+    const p = (T - 1.4) / 5, period = RM.matches ? .5 : .55 * (1 - p) + .05;
     if (T - evo.last >= period) { evo.last = T; evo.showNew = !evo.showNew; Sfx.blip(320 + p * 900 + (evo.showNew ? 120 : 0)); }
   }
   if (T >= 6.4 && !evo.done) {
-    evo.done = true; evo.showNew = true; flash = 1;
+    evo.done = true; evo.showNew = true; flash = RM.matches ? 0 : 1;
     // idempotente: se outra aba já aplicou esta evolução (estado adotado), não evolui de novo
     if (s.stage < evo.target) { s.stage = evo.target; s.happy = clamp(s.happy + 10); }
     const nxt = line().evo[s.stage]; s.pendingEvo = !!(nxt && s.level >= nxt);
@@ -3486,8 +3529,12 @@ function renderData() {
 function fitDevice() {
   const dev = $('device'), stage = dev.parentElement;
   dev.style.transform = ''; dev.style.margin = '';
+  // as dicas embaixo só aparecem quando o aparelho cabe inteiro sem encolher; com pouco espaço, ele tem prioridade
+  const hints = stage.querySelector('.hints'); if (hints) hints.style.display = '';
   const cs = getComputedStyle(stage), bs = getComputedStyle(document.body);
-  const availH = window.innerHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+  const hintsH = hints && hints.offsetHeight ? hints.offsetHeight + parseFloat(cs.rowGap || 0) : 0;
+  let availH = window.innerHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+  if (hintsH && dev.getBoundingClientRect().height > availH - hintsH) hints.style.display = 'none'; else availH -= hintsH;
   const availW = document.documentElement.clientWidth - parseFloat(bs.paddingLeft) - parseFloat(bs.paddingRight);
   const r = dev.getBoundingClientRect();
   const lying = matchMedia('(orientation: landscape) and (max-height: 560px)').matches;
@@ -3511,6 +3558,7 @@ function updateLed() {
 /* ════════════ Cenas ════════════ */
 function markStarter(key) { document.querySelectorAll('.starter').forEach(b => b.classList.toggle('sel', b.dataset.line === key)); }
 function toSelect() {
+  closeChoice(); away = null;
   scene = 'select'; evo = null; particles = []; sweep = null; berryFx = null; cancelTraining();
   $('selectLayer').hidden = false; $('hpbox').style.visibility = 'hidden';
   markStarter(null); sayNow('Bem-vindo ao mundo POKéMON! Toque em um POKéMON para escolher.'); updateUI(); updateLed();
@@ -3518,12 +3566,13 @@ function toSelect() {
 function startGame(lineKey) {
   s = newState(lineKey); save();
   scene = 'habitat'; $('selectLayer').hidden = true; $('hpbox').style.visibility = '';
-  pk.x = 120; pk.dir = -1; pk.mode = 'idle'; pk.idleT = 2; appear = 1; flash = .8;
+  pk.x = 120; pk.dir = -1; pk.mode = 'idle'; pk.idleT = 2; appear = 1; flash = RM.matches ? 0 : .8;
   setBiomeCache(); Sfx.cry(stage().id);
   sayNow(`Vai, ${N()}! Seu novo lar é esta POKé BOLA.`); say('Cuide da fome, sono, felicidade e higiene!');
   updateUI();
 }
 function enterHabitat() {
+  if (pendingChoice) { closeChoice(); markStarter(null); msg.cur = null; }   // pergunta do inicial esquecida aberta em outra aba
   scene = 'habitat'; $('selectLayer').hidden = true; $('hpbox').style.visibility = '';
   setBiomeCache(); logicTick();
   if (msgIdle() && !msg.cur) sayNow(s.asleep ? `${N()} está dormindo... Zzz` : `${N()} está feliz em te ver!`);
@@ -3564,7 +3613,7 @@ $('btnTrain').addEventListener('click', () => { const skip = pressInTraining || 
 $('btnClean').addEventListener('click', clean);
 $('btnLight').addEventListener('click', lights);
 $('btnPet').addEventListener('pointerdown', strikeOnPress);
-$('btnPet').addEventListener('click', () => { if (training) return; if (scene === 'habitat') pet(); else Sfx.click(); });
+$('btnPet').addEventListener('click', () => { const skip = pressInTraining || training; pressInTraining = false; if (skip) return; if (scene === 'habitat') pet(); else Sfx.click(); });
 $('btnSound').addEventListener('click', () => {
   Sfx.on = !Sfx.on; $('btnSound').textContent = 'SOM: ' + (Sfx.on ? 'ON' : 'OFF'); $('btnSound').classList.toggle('on', Sfx.on);
   try { localStorage.setItem(SAVE_KEY + '.mute', Sfx.on ? '0' : '1'); } catch {} Sfx.click();
@@ -3572,7 +3621,9 @@ $('btnSound').addEventListener('click', () => {
 $('btnData').addEventListener('click', () => { if (!s) return; dataOpen = !dataOpen; $('datas').hidden = !dataOpen; $('btnData').classList.toggle('on', dataOpen); Sfx.click(); updateUI(); fitDevice(); });
 window.addEventListener('resize', queueFit);
 window.addEventListener('orientationchange', queueFit);
-if (window.ResizeObserver) new ResizeObserver(queueFit).observe(document.documentElement);
+// o conteúdo do aparelho mudou de altura (selos de condição quebrando linha, aviso no DADOS): reencaixa.
+// O transform e a margem do fitDevice não mudam o tamanho observado, então não há laço.
+if (window.ResizeObserver) new ResizeObserver(() => { if (!fitQueued) { fitQueued = true; requestAnimationFrame(() => { fitQueued = false; fitDevice(); }); } }).observe($('device'));
 $('btnReset').addEventListener('click', () => { if (!s || evo) return Sfx.deny(); Sfx.click(); ask('Apagar o progresso e escolher outro POKéMON?', 'reset'); });
 // Instalar como app: o Chrome avisa quando o site é instalável; aí o botão INSTALAR aparece
 let installPrompt = null;
@@ -3604,6 +3655,8 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) { cancelTraining('O treino foi interrompido.'); save(); }   // sem treino congelado enquanto os status andam
   else { lastFrame = performance.now(); logicTick(); }
 });
+// voltou do cache do botão Voltar: os eventos 'storage' de outra aba não chegaram enquanto estava lá
+window.addEventListener('pageshow', e => { if (e.persisted) { lastFrame = performance.now(); logicTick(); } });
 window.addEventListener('pagehide', save);
 // outra aba salvou/zerou: adota o estado mais novo (a simulação parte de lastTick, então nada conta em dobro)
 window.addEventListener('storage', e => {

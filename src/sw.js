@@ -35,14 +35,16 @@ self.addEventListener('fetch', e => {
   if (req.mode === 'navigate') {
     const isGame = url.origin === self.location.origin && (url.pathname === SCOPE || url.pathname === SCOPE + 'index.html');
     if (!isGame) return;
-    e.respondWith(
-      fetch(req)
-        .then(res => {
-          if (res.ok && !res.redirected) { const copy = res.clone(); caches.open(CORE).then(c => c.put('./index.html', copy)); return res; }
-          return caches.match('./index.html').then(hit => hit || res);   // erro do servidor: abre a cópia que já temos
-        })
-        .catch(() => caches.match('./index.html').then(hit => hit || caches.match('./'))),
-    );
+    const cached = () => caches.match('./index.html').then(hit => hit || caches.match('./'));
+    const net = fetch(req)
+      .then(res => {
+        if (res.ok && !res.redirected) { const copy = res.clone(); e.waitUntil(caches.open(CORE).then(c => c.put('./index.html', copy))); return res; }
+        return caches.match('./index.html').then(hit => hit || res);   // erro do servidor: abre a cópia que já temos
+      })
+      .catch(cached);
+    // rede lenta (conectado, mas travando): em 3,5 s abre a cópia guardada; a resposta da rede ainda atualiza o cache
+    const slow = new Promise(r => setTimeout(r, 3500)).then(cached).then(hit => hit || net);
+    e.respondWith(Promise.race([net, slow]));
     return;
   }
 
