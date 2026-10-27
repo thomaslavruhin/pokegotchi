@@ -3,15 +3,14 @@
    então cada publicação nova gera um cache novo e apaga o antigo. */
 const VERSION = '/*VERSION*/';
 const CORE = `pokegotchi-core-${VERSION}`;
-const RUNTIME = 'pokegotchi-runtime-v1';   // fontes do Google e Tailwind (de outros domínios)
+const RUNTIME = 'pokegotchi-runtime-v1';   // fontes do Google (de outro domínio)
 const CORE_FILES = [
   './', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png',
   './icons/apple-touch-icon.png', './icons/favicon-32.png',
 ];
-const EXTERNAL = /^(fonts\.googleapis\.com|fonts\.gstatic\.com|cdn\.tailwindcss\.com)$/;
+const EXTERNAL = /^(fonts\.googleapis\.com|fonts\.gstatic\.com)$/;
 const FONT_CSS = 'https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap';
-const TAILWIND = 'https://cdn.tailwindcss.com/3.4.17';
 const SCOPE = new URL('./', self.location).pathname;   // ex.: /pokegotchi/
 
 // externos são buscados em modo CORS para o status ser conhecido (nunca guardar erro opaco no cache)
@@ -21,12 +20,12 @@ async function fetchExternal(url) {
   return res;
 }
 
-// Pré-carrega fontes e Tailwind já na instalação: a 1ª visita não passa pelo SW, e sem isso o 1º uso offline ficaria sem a fonte
+// Pré-carrega as fontes já na instalação: a 1ª visita não passa pelo SW, e sem isso o 1º uso offline ficaria sem a fonte
 async function warmExternal() {
   try {
     const css = await (await fetchExternal(FONT_CSS)).clone().text();
     const fonts = [...css.matchAll(/url\((https:\/\/fonts\.gstatic\.com\/[^)]+)\)/g)].map(m => m[1]);
-    await Promise.all([fetchExternal(TAILWIND), ...fonts.map(fetchExternal)]);
+    await Promise.all(fonts.map(fetchExternal));
   } catch { /* sem internet ou bloqueado: o jogo funciona com a fonte do sistema */ }
 }
 
@@ -71,7 +70,7 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // fontes e Tailwind: entrega o que está em cache e atualiza em segundo plano
+  // fontes: entrega o que está em cache e atualiza em segundo plano
   if (EXTERNAL.test(url.hostname)) {
     e.respondWith(caches.match(req.url, { cacheName: RUNTIME }).then(hit => {
       const net = fetchExternal(req.url).catch(() => fetch(req)).catch(() => hit || Response.error());

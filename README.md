@@ -42,7 +42,7 @@ Quando sai uma versão nova, o app se atualiza sozinho na próxima vez que você
 1. Baixe ou clone o repositório.
 2. Abra o `index.html` no navegador.
 
-Os sprites e o código já vêm dentro do arquivo. A internet só é usada para a fonte pixelada (Google Fonts) e o Tailwind (CDN). Sem conexão o jogo funciona do mesmo jeito, só que com a fonte monoespaçada do sistema.
+Os sprites e o código já vêm dentro do arquivo. A internet só é usada para a fonte pixelada (Google Fonts). Sem conexão o jogo funciona do mesmo jeito, só que com a fonte monoespaçada do sistema.
 
 Se preferir servir por HTTP:
 
@@ -270,7 +270,7 @@ Este é um **projeto de fã, sem fins comerciais e sem nenhuma ligação** com a
 
 - **Sprites:** sprites de *Pokémon FireRed/LeafGreen* e da Fruta Oran, obtidos do repositório [PokeAPI/sprites](https://github.com/PokeAPI/sprites).
 - **Fontes:** [Press Start 2P](https://fonts.google.com/specimen/Press+Start+2P) e [VT323](https://fonts.google.com/specimen/VT323), via Google Fonts (SIL Open Font License).
-- **CSS:** escrito à mão no próprio `game.html`. O [Tailwind CSS](https://tailwindcss.com) (CDN, v3.4.17) é carregado só pelo reset base; nenhuma classe utilitária é usada.
+- **CSS:** escrito à mão no próprio `game.html`, com um reset mínimo no topo. Nenhum framework.
 - **Cenários:** desenhados em código, pixel a pixel no canvas.
 - **Interface:** HTML e CSS próprios, com ícones em pixel art gerados como SVG pelo código.
 - **Sons:** sintetizados na hora com a Web Audio API.

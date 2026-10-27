@@ -25,7 +25,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
-<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<style>
+/* Reset mínimo (o que o jogo usava do preflight do Tailwind, sem carregar o Tailwind) */
+*, ::before, ::after { box-sizing: border-box; border: 0 solid #e5e7eb; }
+html { line-height: 1.5; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; tab-size: 4; font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; }
+body { margin: 0; line-height: inherit; }
+p { margin: 0; }
+kbd { font-family: ui-monospace, monospace; font-size: 1em; }
+button { font: inherit; color: inherit; letter-spacing: inherit; margin: 0; padding: 0; background: transparent; text-transform: none; -webkit-appearance: button; appearance: button; cursor: pointer; }
+:disabled { cursor: default; }
+img, svg, canvas { display: block; vertical-align: middle; }
+img { max-width: 100%; height: auto; }
+</style>
 <style>
 /* Layout: one Pokébola-shaped handheld centred on a dark desk — red half holds the GBA screen (240×160) and dialog box, white half holds the FRLG status box and the buttons. Single deliberate dark world. */
 :root {
