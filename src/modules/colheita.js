@@ -25,8 +25,17 @@ function cl_day() {
   const d = G.daily, today = localDate();
   if (today > (d.miniDate || '')) { d.miniDate = today; d.miniGames = 0; d.miniBalls = 0; }
 }
-// pode sair POKé BOLA agora? (2 por partida e o teto do dia, contando as já pegas nesta partida)
-const cl_ballOk = () => cl.balls < 2 && G.daily.miniBalls + cl.balls < 4;
+// pode sair POKé BOLA agora? (só nas 5 primeiras partidas do dia, 2 por partida e o teto do dia, contando as já pegas)
+const cl_ballOk = () => G.daily.miniGames < 5 && cl.balls < 2 && G.daily.miniBalls + cl.balls < 4;
+// a partida acabou por fora (dormiu, adoeceu, outra aba trocou o ativo ou zerou): fecha o SIM/NÃO do SAIR, se aberto
+function cl_abort() {
+  const ours = cl && cl.asking; cl = null; cv.style.touchAction = '';
+  if (ours && pendingChoice) answer(false);
+  if (scene === 'colheita' && s) { goHome(); sayNow('A COLHEITA foi interrompida.'); }
+}
+// RESET em outra aba vai direto para a escolha do inicial sem passar pelo exit() da cena: limpa o que sobrou
+const cl_heal = () => { if (scene !== 'colheita' && cl) { cl = null; cv.style.touchAction = ''; } };
+on('home', cl_heal); on('newGame', cl_heal);
 
 function startColheita() {
   if (blocked()) return Sfx.deny();
@@ -79,8 +88,10 @@ async function cl_quit() {
   if (!cl) return;
   if (cl.phase === 'end') return cl_done();
   const was = cl.paused; cl_pause(true);
+  cl.asking = true;
   const yes = await confirmYN('Sair da COLHEITA? O cansaço não volta e não há prêmios.', { safeNo: true });
   if (scene !== 'colheita' || !cl) return;
+  cl.asking = false;
   if (yes) { cl = null; goHome(); say('Você saiu da COLHEITA.'); }
   else if (!was) cl_pause(false);
 }
@@ -127,7 +138,7 @@ SCENES.colheita = {
   update(dt) {
     if (!cl) return;
     // o POKéMON mudou (outra aba trocou o ativo), dormiu ou adoeceu: a partida acaba sem prêmio
-    if (!s || s.uid !== cl.uid || s.asleep || s.sick) { cl = null; goHome(); say('A COLHEITA foi interrompida.'); return; }
+    if (!s || s.uid !== cl.uid || s.asleep || s.sick) return cl_abort();
     for (const p of cl.fx) { p.life += dt; p.y += p.vy * dt; p.x += (p.vx || 0) * dt; if (p.g) p.vy += p.g * dt; }
     cl.fx = cl.fx.filter(p => p.life < p.max);
     if (cl.phase === 'end') { cl.endT += dt; return; }
@@ -187,7 +198,7 @@ function cl_spawn(v) {
 function cl_pop(txt, x, y, col) { cl.fx.push({ txt, col, x, y, vy: -18, life: 0, max: .9 }); }
 function cl_catch(d, cx) {
   if (d.kind === 'rock') {
-    cl.stun = CL_STUN; cl.streak = 0; cl_release(); Sfx.deny();
+    cl.stun = CL_STUN; cl.streak = 0; Sfx.deny();   // a entrada continua valendo: segurando o dedo, volta a andar após o atordoamento
     for (let i = 0; i < 5; i++) cl.fx.push({ dust: true, x: d.x, y: d.y, vx: (Math.random() - .5) * 50, vy: -20 - Math.random() * 30, g: 120, life: 0, max: .5 });
     cl_pop('AI!', cx, FEET - cl.h - 14, '#c0c8d8'); return;
   }
@@ -215,7 +226,8 @@ function cl_miss(d) {
 /* ── fim: prêmios (com o save mais novo de outra aba) ── */
 function cl_end() {
   syncFromStorage();
-  if (!s || s.uid !== cl.uid) { cl = null; goHome(); say('A COLHEITA foi interrompida.'); return; }
+  // save zerado (já foi para a escolha do inicial) ou o ativo mudou
+  if (!G || !s || scene !== 'colheita' || s.uid !== cl.uid) return cl_abort();
   cl_day();
   const d = G.daily, sc = cl.score, n = N(), rewarded = d.miniGames < 5, rate = cl_rating(sc);
   d.miniGames++;
@@ -224,7 +236,7 @@ function cl_end() {
   // bolas (das quedas e dos pontos) dentro do teto de 4 por dia
   const got = { poke: 0, great: 0 };
   const give = k => { if (d.miniBalls >= 4) return; d.miniBalls++; bagAdd(k); got[k]++; };
-  for (let i = 0; i < cl.balls; i++) give('poke');
+  if (rewarded) for (let i = 0; i < cl.balls; i++) give('poke');
   if (rewarded && sc >= 150) give('poke');
   if (rewarded && sc >= 250) give(G.prog.badges >= 2 ? 'great' : 'poke');
   const stone = rewarded && sc >= 350 && Math.random() < .1 ? CL_STONES[randInt(0, CL_STONES.length - 1)] : null;
@@ -239,7 +251,7 @@ function cl_end() {
   const list = ['poke', 'great'].filter(k => got[k]).map(k => bolas(got[k], k));
   if (list.length) talk(`Você ganhou ${list.join(' e ')}!`);
   if (stone) talk(`Você encontrou ${ITEMS[stone].name}!`);
-  if (!rewarded && sc >= 150) talk('Os prêmios da COLHEITA de hoje acabaram. Volte amanhã!');
+  if (!rewarded && (sc >= 150 || cl.balls)) talk('Os prêmios da COLHEITA de hoje acabaram. Volte amanhã!');
   else if (rewarded && sc >= 150 && !list.length) talk('Já ganhou as POKé BOLAS da COLHEITA de hoje.');
   if (s.energy < 20) talk(`${n} está exausto... Deixe-o dormir.`);
   addExp(gain, true); fire('minigame', { score: sc }); save(); updateUI();
