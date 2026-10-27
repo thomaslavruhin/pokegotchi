@@ -7,6 +7,8 @@ Tamagotchi retrô no estilo *Pokémon FireRed/LeafGreen*, em um único arquivo H
 
 ![Floresta, vulcão e praia: os três habitats](docs/img/banner.png)
 
+### [▶ Jogar agora](https://thomaslavruhin.github.io/pokegotchi/)
+
 ![HTML, CSS e JS puros](https://img.shields.io/badge/HTML%20%2B%20CSS%20%2B%20JS-puro-e2372c?style=flat-square)
 ![Um arquivo](https://img.shields.io/badge/jogo-1%20arquivo-3b3c53?style=flat-square)
 ![Sem instalação](https://img.shields.io/badge/instala%C3%A7%C3%A3o-nenhuma-58d080?style=flat-square)
@@ -23,7 +25,9 @@ O tempo continua correndo com a aba fechada, até 12 horas. Quando você volta, 
 
 ## Jogar
 
-Não precisa instalar nada:
+**Online:** abra **[thomaslavruhin.github.io/pokegotchi](https://thomaslavruhin.github.io/pokegotchi/)**. Funciona no computador e no celular, e o progresso fica salvo no seu navegador.
+
+**No seu computador**, sem instalar nada:
 
 1. Baixe ou clone o repositório.
 2. Abra o `index.html` no navegador.
@@ -155,7 +159,8 @@ Os níveis de evolução são os do FireRed/LeafGreen. A diferença é que aqui 
 
 ```
 pokegotchi/
-├── index.html              ← o jogo pronto (gerado; é o arquivo que você abre)
+├── index.html              ← o jogo pronto (gerado; é o arquivo que você abre e o que o GitHub Pages publica)
+├── .nojekyll               ← faz o GitHub Pages servir os arquivos como estão
 ├── README.md
 ├── LICENSE
 ├── src/
