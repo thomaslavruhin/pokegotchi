@@ -661,7 +661,7 @@ function sanitize(o) {
   g.active = active;
   const seen = new Set([active.uid]);
   g.pc = (Array.isArray(o.pc) ? o.pc.slice(0, 360) : []).map(m => sanitizeMon(m, false)).filter(m => m && !seen.has(m.uid) && seen.add(m.uid));
-  g.nextUid = Math.max(Math.floor(num(o.nextUid, 2)), ...seen) + 1;
+  g.nextUid = Math.max(Math.floor(num(o.nextUid, 2)), Math.max(...seen) + 1);
   g.dex = { seen: dexStr(o.dex?.seen), caught: dexStr(o.dex?.caught), shiny: dexStr(o.dex?.shiny) };
   g.bag = mergeLike(DEFAULTS.bag, o.bag); for (const k in g.bag) g.bag[k] = clamp(Math.floor(g.bag[k]), 0, 99);
   g.prog = mergeLike(DEFAULTS.prog, o.prog); g.prog.badges = clamp(Math.floor(g.prog.badges), 0, 8);
@@ -841,7 +841,7 @@ function reportAway(sm, now) {
     if (sm.poop) txt += ` ${N()} fez ${sm.poop} sujeira${sm.poop > 1 ? 's' : ''}.`;
     say(txt);
   } else if (sm.poop) say(`${N()} fez sujeira no habitat!`);
-  if (sm.levels) say(`Cuidando de si mesmo, subiu ${sm.levels} nível${sm.levels > 1 ? 'is' : ''}!`);
+  if (sm.levels) say(`Cuidando de si mesmo, subiu ${sm.levels} ${sm.levels > 1 ? 'níveis' : 'nível'}!`);
   if ((sm.wake && !s.asleep) || ((sm.collapse || sm.doze) && s.asleep)) say(s.asleep ? `${N()} está dormindo... Zzz` : `${N()} acordou com fome!`);
   if (s.sick) say(`${N()} está doente!`);
   else if (s.hunger < 15) say(`${N()} está faminto!`);
@@ -887,10 +887,13 @@ function ask(text, kind, extra) {
   document.getElementById(kind === 'reset' || (extra && extra.safeNo) ? 'choiceNo' : 'choiceYes').focus({ preventScroll: true });
 }
 // await confirmYN('Soltar PIDGEY?', { safeNo: true }) -> true/false
-const confirmYN = (text, extra) => new Promise(res => ask(text, yes => res(yes), extra));
-function closeChoice() { pendingChoice = null; elChoice.hidden = true; }
+const confirmYN = (text, extra) => new Promise(res => ask(text, yes => res(yes), { ...extra, promise: true }));
+function closeChoice() {
+  const pc = pendingChoice; pendingChoice = null; elChoice.hidden = true;
+  if (pc && pc.promise) pc.kind(false);   // confirmYN fechado de fora (RESET, volta para casa): vale NÃO, ninguém fica esperando
+}
 function answer(yes) {
-  const pc = pendingChoice; closeChoice(); Sfx.click();
+  const pc = pendingChoice; pendingChoice = null; closeChoice(); Sfx.click();
   if (!pc) return;
   if (typeof pc.kind === 'function') pc.kind(yes);
   if (pc.kind === 'starter') { if (yes) startGame(pc.sp); else { sayNow('Então escolha com calma.'); markStarter(null); } }
@@ -1627,7 +1630,8 @@ window.addEventListener('keydown', e => {
   if (e.target.closest && e.target.closest('input, textarea')) return;
   if (pendingChoice) {
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); (document.activeElement === $('choiceYes') ? $('choiceNo') : $('choiceYes')).focus(); }
-    if (e.key === 'Escape' || e.key === 'Backspace') { e.preventDefault(); answer(false); }
+    if (e.key === 'Escape' || e.key === 'Backspace' || e.key === 'x' || e.key === 'X') { e.preventDefault(); answer(false); }
+    if ((e.key === 'z' || e.key === 'Z') && !e.repeat) { e.preventDefault(); answer(document.activeElement !== $('choiceNo')); }
     if (e.key >= '1' && e.key <= '4' && knobDefs && !e.repeat) { e.preventDefault(); $(KNOB_IDS[+e.key - 1]).click(); }   // cena com SIM/NÃO nos botões
     return;
   }

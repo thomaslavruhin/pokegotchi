@@ -92,7 +92,7 @@ function exRollEncounter(area, ph = phaseAt()) {
 /* Passeio */
 function exNewOuting(area) {
   const max = btStats(s.sp, s.level).hp;
-  return { area: EX_AREAS[area] ? area : 'floresta', hp: Math.min(max, Math.ceil(max * (.5 + s.energy / 200))), maxHp: max, steps: 0, startedAt: Date.now() };
+  return { area: EX_AREAS[area] ? area : 'floresta', hp: Math.min(max, Math.ceil(max * (.5 + s.energy / 200))), maxHp: max, steps: 0, startedAt: Date.now(), owner: BT_TAB, at: Date.now() };
 }
 // condições para sair e para cada passo (null = pode)
 function exBlock() {
@@ -271,12 +271,17 @@ function exArea() {
 /* Ao abrir o jogo / voltar para casa: encontro recente continua (anti-reroll); velho foge; passeio velho acaba */
 const exEncFresh = () => G && G.enc && Date.now() - num(G.enc.at, 0) < 30 * 60e3;
 let exResumeT = 0;
-on('boot', () => { if (G && G.outing && !exEncFresh()) { G.outing = null; save(); } });
+// passeio de outra aba ainda viva (batimento pelo tick, como a batalha): esta aba não o encerra
+const exOutElsewhere = o => !!(o && o.owner && o.owner !== BT_TAB && Date.now() - num(o.at, 0) < 120e3);
+on('boot', () => { if (G && G.outing && !exEncFresh() && !exOutElsewhere(G.outing)) { G.outing = null; save(); } });
 on('home', () => {
   if (!G) return;
   if (G.enc) { clearTimeout(exResumeT); exResumeT = setTimeout(exResume, 500); return; }
-  if (G.outing) { G.outing = null; save(); }
+  if (G.outing && !exOutElsewhere(G.outing)) { G.outing = null; save(); }
 });
+on('tick', now => { if (G && G.outing && (scene === 'explorar' || scene === 'batalha')) { G.outing.owner = BT_TAB; G.outing.at = now; } });
+// recarregar ou fechar: solta o passeio na hora
+window.addEventListener('pagehide', () => { if (G && G.outing && G.outing.owner === BT_TAB) { G.outing.owner = null; save(); } });
 // em casa: espera menus e perguntas fecharem; batalha em outra aba → tenta de novo a cada 15 s (o batimento dela vence em 2 min)
 function exResume(how = 'auto') {
   if (!G || !G.enc || scene !== 'habitat') return;

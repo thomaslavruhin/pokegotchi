@@ -157,7 +157,7 @@ async function pc_stone(uid, k) {
   if (bag_stoneEvos(m.sp).length > 1) {   // EEVEE: a pedra escolhe a forma
     bag_preview(to, m.shiny);
     const ok = await confirmYN(`Usar a ${ITEMS[k].name}? ${N(m)} vai evoluir para ${DEX[to].name}!`);
-    bag_preview(null); if (!ok) return;
+    bag_preview(null); if (!ok || scene !== 'pc') return;
   }
   syncFromStorage(); m = G && pc_find(uid);
   if (!m || bag_stoneTo(m.sp, k) !== to || !bagUse(k)) return Sfx.deny();
@@ -169,7 +169,7 @@ async function pc_stone(uid, k) {
 async function pc_trade(uid) {
   let m = pc_find(uid); const to = m && pc_tradeTo(m); if (!to) return Sfx.deny();
   if (!bagHas('cabo')) { sayNow('Você precisa de um CABO DE TROCA.'); return Sfx.deny(); }
-  const ok = await confirmYN(`Usar 1 CABO DE TROCA para trocar ${N(m)}?`); if (!ok) return;
+  const ok = await confirmYN(`Usar 1 CABO DE TROCA para trocar ${N(m)}?`); if (!ok || scene !== 'pc') return;   // fechado de fora: vale NÃO
   syncFromStorage(); m = G && pc_find(uid);
   if (!m || pc_tradeTo(m) !== to || !bagUse('cabo')) return Sfx.deny();
   const from = m.sp, shiny = m.shiny;
@@ -211,7 +211,7 @@ async function pc_release(uid) {
   let m = pc_find(uid); if (!m) return Sfx.deny();
   const name = N(m);
   if (!await confirmYN(`Soltar ${name}?`, { safeNo: true })) return;
-  if (!await confirmYN(`Tem certeza? ${name} não vai voltar.`, { safeNo: true })) return;
+  if (!await confirmYN(`Tem certeza? ${name} não vai voltar.`, { safeNo: true }) || scene !== 'pc') return;
   syncFromStorage(); if (!G) return;
   const i = G.pc.findIndex(x => x.uid === uid); if (i < 0) return Sfx.deny();
   const ball = DEX[G.pc[i].sp].stage >= 1 ? 'great' : 'poke';
@@ -239,7 +239,7 @@ function pc_sheetStep(d) {
   Sfx.click(); pc_render();
 }
 
-function pc_exit() { if (pc.busy) return Sfx.deny(); Sfx.click(); goHome(); }
+function pc_exit() { if (pc.busy || pendingChoice) return Sfx.deny(); Sfx.click(); goHome(); }
 SCENES.pc = {
   knobs: Object.assign([
     { label: '◀ CAIXA', icon: '◀', fn: () => pc_box(-1) }, { label: 'ESCOLHER', icon: 'OK', fn: () => pc_choose() },
@@ -251,7 +251,7 @@ SCENES.pc = {
     pc.el.addEventListener('click', pc_click);
     pc_render();
   },
-  exit() { if (pc.el) pc.el.remove(); pc.el = null; pc.sheet = null; pc.busy = false; bag_preview(null); },
+  exit() { if (pendingChoice) closeChoice(); if (pc.el) pc.el.remove(); pc.el = null; pc.sheet = null; pc.busy = false; bag_preview(null); },
   draw(c) { R(c, 0, 0, W, H, '#28406a'); },
   key(e, k) {
     if (pc.busy) return false;   // A/Enter ainda passa as mensagens da troca

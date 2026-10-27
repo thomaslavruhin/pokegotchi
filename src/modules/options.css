@@ -12,6 +12,6 @@
   padding: 0 4px; min-height: max(24px, 11cqw); font-size: clamp(6px, 3cqw, 8px); cursor: pointer; flex: 0 1 auto; }
 .op-btn:hover, .op-btn:focus-visible { background: #fff8c8; outline: none; }
 .op-btn:active { translate: 0 1px; }
-.op-prev { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: flex-start; line-height: 1.6; overflow: hidden; }
+.op-prev { flex: 1; padding-right: 32%; min-height: 0; display: flex; flex-direction: column; align-items: flex-start; line-height: 1.6; overflow: hidden; }
 .op-prev img { flex: 1; min-height: 0; max-width: 40%; object-fit: contain; object-position: left bottom; image-rendering: pixelated; }
 .op-prev em { font-style: normal; color: #c03028; }

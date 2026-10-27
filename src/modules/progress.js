@@ -167,7 +167,7 @@ function pg_hall() {
 
 on('boot', () => { if (G) { pg_day(); pg_check(); } });
 on('home', () => { pg_day(); pg_safety(); pg_check(); pg_hall(); });
-on('tick', () => { pg_day(); pg_safety(); pg_check(); });
+on('tick', () => { pg_day(); pg_safety(); pg_check(); pg_hall(); });   // completou em casa (evolução, presente) ou acordou
 on('caught', (m, how) => {
   if (!G) return;
   // o contador de fósseis é só deste gancho: o módulo que revive o fóssil não mexe em prog.fossils
@@ -182,7 +182,7 @@ on('caught', (m, how) => {
 });
 on('battleEnd', r => {
   if (!G || !r) return;
-  if (r.won) G.prog.wins++;
+  // prog.wins é contado pela batalha, junto com o resultado gravado (aqui contaria em dobro)
   if (r.caught && (r.night ?? phaseAt() === 'NOITE')) G.prog.nightCaps++;
   pg_check(); save();
 });

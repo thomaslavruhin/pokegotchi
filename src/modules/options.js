@@ -66,14 +66,16 @@ function op_close(silent) {
   if (!op_panel) return;
   const p = op_panel; op_panel = null; p.el.remove();
   const i = Menu.stack.indexOf(p.guard); if (i >= 0) Menu.stack.splice(i, 1);
-  setKnobs(scene === 'habitat' ? null : p.prevKnobs);
+  // no habitat volta aos botões dele, a não ser que a ficha avulsa da POKéDEX esteja aberta por baixo
+  const pop = typeof dx !== 'undefined' && dx.mode === 'popup';
+  setKnobs(pop ? dx.popKnobs : scene === 'habitat' ? null : p.prevKnobs);
   if (!silent) Sfx.click();
 }
 setInterval(() => { if (op_panel && !Menu.stack.includes(op_panel.guard)) op_close(true); }, 250);
 // teclado com o painel aberto: o jogo não vê as teclas (nem Enter abrindo o START por baixo); digitar na caixa funciona
 window.addEventListener('keydown', e => {
   if (!op_panel || pendingChoice) return;
-  e.stopPropagation();
+  e.stopImmediatePropagation();   // nem a ficha avulsa da POKéDEX (também em captura) vê a tecla
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   const k = e.key.toLowerCase(), typing = e.target.closest && e.target.closest('textarea');
   if (k === 'escape' || (!typing && (k === 'x' || k === 'backspace'))) { e.preventDefault(); op_close(); return; }
