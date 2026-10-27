@@ -9,6 +9,7 @@
  *     /*BIOMES_JS*\/       -> o código dos biomas (src/biomes/*.js)
  * - src/sprites/{1..9,berry}.png
  * - src/biomes/{floresta,vulcao,praia}.js
+ * - src/fonts/{press-start-2p,vt323}.woff2 -> @font-face em data URI no lugar de /*FONTS_CSS*\/
  */
 $root = dirname(__DIR__);
 $game = file_get_contents("$root/src/game.html");
@@ -27,7 +28,14 @@ foreach (['floresta', 'vulcao', 'praia'] as $k) {
     $biomes .= "\n/* ── bioma: $k ── */\n" . trim(file_get_contents($js)) . "\n";
 }
 
-foreach (['/*SPRITES_JSON*/{}' => json_encode($sprites, JSON_UNESCAPED_SLASHES), '/*BIOMES_JS*/' => $biomes] as $mark => $value) {
+$fonts = [];
+foreach (['Press Start 2P' => 'press-start-2p', 'VT323' => 'vt323'] as $family => $k) {
+    $woff2 = "$root/src/fonts/$k.woff2";
+    if (!is_file($woff2)) fail("fonte ausente: src/fonts/$k.woff2");
+    $fonts[] = "@font-face { font-family: \"$family\"; font-display: swap; src: url(data:font/woff2;base64," . base64_encode(file_get_contents($woff2)) . ") format(\"woff2\"); }";
+}
+
+foreach (['/*SPRITES_JSON*/{}' => json_encode($sprites, JSON_UNESCAPED_SLASHES), '/*BIOMES_JS*/' => $biomes, '/*FONTS_CSS*/' => implode("\n", $fonts)] as $mark => $value) {
     if (substr_count($game, $mark) !== 1) fail("marcador $mark precisa aparecer exatamente 1 vez em src/game.html");
     $game = str_replace($mark, $value, $game);
 }

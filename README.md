@@ -42,7 +42,7 @@ Quando sai uma versão nova, o app se atualiza sozinho na próxima vez que você
 1. Baixe ou clone o repositório.
 2. Abra o `index.html` no navegador.
 
-Os sprites e o código já vêm dentro do arquivo. A internet só é usada para a fonte pixelada (Google Fonts). Sem conexão o jogo funciona do mesmo jeito, só que com a fonte monoespaçada do sistema.
+Sprites, fontes e código já vêm dentro do arquivo: o jogo não usa a internet para nada.
 
 Se preferir servir por HTTP:
 
@@ -185,7 +185,8 @@ pokegotchi/
 │   │   ├── floresta.js     ← cenário de Bulbasaur/Ivysaur/Venusaur
 │   │   ├── vulcao.js       ← cenário de Charmander/Charmeleon/Charizard
 │   │   └── praia.js        ← cenário de Squirtle/Wartortle/Blastoise
-│   └── sprites/            ← sprites FireRed/LeafGreen (1–9) e a Fruta Oran
+│   ├── sprites/            ← sprites FireRed/LeafGreen (1–9) e a Fruta Oran
+│   └── fonts/              ← Press Start 2P e VT323 (subconjunto latino, .woff2) e suas licenças OFL
 ├── tools/
 │   ├── build.php           ← junta src/ em um único index.html e gera o sw.js
 │   ├── make-icons.php      ← desenha os ícones (Pokébola em pixel art) sem depender de GD
@@ -208,10 +209,11 @@ O que o script faz:
 
 1. Embute os sprites como *data URI* no lugar do marcador `/*SPRITES_JSON*/{}` de `src/game.html`.
 2. Cola o código dos biomas no lugar de `/*BIOMES_JS*/`.
-3. Envolve tudo num documento HTML completo, com o cabeçalho do app (manifest, ícones, registro do service worker).
-4. Gera o `sw.js` a partir de `src/sw.js`, com a versão igual a um hash do `index.html`. Cada publicação nova cria um cache novo e apaga o antigo.
+3. Embute as fontes de `src/fonts/` como `@font-face` em *data URI* no lugar de `/*FONTS_CSS*/`.
+4. Envolve tudo num documento HTML completo, com o cabeçalho do app (manifest, ícones, registro do service worker).
+5. Gera o `sw.js` a partir de `src/sw.js`, com a versão igual a um hash do `index.html`. Cada publicação nova cria um cache novo e apaga o antigo.
 
-Assim o `index.html` não depende de nenhum arquivo ao lado dele para rodar e funciona até em ambientes que bloqueiam imagens externas. Os ícones só mudam se você rodar `php tools/make-icons.php`.
+Assim o `index.html` não depende de nenhum arquivo ao lado dele para rodar e funciona até em ambientes que bloqueiam imagens e fontes externas. Os ícones só mudam se você rodar `php tools/make-icons.php`.
 
 ### Bancada de biomas
 
@@ -269,7 +271,7 @@ Os helpers (`R`, `disc`, `dither`, `rng`, `groundBottom`, `dioramaEdge`) e as co
 Este é um **projeto de fã, sem fins comerciais e sem nenhuma ligação** com a Nintendo, a Creatures Inc., a GAME FREAK inc. ou a The Pokémon Company. Pokémon e todos os nomes e personagens relacionados são marcas registradas e © de seus respectivos donos.
 
 - **Sprites:** sprites de *Pokémon FireRed/LeafGreen* e da Fruta Oran, obtidos do repositório [PokeAPI/sprites](https://github.com/PokeAPI/sprites).
-- **Fontes:** [Press Start 2P](https://fonts.google.com/specimen/Press+Start+2P) e [VT323](https://fonts.google.com/specimen/VT323), via Google Fonts (SIL Open Font License).
+- **Fontes:** [Press Start 2P](https://fonts.google.com/specimen/Press+Start+2P) e [VT323](https://fonts.google.com/specimen/VT323), embutidas no jogo sob a SIL Open Font License (textos da licença em `src/fonts/`).
 - **CSS:** escrito à mão no próprio `game.html`, com um reset mínimo no topo. Nenhum framework.
 - **Cenários:** desenhados em código, pixel a pixel no canvas.
 - **Interface:** HTML e CSS próprios, com ícones em pixel art gerados como SVG pelo código.
